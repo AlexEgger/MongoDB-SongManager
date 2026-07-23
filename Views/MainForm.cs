@@ -1,67 +1,83 @@
-using MongoDB_SongManager.Services.DTOs;
+using MongoDB_SongManager.Data.Repositories;
+using MongoDB_SongManager.Models;
+using MongoDB_SongManager.Presenters;
+using MongoDB_SongManager.Services;
 using SongManager.Views;
 
-namespace MongoDB_SongManager.Views;
-
-/// <summary>
-/// Concrete WinForms view implementation managing controls and standard user interactions.
-/// </summary>
-public partial class MainForm : Form, IMainView
+namespace MongoDB_SongManager.Views
 {
-    public event EventHandler? ViewLoaded;
-    public event EventHandler? SearchRequested;
-    public event EventHandler? ImportCsvRequested;
-    public event EventHandler? ExportCsvRequested;
-
-    //public string SearchText => txtSearch.Text;
-    public string SelectedCsvPath { get; private set; } = string.Empty;
-
-    string IMainView.SearchText => throw new NotImplementedException();
-
-    public MainForm ()
+    public partial class MainForm : Form
     {
-        InitializeComponent();
+        private readonly CurrentUserService _currentUserService;
+        private readonly IRepository<User> _userRepository;
 
-        // Bind control events to interface events
-        Load += (s, e) => ViewLoaded?.Invoke(this, EventArgs.Empty);
+        private readonly SongsView _songsView;
+        private readonly SongsPresenter _songsPresenter;
 
-        SongsView songsView = new SongsView();
-        songsView.Dock = DockStyle.Fill;
-
-        tabPageSongs.Controls.Add(songsView);
-
-        //btnSearch.Click += (s, e) => SearchRequested?.Invoke(this, EventArgs.Empty);
-        //btnImportCsv.Click += OnImportCsvClicked;
-    }
-
-    private void OnImportCsvClicked (object? sender, EventArgs e)
-    {
-        using var openFileDialog = new OpenFileDialog
+        /// <summary>
+        /// Initializes the main application window with dependency injection.
+        /// </summary>
+        public MainForm (
+            CurrentUserService currentUserService,
+            IRepository<User> userRepository,
+            IRepository<Song> songRepository,
+            IRepository<Artist> artistRepository)
         {
-            Filter = "CSV Files (*.csv)|*.csv",
-            Title = "Select CSV File to Import"
-        };
+            InitializeComponent();
 
-        if (openFileDialog.ShowDialog() == DialogResult.OK)
-        {
-            SelectedCsvPath = openFileDialog.FileName;
-            ImportCsvRequested?.Invoke(this, EventArgs.Empty);
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+
+            // Initialize Sub-Views & Presenters
+            _songsView = new SongsView();
+            _songsPresenter = new SongsPresenter(_songsView, songRepository, artistRepository);
+
+            // Setup Navigation
+            btnNavSongs.Click += (s, e) => ShowView(_songsView);
+            cmbUser.SelectedIndexChanged += OnUserSelectionChanged;
+
+            LoadUsersIntoComboBox();
+
+            // Default View
+            ShowView(_songsView);
         }
-    }
 
-    public void DisplaySongs (List<SongDisplayDto> songs)
-    {
-        //dgvSongs.DataSource = null;
-        //dgvSongs.DataSource = songs;
-    }
+        /// <summary>
+        /// Loads all registered active users from MongoDB into the header ComboBox.
+        /// </summary>
+        private void LoadUsersIntoComboBox ()
+        {
+            var users = _userRepository.GetAll().ToList();
+            cmbUser.DisplayMember = "Name";
+            cmbUser.ValueMember = "Id";
+            cmbUser.DataSource = users;
 
-    public void ShowErrorMessage (string message)
-    {
-        MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
+            if (users.Count > 0)
+            {
+                cmbUser.SelectedIndex = 0;
+                _currentUserService.SetCurrentUser(users[0]);
+            }
+        }
 
-    public void ShowSuccessMessage (string message)
-    {
-        MessageBox.Show(message, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        /// <summary>
+        /// Handles changes in the user ComboBox and informs the CurrentUserService.
+        /// </summary>
+        private void OnUserSelectionChanged (object? sender, EventArgs e)
+        {
+            if (cmbUser.SelectedItem is User selectedUser)
+            {
+                _currentUserService.SetCurrentUser(selectedUser);
+            }
+        }
+
+        /// <summary>
+        /// Displays the specified UserControl inside the main content container panel.
+        /// </summary>
+        private void ShowView (UserControl view)
+        {
+            pnlContentContainer.Controls.Clear();
+            view.Dock = DockStyle.Fill;
+            pnlContentContainer.Controls.Add(view);
+        }
     }
 }

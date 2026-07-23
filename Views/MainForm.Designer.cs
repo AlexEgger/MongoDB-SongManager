@@ -1,18 +1,9 @@
-﻿using SongManager.Views;
-
-namespace MongoDB_SongManager.Views
+﻿namespace MongoDB_SongManager.Views
 {
     partial class MainForm
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose (bool disposing)
         {
             if (disposing && (components != null))
@@ -24,78 +15,102 @@ namespace MongoDB_SongManager.Views
 
         #region Windows Form Designer generated code
 
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent ()
         {
-            tabControlMain = new TabControl();
-            tabPageSongs = new TabPage();
-            tabPage2 = new TabPage();
-            songsView1 = new SongsView();
-            tabControlMain.SuspendLayout();
-            tabPageSongs.SuspendLayout();
+            pnlHeader = new Panel();
+            cmbUser = new ComboBox();
+            lblUserHeader = new Label();
+            btnNavSonglists = new Button();
+            btnNavSongs = new Button();
+            pnlContentContainer = new Panel();
+            pnlHeader.SuspendLayout();
             SuspendLayout();
             // 
-            // tabControlMain
+            // pnlHeader
             // 
-            tabControlMain.Controls.Add(tabPageSongs);
-            tabControlMain.Controls.Add(tabPage2);
-            tabControlMain.Dock = DockStyle.Fill;
-            tabControlMain.Location = new Point(0, 0);
-            tabControlMain.Name = "tabControlMain";
-            tabControlMain.SelectedIndex = 0;
-            tabControlMain.Size = new Size(800, 450);
-            tabControlMain.TabIndex = 0;
+            pnlHeader.BackColor = SystemColors.ControlLight;
+            pnlHeader.Controls.Add(cmbUser);
+            pnlHeader.Controls.Add(lblUserHeader);
+            pnlHeader.Controls.Add(btnNavSonglists);
+            pnlHeader.Controls.Add(btnNavSongs);
+            pnlHeader.Dock = DockStyle.Top;
+            pnlHeader.Location = new Point(0, 0);
+            pnlHeader.Name = "pnlHeader";
+            pnlHeader.Padding = new Padding(10, 5, 10, 5);
+            pnlHeader.Size = new Size(1008, 45);
+            pnlHeader.TabIndex = 0;
             // 
-            // tabPageSongs
+            // cmbUser
             // 
-            tabPageSongs.Controls.Add(songsView1);
-            tabPageSongs.Location = new Point(4, 24);
-            tabPageSongs.Name = "tabPageSongs";
-            tabPageSongs.Padding = new Padding(3);
-            tabPageSongs.Size = new Size(792, 422);
-            tabPageSongs.TabIndex = 0;
-            tabPageSongs.Text = "Songs and Songlists";
-            tabPageSongs.UseVisualStyleBackColor = true;
+            cmbUser.Dock = DockStyle.Right;
+            cmbUser.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbUser.FormattingEnabled = true;
+            cmbUser.Location = new Point(746, 5);
+            cmbUser.Name = "cmbUser";
+            cmbUser.Size = new Size(180, 23);
+            cmbUser.TabIndex = 3;
             // 
-            // tabPage2
+            // lblUserHeader
             // 
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(792, 422);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
-            tabPage2.UseVisualStyleBackColor = true;
+            lblUserHeader.AutoSize = true;
+            lblUserHeader.Dock = DockStyle.Right;
+            lblUserHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lblUserHeader.Location = new Point(926, 5);
+            lblUserHeader.Name = "lblUserHeader";
+            lblUserHeader.Padding = new Padding(0, 5, 10, 0);
+            lblUserHeader.Size = new Size(72, 20);
+            lblUserHeader.TabIndex = 2;
+            lblUserHeader.Text = "Benutzer:";
             // 
-            // songsView1
+            // btnNavSonglists
             // 
-            songsView1.Dock = DockStyle.Fill;
-            songsView1.Location = new Point(3, 3);
-            songsView1.Name = "songsView1";
-            songsView1.Size = new Size(786, 416);
-            songsView1.TabIndex = 0;
+            btnNavSonglists.Location = new Point(155, 7);
+            btnNavSonglists.Name = "btnNavSonglists";
+            btnNavSonglists.Size = new Size(130, 30);
+            btnNavSonglists.TabIndex = 1;
+            btnNavSonglists.Text = "🎵 Setlists / Listen";
+            btnNavSonglists.UseVisualStyleBackColor = true;
+            // 
+            // btnNavSongs
+            // 
+            btnNavSongs.Location = new Point(10, 7);
+            btnNavSongs.Name = "btnNavSongs";
+            btnNavSongs.Size = new Size(135, 30);
+            btnNavSongs.TabIndex = 0;
+            btnNavSongs.Text = "🎼 Songs & Interpreten";
+            btnNavSongs.UseVisualStyleBackColor = true;
+            // 
+            // pnlContentContainer
+            // 
+            pnlContentContainer.Dock = DockStyle.Fill;
+            pnlContentContainer.Location = new Point(0, 45);
+            pnlContentContainer.Name = "pnlContentContainer";
+            pnlContentContainer.Size = new Size(1008, 684);
+            pnlContentContainer.TabIndex = 1;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(tabControlMain);
+            ClientSize = new Size(1008, 729);
+            Controls.Add(pnlContentContainer);
+            Controls.Add(pnlHeader);
+            MinimumSize = new Size(800, 600);
             Name = "MainForm";
-            Text = "Form1";
-            tabControlMain.ResumeLayout(false);
-            tabPageSongs.ResumeLayout(false);
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "MongoDB SongManager";
+            pnlHeader.ResumeLayout(false);
+            pnlHeader.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private TabControl tabControlMain;
-        private TabPage tabPageSongs;
-        private TabPage tabPage2;
-        private SongsView songsView1;
+        private Panel pnlHeader;
+        private Button btnNavSonglists;
+        private Button btnNavSongs;
+        private ComboBox cmbUser;
+        private Label lblUserHeader;
+        private Panel pnlContentContainer;
     }
 }

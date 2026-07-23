@@ -3,14 +3,14 @@
     partial class SonglistsView
     {
         /// <summary> 
-        /// Erforderliche Designervariable.
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary> 
-        /// Verwendete Ressourcen bereinigen.
+        /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose (bool disposing)
         {
             if (disposing && (components != null))
@@ -20,15 +20,21 @@
             base.Dispose(disposing);
         }
 
-        #region Vom Komponenten-Designer generierter Code
+        #region Component Designer generated code
 
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent ()
         {
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.lstSetlists = new System.Windows.Forms.ListBox();
             this.lblSetlistHeader = new System.Windows.Forms.Label();
-            this.btnCreateSetlist = new System.Windows.Forms.Button();
+            this.pnlLeftButtons = new System.Windows.Forms.TableLayoutPanel();
+            this.btnCreateList = new System.Windows.Forms.Button();
+            this.btnDeleteList = new System.Windows.Forms.Button();
             this.pnlRight = new System.Windows.Forms.Panel();
             this.builderLayout = new System.Windows.Forms.TableLayoutPanel();
             this.dgvAvailableSongs = new System.Windows.Forms.DataGridView();
@@ -41,8 +47,8 @@
             this.colKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colSetDuration = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlTransferButtons = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnAddSong = new System.Windows.Forms.Button();
-            this.btnRemoveSong = new System.Windows.Forms.Button();
+            this.btnAddSongToList = new System.Windows.Forms.Button();
+            this.btnRemoveSongFromList = new System.Windows.Forms.Button();
             this.btnMoveUp = new System.Windows.Forms.Button();
             this.btnMoveDown = new System.Windows.Forms.Button();
             this.lblAvailHeader = new System.Windows.Forms.Label();
@@ -54,6 +60,7 @@
             this.lblActiveSetlistTitle = new System.Windows.Forms.Label();
             this.mainLayout.SuspendLayout();
             this.pnlLeft.SuspendLayout();
+            this.pnlLeftButtons.SuspendLayout();
             this.pnlRight.SuspendLayout();
             this.builderLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAvailableSongs)).BeginInit();
@@ -82,7 +89,7 @@
             // 
             this.pnlLeft.Controls.Add(this.lstSetlists);
             this.pnlLeft.Controls.Add(this.lblSetlistHeader);
-            this.pnlLeft.Controls.Add(this.btnCreateSetlist);
+            this.pnlLeft.Controls.Add(this.pnlLeftButtons);
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLeft.Location = new System.Drawing.Point(4, 4);
             this.pnlLeft.Name = "pnlLeft";
@@ -95,12 +102,6 @@
             this.lstSetlists.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstSetlists.FormattingEnabled = true;
             this.lstSetlists.ItemHeight = 15;
-            this.lstSetlists.Items.AddRange(new object[] {
-            "🎸 Graspop Mainstage 2026",
-            "☕ Acoustic Pub Night (2h)",
-            "💍 Hochzeit Schmidt (Set 1)",
-            "💍 Hochzeit Schmidt (Set 2)",
-            "🎙️ Proberaum Abarbeiten"});
             this.lstSetlists.Location = new System.Drawing.Point(5, 35);
             this.lstSetlists.Name = "lstSetlists";
             this.lstSetlists.Size = new System.Drawing.Size(192, 462);
@@ -114,18 +115,45 @@
             this.lblSetlistHeader.Name = "lblSetlistHeader";
             this.lblSetlistHeader.Size = new System.Drawing.Size(192, 30);
             this.lblSetlistHeader.TabIndex = 1;
-            this.lblSetlistHeader.Text = "Alle Setlists";
+            this.lblSetlistHeader.Text = "Alle Songlisten";
             this.lblSetlistHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnCreateSetlist
+            // pnlLeftButtons
             // 
-            this.btnCreateSetlist.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.btnCreateSetlist.Location = new System.Drawing.Point(5, 497);
-            this.btnCreateSetlist.Name = "btnCreateSetlist";
-            this.btnCreateSetlist.Size = new System.Drawing.Size(192, 40);
-            this.btnCreateSetlist.TabIndex = 2;
-            this.btnCreateSetlist.Text = "+ Neue Setlist";
-            this.btnCreateSetlist.UseVisualStyleBackColor = true;
+            this.pnlLeftButtons.ColumnCount = 2;
+            this.pnlLeftButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlLeftButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pnlLeftButtons.Controls.Add(this.btnCreateList, 0, 0);
+            this.pnlLeftButtons.Controls.Add(this.btnDeleteList, 1, 0);
+            this.pnlLeftButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlLeftButtons.Location = new System.Drawing.Point(5, 497);
+            this.pnlLeftButtons.Name = "pnlLeftButtons";
+            this.pnlLeftButtons.RowCount = 1;
+            this.pnlLeftButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.pnlLeftButtons.Size = new System.Drawing.Size(192, 40);
+            this.pnlLeftButtons.TabIndex = 2;
+            // 
+            // btnCreateList
+            // 
+            this.btnCreateList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCreateList.Location = new System.Drawing.Point(0, 0);
+            this.btnCreateList.Margin = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.btnCreateList.Name = "btnCreateList";
+            this.btnCreateList.Size = new System.Drawing.Size(94, 40);
+            this.btnCreateList.TabIndex = 0;
+            this.btnCreateList.Text = "+ Neu";
+            this.btnCreateList.UseVisualStyleBackColor = true;
+            // 
+            // btnDeleteList
+            // 
+            this.btnDeleteList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDeleteList.Location = new System.Drawing.Point(98, 0);
+            this.btnDeleteList.Margin = new System.Windows.Forms.Padding(2, 0, 0, 0);
+            this.btnDeleteList.Name = "btnDeleteList";
+            this.btnDeleteList.Size = new System.Drawing.Size(94, 40);
+            this.btnDeleteList.TabIndex = 1;
+            this.btnDeleteList.Text = "🗑️ Löschen";
+            this.btnDeleteList.UseVisualStyleBackColor = true;
             // 
             // pnlRight
             // 
@@ -196,7 +224,7 @@
             this.colAvailDuration.Name = "colAvailDuration";
             this.colAvailDuration.ReadOnly = true;
             // 
-            // dgvSetlistSongs
+            // dgvSonglistSongs
             // 
             this.dgvSonglistSongs.AllowUserToAddRows = false;
             this.dgvSonglistSongs.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -209,7 +237,7 @@
             this.dgvSonglistSongs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvSonglistSongs.Location = new System.Drawing.Point(407, 28);
             this.dgvSonglistSongs.MultiSelect = false;
-            this.dgvSonglistSongs.Name = "dgvSetlistSongs";
+            this.dgvSonglistSongs.Name = "dgvSonglistSongs";
             this.dgvSonglistSongs.ReadOnly = true;
             this.dgvSonglistSongs.RowHeadersVisible = false;
             this.dgvSonglistSongs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -245,9 +273,8 @@
             // 
             // pnlTransferButtons
             // 
-
-            this.pnlTransferButtons.Controls.Add(this.btnAddSong);
-            this.pnlTransferButtons.Controls.Add(this.btnRemoveSong);
+            this.pnlTransferButtons.Controls.Add(this.btnAddSongToList);
+            this.pnlTransferButtons.Controls.Add(this.btnRemoveSongFromList);
             this.pnlTransferButtons.Controls.Add(this.btnMoveUp);
             this.pnlTransferButtons.Controls.Add(this.btnMoveDown);
             this.pnlTransferButtons.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -258,23 +285,23 @@
             this.pnlTransferButtons.Size = new System.Drawing.Size(80, 456);
             this.pnlTransferButtons.TabIndex = 2;
             // 
-            // btnAddSong
+            // btnAddSongToList
             // 
-            this.btnAddSong.Location = new System.Drawing.Point(8, 43);
-            this.btnAddSong.Name = "btnAddSong";
-            this.btnAddSong.Size = new System.Drawing.Size(65, 35);
-            this.btnAddSong.TabIndex = 0;
-            this.btnAddSong.Text = "➕ ➡️";
-            this.btnAddSong.UseVisualStyleBackColor = true;
+            this.btnAddSongToList.Location = new System.Drawing.Point(8, 43);
+            this.btnAddSongToList.Name = "btnAddSongToList";
+            this.btnAddSongToList.Size = new System.Drawing.Size(65, 35);
+            this.btnAddSongToList.TabIndex = 0;
+            this.btnAddSongToList.Text = "➕ ➡️";
+            this.btnAddSongToList.UseVisualStyleBackColor = true;
             // 
-            // btnRemoveSong
+            // btnRemoveSongFromList
             // 
-            this.btnRemoveSong.Location = new System.Drawing.Point(8, 84);
-            this.btnRemoveSong.Name = "btnRemoveSong";
-            this.btnRemoveSong.Size = new System.Drawing.Size(65, 35);
-            this.btnRemoveSong.TabIndex = 1;
-            this.btnRemoveSong.Text = "⬅️ ❌";
-            this.btnRemoveSong.UseVisualStyleBackColor = true;
+            this.btnRemoveSongFromList.Location = new System.Drawing.Point(8, 84);
+            this.btnRemoveSongFromList.Name = "btnRemoveSongFromList";
+            this.btnRemoveSongFromList.Size = new System.Drawing.Size(65, 35);
+            this.btnRemoveSongFromList.TabIndex = 1;
+            this.btnRemoveSongFromList.Text = "⬅️ ❌";
+            this.btnRemoveSongFromList.UseVisualStyleBackColor = true;
             // 
             // btnMoveUp
             // 
@@ -356,7 +383,7 @@
             this.lblTotalDuration.Name = "lblTotalDuration";
             this.lblTotalDuration.Size = new System.Drawing.Size(175, 15);
             this.lblTotalDuration.TabIndex = 1;
-            this.lblTotalDuration.Text = "⏱️ Gesamtdauer: 42 Min (9 Songs)";
+            this.lblTotalDuration.Text = "⏱️ Gesamtdauer: 0 Min (0 Songs)";
             // 
             // lblActiveSetlistTitle
             // 
@@ -364,19 +391,20 @@
             this.lblActiveSetlistTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblActiveSetlistTitle.Location = new System.Drawing.Point(3, 3);
             this.lblActiveSetlistTitle.Name = "lblActiveSetlistTitle";
-            this.lblActiveSetlistTitle.Size = new System.Drawing.Size(222, 20);
+            this.lblActiveSetlistTitle.Size = new System.Drawing.Size(140, 20);
             this.lblActiveSetlistTitle.TabIndex = 0;
-            this.lblActiveSetlistTitle.Text = "Setlist: Graspop Mainstage 2026";
+            this.lblActiveSetlistTitle.Text = "Keine Setlist aktiv";
             // 
-            // SetlistManagerView
+            // SonglistsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.mainLayout);
-            this.Name = "SetlistManagerView";
+            this.Name = "SonglistsView";
             this.Size = new System.Drawing.Size(950, 550);
             this.mainLayout.ResumeLayout(false);
             this.pnlLeft.ResumeLayout(false);
+            this.pnlLeftButtons.ResumeLayout(false);
             this.pnlRight.ResumeLayout(false);
             this.builderLayout.ResumeLayout(false);
             this.builderLayout.PerformLayout();
@@ -395,7 +423,9 @@
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.ListBox lstSetlists;
         private System.Windows.Forms.Label lblSetlistHeader;
-        private System.Windows.Forms.Button btnCreateSetlist;
+        private System.Windows.Forms.TableLayoutPanel pnlLeftButtons;
+        private System.Windows.Forms.Button btnCreateList;
+        private System.Windows.Forms.Button btnDeleteList;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblActiveSetlistTitle;
@@ -406,8 +436,8 @@
         private System.Windows.Forms.DataGridView dgvAvailableSongs;
         private System.Windows.Forms.DataGridView dgvSonglistSongs;
         private System.Windows.Forms.FlowLayoutPanel pnlTransferButtons;
-        private System.Windows.Forms.Button btnAddSong;
-        private System.Windows.Forms.Button btnRemoveSong;
+        private System.Windows.Forms.Button btnAddSongToList;
+        private System.Windows.Forms.Button btnRemoveSongFromList;
         private System.Windows.Forms.Button btnMoveUp;
         private System.Windows.Forms.Button btnMoveDown;
         private System.Windows.Forms.Label lblAvailHeader;
