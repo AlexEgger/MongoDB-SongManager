@@ -73,10 +73,20 @@ namespace MongoDB_SongManager.Views
                 _dtoService
             );
 
-            // Setup Navigation and Control Event Bindings
-            btnNavSongs.Click += (s, e) => ShowView(_songsView);
+            // Setup Navigation and Control Event Bindings with data refresh on view switch
+            btnNavSongs.Click += (s, e) =>
+            {
+                _songsPresenter.LoadInitialData();
+                ShowView(_songsView);
+            };
+
+            btnNavSonglists.Click += (s, e) =>
+            {
+                _songlistsPresenter.LoadInitialData();
+                ShowView(_songlistsView);
+            };
+
             cmbUser.SelectedIndexChanged += OnUserSelectionChanged;
-            btnNavSonglists.Click += (s, e) => ShowView(_songlistsView);
 
             LoadUsersIntoComboBox();
 

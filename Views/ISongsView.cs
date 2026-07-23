@@ -103,6 +103,11 @@ public interface ISongsView
     /// </summary>
     event EventHandler RemoveSongFromSonglistClicked;
 
+    /// <summary>
+    /// Occurs when the user requests to rename the selected song list.
+    /// </summary>
+    event EventHandler RenameSonglistClicked;
+
     #endregion
 
     #region CSV Events

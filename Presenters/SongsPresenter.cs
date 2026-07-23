@@ -71,6 +71,7 @@ namespace MongoDB_SongManager.Presenters
             // Songlist Events
             _view.SonglistSelectionChanged += (s, e) => ApplyFilters();
             _view.CreateSonglistClicked += OnCreateSonglistClicked;
+            _view.RenameSonglistClicked += OnRenameSonglistClicked;
 
             // Current User Changed
             _currentUserService.CurrentUserChanged += (s, e) =>
@@ -505,6 +506,41 @@ namespace MongoDB_SongManager.Presenters
                 };
 
                 _songlistRepository.Insert(newList);
+                LoadSonglists();
+            }
+        }
+
+        /// <summary>
+        /// Handles renaming the currently selected songlist if the current user is the owner.
+        /// </summary>
+        private void OnRenameSonglistClicked (object? sender, EventArgs e)
+        {
+            var selectedList = _view.SelectedSonglist;
+
+            if (selectedList == null)
+            {
+                MessageBox.Show("Please select a playlist to rename.", "Rename Playlist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Security / Ownership Check: Only creator can rename their playlist
+            if (selectedList.CreatorId != _currentUserService.CurrentUserId)
+            {
+                MessageBox.Show("You can only rename playlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string newListName = Microsoft.VisualBasic.Interaction.InputBox(
+                                                                    "Enter a new name for the playlist:",
+                                                                    "Rename Playlist",
+                                                                    selectedList.Name);
+
+            if (!string.IsNullOrWhiteSpace(newListName) && newListName != selectedList.Name)
+            {
+                selectedList.Name = newListName;
+
+                // Update in DB and reload view
+                _songlistRepository.Update(selectedList);
                 LoadSonglists();
             }
         }

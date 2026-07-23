@@ -17,9 +17,12 @@
 
         private void InitializeComponent ()
         {
+            this.components = new System.ComponentModel.Container();
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.lstSetlists = new System.Windows.Forms.ListBox();
+            this.cmsSetlists = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiRenameList = new System.Windows.Forms.ToolStripMenuItem();
             this.chkMyListsOnly = new System.Windows.Forms.CheckBox();
             this.lblSetlistHeader = new System.Windows.Forms.Label();
             this.pnlLeftButtons = new System.Windows.Forms.TableLayoutPanel();
@@ -41,13 +44,14 @@
             this.btnMoveUp = new System.Windows.Forms.Button();
             this.btnMoveDown = new System.Windows.Forms.Button();
             this.pnlAvailHeader = new System.Windows.Forms.Panel();
-            this.lblAvailHeader = new System.Windows.Forms.Label();
             this.txtSearchAvailable = new System.Windows.Forms.TextBox();
+            this.lblAvailHeader = new System.Windows.Forms.Label();
             this.lblSetlistSongsHeader = new System.Windows.Forms.Label();
             this.pnlTopHeader = new System.Windows.Forms.Panel();
             this.lblActiveSetlistTitle = new System.Windows.Forms.Label();
             this.mainLayout.SuspendLayout();
             this.pnlLeft.SuspendLayout();
+            this.cmsSetlists.SuspendLayout();
             this.pnlLeftButtons.SuspendLayout();
             this.pnlRight.SuspendLayout();
             this.builderLayout.SuspendLayout();
@@ -89,6 +93,7 @@
             // 
             // lstSetlists
             // 
+            this.lstSetlists.ContextMenuStrip = this.cmsSetlists;
             this.lstSetlists.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstSetlists.FormattingEnabled = true;
             this.lstSetlists.ItemHeight = 15;
@@ -97,6 +102,19 @@
             this.lstSetlists.Size = new System.Drawing.Size(220, 442);
             this.lstSetlists.TabIndex = 0;
             // 
+            // cmsSetlists
+            // 
+            this.cmsSetlists.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiRenameList});
+            this.cmsSetlists.Name = "cmsSetlists";
+            this.cmsSetlists.Size = new System.Drawing.Size(181, 48);
+            // 
+            // tsmiRenameList
+            // 
+            this.tsmiRenameList.Name = "tsmiRenameList";
+            this.tsmiRenameList.Size = new System.Drawing.Size(180, 22);
+            this.tsmiRenameList.Text = "Rename Setlist";
+            // 
             // chkMyListsOnly
             // 
             this.chkMyListsOnly.Dock = System.Windows.Forms.DockStyle.Top;
@@ -104,7 +122,7 @@
             this.chkMyListsOnly.Name = "chkMyListsOnly";
             this.chkMyListsOnly.Size = new System.Drawing.Size(220, 25);
             this.chkMyListsOnly.TabIndex = 3;
-            this.chkMyListsOnly.Text = "👤 Nur meine Setlists anzeigen";
+            this.chkMyListsOnly.Text = "👤 Show only my setlists";
             this.chkMyListsOnly.UseVisualStyleBackColor = true;
             // 
             // lblSetlistHeader
@@ -115,7 +133,7 @@
             this.lblSetlistHeader.Name = "lblSetlistHeader";
             this.lblSetlistHeader.Size = new System.Drawing.Size(220, 25);
             this.lblSetlistHeader.TabIndex = 1;
-            this.lblSetlistHeader.Text = "Songlisten / Setlists";
+            this.lblSetlistHeader.Text = "Songlists / Setlists";
             this.lblSetlistHeader.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlLeftButtons
@@ -141,7 +159,7 @@
             this.btnCreateList.Name = "btnCreateList";
             this.btnCreateList.Size = new System.Drawing.Size(108, 40);
             this.btnCreateList.TabIndex = 0;
-            this.btnCreateList.Text = "+ Neu";
+            this.btnCreateList.Text = "+ New";
             this.btnCreateList.UseVisualStyleBackColor = true;
             // 
             // btnDeleteList
@@ -152,7 +170,7 @@
             this.btnDeleteList.Name = "btnDeleteList";
             this.btnDeleteList.Size = new System.Drawing.Size(108, 40);
             this.btnDeleteList.TabIndex = 1;
-            this.btnDeleteList.Text = "🗑️ Löschen";
+            this.btnDeleteList.Text = "🗑️ Delete";
             this.btnDeleteList.UseVisualStyleBackColor = true;
             // 
             // pnlRight
@@ -186,36 +204,6 @@
             this.builderLayout.Size = new System.Drawing.Size(695, 497);
             this.builderLayout.TabIndex = 1;
             // 
-            // pnlAvailHeader
-            // 
-            this.pnlAvailHeader.Controls.Add(this.txtSearchAvailable);
-            this.pnlAvailHeader.Controls.Add(this.lblAvailHeader);
-            this.pnlAvailHeader.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlAvailHeader.Location = new System.Drawing.Point(0, 0);
-            this.pnlAvailHeader.Name = "pnlAvailHeader";
-            this.pnlAvailHeader.Size = new System.Drawing.Size(305, 30);
-            this.pnlAvailHeader.TabIndex = 5;
-            // 
-            // lblAvailHeader
-            // 
-            this.lblAvailHeader.AutoSize = true;
-            this.lblAvailHeader.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblAvailHeader.Location = new System.Drawing.Point(0, 7);
-            this.lblAvailHeader.Name = "lblAvailHeader";
-            this.lblAvailHeader.Size = new System.Drawing.Size(100, 15);
-            this.lblAvailHeader.TabIndex = 3;
-            this.lblAvailHeader.Text = "Verfügbare Songs";
-            // 
-            // txtSearchAvailable
-            // 
-            this.txtSearchAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtSearchAvailable.Location = new System.Drawing.Point(105, 3);
-            this.txtSearchAvailable.Name = "txtSearchAvailable";
-            this.txtSearchAvailable.PlaceholderText = "🔍 Suche...";
-            this.txtSearchAvailable.Size = new System.Drawing.Size(197, 23);
-            this.txtSearchAvailable.TabIndex = 4;
-            // 
             // dgvAvailableSongs
             // 
             this.dgvAvailableSongs.AllowUserToAddRows = false;
@@ -237,19 +225,19 @@
             // 
             // colAvailTitle
             // 
-            this.colAvailTitle.HeaderText = "Titel";
+            this.colAvailTitle.HeaderText = "Title";
             this.colAvailTitle.Name = "colAvailTitle";
             this.colAvailTitle.ReadOnly = true;
             // 
             // colAvailArtist
             // 
-            this.colAvailArtist.HeaderText = "Interpret";
+            this.colAvailArtist.HeaderText = "Artist";
             this.colAvailArtist.Name = "colAvailArtist";
             this.colAvailArtist.ReadOnly = true;
             // 
             // colAvailBook
             // 
-            this.colAvailBook.HeaderText = "Liederbuch";
+            this.colAvailBook.HeaderText = "Songbook";
             this.colAvailBook.Name = "colAvailBook";
             this.colAvailBook.ReadOnly = true;
             // 
@@ -281,13 +269,13 @@
             // 
             // colSetTitle
             // 
-            this.colSetTitle.HeaderText = "Titel in Setlist";
+            this.colSetTitle.HeaderText = "Title in Setlist";
             this.colSetTitle.Name = "colSetTitle";
             this.colSetTitle.ReadOnly = true;
             // 
             // colSetArtist
             // 
-            this.colSetArtist.HeaderText = "Interpret";
+            this.colSetArtist.HeaderText = "Artist";
             this.colSetArtist.Name = "colSetArtist";
             this.colSetArtist.ReadOnly = true;
             // 
@@ -330,7 +318,7 @@
             this.btnMoveUp.Name = "btnMoveUp";
             this.btnMoveUp.Size = new System.Drawing.Size(62, 35);
             this.btnMoveUp.TabIndex = 2;
-            this.btnMoveUp.Text = "▲ Hoch";
+            this.btnMoveUp.Text = "▲ Up";
             this.btnMoveUp.UseVisualStyleBackColor = true;
             // 
             // btnMoveDown
@@ -339,8 +327,38 @@
             this.btnMoveDown.Name = "btnMoveDown";
             this.btnMoveDown.Size = new System.Drawing.Size(62, 35);
             this.btnMoveDown.TabIndex = 3;
-            this.btnMoveDown.Text = "▼ Runter";
+            this.btnMoveDown.Text = "▼ Down";
             this.btnMoveDown.UseVisualStyleBackColor = true;
+            // 
+            // pnlAvailHeader
+            // 
+            this.pnlAvailHeader.Controls.Add(this.txtSearchAvailable);
+            this.pnlAvailHeader.Controls.Add(this.lblAvailHeader);
+            this.pnlAvailHeader.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlAvailHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnlAvailHeader.Name = "pnlAvailHeader";
+            this.pnlAvailHeader.Size = new System.Drawing.Size(305, 30);
+            this.pnlAvailHeader.TabIndex = 5;
+            // 
+            // txtSearchAvailable
+            // 
+            this.txtSearchAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSearchAvailable.Location = new System.Drawing.Point(105, 3);
+            this.txtSearchAvailable.Name = "txtSearchAvailable";
+            this.txtSearchAvailable.PlaceholderText = "🔍 Search...";
+            this.txtSearchAvailable.Size = new System.Drawing.Size(197, 23);
+            this.txtSearchAvailable.TabIndex = 4;
+            // 
+            // lblAvailHeader
+            // 
+            this.lblAvailHeader.AutoSize = true;
+            this.lblAvailHeader.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblAvailHeader.Location = new System.Drawing.Point(0, 7);
+            this.lblAvailHeader.Name = "lblAvailHeader";
+            this.lblAvailHeader.Size = new System.Drawing.Size(93, 15);
+            this.lblAvailHeader.TabIndex = 3;
+            this.lblAvailHeader.Text = "Available Songs";
             // 
             // lblSetlistSongsHeader
             // 
@@ -348,9 +366,9 @@
             this.lblSetlistSongsHeader.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblSetlistSongsHeader.Location = new System.Drawing.Point(391, 7);
             this.lblSetlistSongsHeader.Name = "lblSetlistSongsHeader";
-            this.lblSetlistSongsHeader.Size = new System.Drawing.Size(128, 15);
+            this.lblSetlistSongsHeader.Size = new System.Drawing.Size(123, 15);
             this.lblSetlistSongsHeader.TabIndex = 4;
-            this.lblSetlistSongsHeader.Text = "Songs in dieser Setlist";
+            this.lblSetlistSongsHeader.Text = "Songs in this Setlist";
             // 
             // pnlTopHeader
             // 
@@ -367,9 +385,9 @@
             this.lblActiveSetlistTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblActiveSetlistTitle.Location = new System.Drawing.Point(3, 5);
             this.lblActiveSetlistTitle.Name = "lblActiveSetlistTitle";
-            this.lblActiveSetlistTitle.Size = new System.Drawing.Size(140, 20);
+            this.lblActiveSetlistTitle.Size = new System.Drawing.Size(130, 20);
             this.lblActiveSetlistTitle.TabIndex = 0;
-            this.lblActiveSetlistTitle.Text = "Keine Setlist aktiv";
+            this.lblActiveSetlistTitle.Text = "No setlist active";
             // 
             // SonglistsView
             // 
@@ -380,6 +398,7 @@
             this.Size = new System.Drawing.Size(950, 550);
             this.mainLayout.ResumeLayout(false);
             this.pnlLeft.ResumeLayout(false);
+            this.cmsSetlists.ResumeLayout(false);
             this.pnlLeftButtons.ResumeLayout(false);
             this.pnlRight.ResumeLayout(false);
             this.builderLayout.ResumeLayout(false);
@@ -400,6 +419,8 @@
         private System.Windows.Forms.TableLayoutPanel mainLayout;
         private System.Windows.Forms.Panel pnlLeft;
         private System.Windows.Forms.ListBox lstSetlists;
+        private System.Windows.Forms.ContextMenuStrip cmsSetlists;
+        private System.Windows.Forms.ToolStripMenuItem tsmiRenameList;
         private System.Windows.Forms.CheckBox chkMyListsOnly;
         private System.Windows.Forms.Label lblSetlistHeader;
         private System.Windows.Forms.TableLayoutPanel pnlLeftButtons;

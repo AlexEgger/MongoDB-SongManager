@@ -52,6 +52,7 @@ namespace MongoDB_SongManager.Presenters
             _view.SonglistSelectionChanged += OnSonglistSelectionChanged;
             _view.FilterMySonglistsOnlyChanged += (s, e) => ApplySonglistFilter();
             _view.CreateSonglistClicked += OnCreateSonglistClicked;
+            _view.RenameSonglistClicked += OnRenameSonglistClicked;
             _view.DeleteSonglistClicked += OnDeleteSonglistClicked;
 
             // Song Transfer & Ordering
@@ -290,6 +291,40 @@ namespace MongoDB_SongManager.Presenters
                 };
 
                 _songlistRepository.Insert(newList);
+                LoadSonglists();
+            }
+        }
+
+        /// <summary>
+        /// Prompts user input and renames the currently selected setlist if authorized.
+        /// </summary>
+        private void OnRenameSonglistClicked (object? sender, EventArgs e)
+        {
+            var selectedList = _view.SelectedSonglist;
+
+            if (selectedList == null)
+            {
+                MessageBox.Show("Please select a setlist to rename.", "Rename Setlist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (selectedList.CreatorId != _currentUserService.CurrentUserId)
+            {
+                MessageBox.Show("You can only rename setlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string newName = Microsoft.VisualBasic.Interaction.InputBox(
+                "Enter a new name for the setlist:",
+                "Rename Setlist",
+                selectedList.Name);
+
+            if (!string.IsNullOrWhiteSpace(newName) && newName != selectedList.Name)
+            {
+                selectedList.Name = newName;
+                _songlistRepository.Update(selectedList);
+
+                // Reload lists to reflect the updated name in the UI
                 LoadSonglists();
             }
         }

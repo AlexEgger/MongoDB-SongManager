@@ -15,7 +15,26 @@ namespace SongManager.Views
         public SonglistsView ()
         {
             InitializeComponent();
+            WireUpContextMenuMouseBehavior();
             WireUpEvents();
+        }
+
+        /// <summary>
+        /// Ensures that right-clicking an item in the ListBox selects it before opening the context menu.
+        /// </summary>
+        private void WireUpContextMenuMouseBehavior ()
+        {
+            lstSetlists.MouseDown += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    int index = lstSetlists.IndexFromPoint(e.Location);
+                    if (index != ListBox.NoMatches)
+                    {
+                        lstSetlists.SelectedIndex = index;
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -26,6 +45,7 @@ namespace SongManager.Views
             lstSetlists.SelectedIndexChanged += (s, e) => SonglistSelectionChanged?.Invoke(this, EventArgs.Empty);
             chkMyListsOnly.CheckedChanged += (s, e) => FilterMySonglistsOnlyChanged?.Invoke(this, EventArgs.Empty);
             btnCreateList.Click += (s, e) => CreateSonglistClicked?.Invoke(this, EventArgs.Empty);
+            tsmiRenameList.Click += (s, e) => RenameSonglistClicked?.Invoke(this, EventArgs.Empty);
             btnDeleteList.Click += (s, e) => DeleteSonglistClicked?.Invoke(this, EventArgs.Empty);
 
             btnAddSongToList.Click += (s, e) => AddSongToSonglistClicked?.Invoke(this, EventArgs.Empty);
@@ -81,6 +101,7 @@ namespace SongManager.Views
         public event EventHandler? SonglistSelectionChanged;
         public event EventHandler? FilterMySonglistsOnlyChanged;
         public event EventHandler? CreateSonglistClicked;
+        public event EventHandler? RenameSonglistClicked;
         public event EventHandler? DeleteSonglistClicked;
 
         public event EventHandler? AddSongToSonglistClicked;
@@ -127,7 +148,7 @@ namespace SongManager.Views
             }
 
             var activeList = SelectedSonglist;
-            lblActiveSetlistTitle.Text = activeList != null ? activeList.Name : "Keine Setlist aktiv";
+            lblActiveSetlistTitle.Text = activeList != null ? activeList.Name : "No setlist active";
         }
 
         public void SetReadOnlyState (bool isReadOnly)
@@ -139,6 +160,7 @@ namespace SongManager.Views
             btnMoveUp.Enabled = enableEditing;
             btnMoveDown.Enabled = enableEditing;
             btnDeleteList.Enabled = enableEditing;
+            tsmiRenameList.Enabled = enableEditing;
         }
 
         #endregion

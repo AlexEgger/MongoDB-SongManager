@@ -10,6 +10,7 @@ namespace SongManager.Views
     public partial class SongsView : UserControl, ISongsView
     {
         private bool _isFavoritesFilterActive;
+        private ContextMenuStrip _songlistContextMenu = null!;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SongsView"/> class.
@@ -17,7 +18,36 @@ namespace SongManager.Views
         public SongsView ()
         {
             InitializeComponent();
+            InitializeSonglistContextMenu();
             WireUpEvents();
+        }
+
+        /// <summary>
+        /// Initializes the context menu for the playlist list box to support right-click actions like renaming.
+        /// </summary>
+        private void InitializeSonglistContextMenu ()
+        {
+            _songlistContextMenu = new ContextMenuStrip();
+            var renameMenuItem = new ToolStripMenuItem("Rename Playlist");
+
+            renameMenuItem.Click += (s, e) => RenameSonglistClicked?.Invoke(this, EventArgs.Empty);
+            _songlistContextMenu.Items.Add(renameMenuItem);
+
+            // Attach context menu to the playlist list box
+            lstSongLists.ContextMenuStrip = _songlistContextMenu;
+
+            // Ensure right-clicking selects the item under the cursor before showing the context menu
+            lstSongLists.MouseDown += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    int index = lstSongLists.IndexFromPoint(e.Location);
+                    if (index != ListBox.NoMatches)
+                    {
+                        lstSongLists.SelectedIndex = index;
+                    }
+                }
+            };
         }
 
         /// <summary>
@@ -30,7 +60,7 @@ namespace SongManager.Views
             btnFilterFavorites.Click += (s, e) =>
             {
                 _isFavoritesFilterActive = !_isFavoritesFilterActive;
-                btnFilterFavorites.Text = _isFavoritesFilterActive ? " Nur ⭐" : "⭐ Favoriten";
+                btnFilterFavorites.Text = _isFavoritesFilterActive ? " Only ⭐" : "⭐ Favorites";
                 FilterFavoritesClicked?.Invoke(this, EventArgs.Empty);
             };
 
@@ -115,6 +145,7 @@ namespace SongManager.Views
 
         public event EventHandler? SonglistSelectionChanged;
         public event EventHandler? CreateSonglistClicked;
+        public event EventHandler? RenameSonglistClicked;
         public event EventHandler? DeleteSonglistClicked;
         public event EventHandler? AddSongToSonglistClicked;
         public event EventHandler? RemoveSongFromSonglistClicked;
@@ -156,28 +187,28 @@ namespace SongManager.Views
         {
             if (song == null)
             {
-                lblSongTitle.Text = "Titel: -";
-                lblArtist.Text = "Interpret: -";
+                lblSongTitle.Text = "Title: -";
+                lblArtist.Text = "Artist: -";
                 lblTempo.Text = "Tempo: -";
-                lblBookInfo.Text = "Liederbuch: -";
-                lnkChords.Text = "Kein Link";
-                lnkYoutube.Text = "Kein Link";
+                lblBookInfo.Text = "Songbook: -";
+                lnkChords.Text = "No link";
+                lnkYoutube.Text = "No link";
                 return;
             }
 
-            lblSongTitle.Text = $"Titel: {song.Title}";
-            lblArtist.Text = $"Interpret: {artistName ?? "Unbekannt"}";
+            lblSongTitle.Text = $"Title: {song.Title}";
+            lblArtist.Text = $"Artist: {artistName ?? "Unknown"}";
             lblTempo.Text = song.Tempo.HasValue ? $"Tempo: {song.Tempo} BPM" : "Tempo: -";
 
             string bookInfo = "-";
             if (song.Liederbuchnummer.HasValue || song.Liederbuchseite.HasValue)
             {
-                bookInfo = $"Nr. {song.Liederbuchnummer?.ToString() ?? "-"}, S. {song.Liederbuchseite?.ToString() ?? "-"}";
+                bookInfo = $"No. {song.Liederbuchnummer?.ToString() ?? "-"}, p. {song.Liederbuchseite?.ToString() ?? "-"}";
             }
-            lblBookInfo.Text = $"Liederbuch: {bookInfo}";
+            lblBookInfo.Text = $"Songbook: {bookInfo}";
 
-            lnkChords.Text = string.IsNullOrEmpty(song.ChordsUrl) ? "Kein Link" : "🎸 Akkorde öffnen";
-            lnkYoutube.Text = string.IsNullOrEmpty(song.YoutubeUrl) ? "Kein Link" : "▶️ YouTube Video";
+            lnkChords.Text = string.IsNullOrEmpty(song.ChordsUrl) ? "No link" : "🎸 Open Chords";
+            lnkYoutube.Text = string.IsNullOrEmpty(song.YoutubeUrl) ? "No link" : "▶️ YouTube Video";
         }
 
         /// <summary>
@@ -189,7 +220,7 @@ namespace SongManager.Views
             lstSongLists.Items.Clear();
 
             // Option for "All Songs (No filtering)"
-            lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 Alle Songs", null!));
+            lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 All Songs", null!));
 
             // Sort playlists: user's own playlists first, then secondary sort alphabetically by name
             var sortedSonglists = songlists

@@ -21,6 +21,7 @@ namespace MongoDB_SongManager.Views
         event EventHandler? SonglistSelectionChanged;
         event EventHandler? FilterMySonglistsOnlyChanged;
         event EventHandler? CreateSonglistClicked;
+        event EventHandler? RenameSonglistClicked;
         event EventHandler? DeleteSonglistClicked;
 
         // Song Transfer & Ordering Events
