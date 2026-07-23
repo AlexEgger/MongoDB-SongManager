@@ -17,6 +17,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly ISonglistRepository _songlistRepository;
         private readonly IUserInteractionRepository _userInteractionRepository;
         private readonly CurrentUserService _currentUserService;
+        private readonly IDtoService _dtoService;
 
         private List<Song> _allSongs = new();
         private List<Songlist> _allSonglists = new();
@@ -31,14 +32,16 @@ namespace MongoDB_SongManager.Presenters
             IArtistRepository artistRepository,
             ISonglistRepository songlistRepository,
             IUserInteractionRepository userInteractionRepository,
-            CurrentUserService currentUserService)
+            CurrentUserService currentUserService,
+            IDtoService dtoService)
         {
-            _view = view;
-            _songRepository = songRepository;
-            _artistRepository = artistRepository;
-            _songlistRepository = songlistRepository;
-            _userInteractionRepository = userInteractionRepository;
-            _currentUserService = currentUserService;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _songRepository = songRepository ?? throw new ArgumentNullException(nameof(songRepository));
+            _artistRepository = artistRepository ?? throw new ArgumentNullException(nameof(artistRepository));
+            _songlistRepository = songlistRepository ?? throw new ArgumentNullException(nameof(songlistRepository));
+            _userInteractionRepository = userInteractionRepository ?? throw new ArgumentNullException(nameof(userInteractionRepository));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
 
             WireUpEvents();
             LoadInitialData();
@@ -127,7 +130,6 @@ namespace MongoDB_SongManager.Presenters
             {
                 string currentUserId = _currentUserService.CurrentUserId;
 
-                // Query user interactions to find favorite songs for the active user
                 var favoriteSongIds = _userInteractionRepository
                     .GetFavoritesByUserId(currentUserId)
                     .Select(interaction => interaction.SongId)
@@ -148,7 +150,9 @@ namespace MongoDB_SongManager.Presenters
                 });
             }
 
-            _view.DisplaySongs(filtered, _artistNames);
+            // Transform domain models to presentation DTOs via DtoService
+            var songDtos = _dtoService.MapToSongDisplayDtos(filtered, _artistNames);
+            _view.DisplaySongs(songDtos);
         }
 
         /// <summary>
@@ -156,13 +160,16 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnSongSelectionChanged (object? sender, EventArgs e)
         {
-            var selectedSong = _view.SelectedSong;
-            string? artistName = null;
-
-            if (selectedSong != null && !string.IsNullOrEmpty(selectedSong.ArtistId))
+            var selectedDto = _view.SelectedSong;
+            if (selectedDto == null)
             {
-                _artistNames.TryGetValue(selectedSong.ArtistId, out artistName);
+                _view.DisplaySongDetails(null, null);
+                return;
             }
+
+            // Find full model entity matching the selected DTO Id
+            var selectedSong = _allSongs.FirstOrDefault(s => s.Id == selectedDto.Id);
+            string? artistName = selectedDto.ArtistName;
 
             _view.DisplaySongDetails(selectedSong, artistName);
         }
@@ -201,11 +208,14 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnEditSongClicked (object? sender, EventArgs e)
         {
-            var selected = _view.SelectedSong;
-            if (selected == null) return;
+            var selectedDto = _view.SelectedSong;
+            if (selectedDto == null) return;
+
+            var selectedSong = _allSongs.FirstOrDefault(s => s.Id == selectedDto.Id);
+            if (selectedSong == null) return;
 
             var artists = _artistRepository.GetAll().ToList();
-            using var dialog = new SongDialog(selected, artists);
+            using var dialog = new SongDialog(selectedSong, artists);
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 _songRepository.Update(dialog.Song);
@@ -219,18 +229,18 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnDeleteSongClicked (object? sender, EventArgs e)
         {
-            var selected = _view.SelectedSong;
-            if (selected == null) return;
+            var selectedDto = _view.SelectedSong;
+            if (selectedDto == null) return;
 
             var confirm = MessageBox.Show(
-                $"Are you sure you want to delete the song '{selected.Title}'?",
+                $"Are you sure you want to delete the song '{selectedDto.Title}'?",
                 "Delete Song",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (confirm == DialogResult.Yes)
             {
-                _songRepository.Delete(selected.Id);
+                _songRepository.Delete(selectedDto.Id);
                 LoadSongs();
                 ApplyFilters();
             }

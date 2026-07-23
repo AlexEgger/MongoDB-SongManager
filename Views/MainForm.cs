@@ -12,15 +12,20 @@ namespace MongoDB_SongManager.Views
     public partial class MainForm : Form
     {
         private readonly CurrentUserService _currentUserService;
+        private readonly IDtoService _dtoService;
         private readonly IRepository<User> _userRepository;
 
         private readonly SongsView _songsView;
         private readonly SongsPresenter _songsPresenter;
 
+        private readonly SonglistsView _songlistsView;
+        private readonly SonglistsPresenter _songlistsPresenter;
+
         /// <summary>
         /// Initializes the main application window with dependency injection.
         /// </summary>
         /// <param name="currentUserService">Service tracking active user state.</param>
+        /// <param name="dtoService">Service mapping domain models to presentation DTOs.</param>
         /// <param name="userRepository">Repository for user data access.</param>
         /// <param name="songRepository">Repository for song data access.</param>
         /// <param name="artistRepository">Repository for artist data access.</param>
@@ -28,6 +33,7 @@ namespace MongoDB_SongManager.Views
         /// <param name="userInteractionRepository">Repository for user interactions and favorites.</param>
         public MainForm (
             CurrentUserService currentUserService,
+            IDtoService dtoService,
             IRepository<User> userRepository,
             ISongRepository songRepository,
             IArtistRepository artistRepository,
@@ -37,9 +43,10 @@ namespace MongoDB_SongManager.Views
             InitializeComponent();
 
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
 
-            // Initialize Sub-Views & Presenters with required repositories
+            // Initialize Sub-Views & Presenters with required repositories and DTO service
             _songsView = new SongsView();
             _songsPresenter = new SongsPresenter(
                 _songsView,
@@ -47,12 +54,24 @@ namespace MongoDB_SongManager.Views
                 artistRepository,
                 songlistRepository,
                 userInteractionRepository,
-                _currentUserService
+                _currentUserService,
+                _dtoService
+            );
+
+            _songlistsView = new SonglistsView();
+            _songlistsPresenter = new SonglistsPresenter(
+                _songlistsView,
+                songlistRepository,
+                songRepository,
+                artistRepository,
+                _currentUserService,
+                _dtoService
             );
 
             // Setup Navigation and Control Event Bindings
             btnNavSongs.Click += (s, e) => ShowView(_songsView);
             cmbUser.SelectedIndexChanged += OnUserSelectionChanged;
+            btnNavSonglists.Click += (s, e) => ShowView(_songlistsView);
 
             LoadUsersIntoComboBox();
 

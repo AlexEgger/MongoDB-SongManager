@@ -1,10 +1,11 @@
 ﻿using MongoDB_SongManager.Models;
+using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace SongManager.Views
 {
     /// <summary>
-    /// UserControl representing the songlist management view implementation.
+    /// UserControl representing the songlist/setlist management view implementation.
     /// </summary>
     public partial class SonglistsView : UserControl, ISonglistsView
     {
@@ -23,17 +24,20 @@ namespace SongManager.Views
         private void WireUpEvents ()
         {
             lstSetlists.SelectedIndexChanged += (s, e) => SonglistSelectionChanged?.Invoke(this, EventArgs.Empty);
-            btnAddSongToList.Click += (s, e) => AddSongToPlaylistClicked?.Invoke(this, EventArgs.Empty);
-            btnRemoveSongFromList.Click += (s, e) => RemoveSongFromPlaylistClicked?.Invoke(this, EventArgs.Empty);
+            chkMyListsOnly.CheckedChanged += (s, e) => FilterMySonglistsOnlyChanged?.Invoke(this, EventArgs.Empty);
             btnCreateList.Click += (s, e) => CreateSonglistClicked?.Invoke(this, EventArgs.Empty);
             btnDeleteList.Click += (s, e) => DeleteSonglistClicked?.Invoke(this, EventArgs.Empty);
+
+            btnAddSongToList.Click += (s, e) => AddSongToSonglistClicked?.Invoke(this, EventArgs.Empty);
+            btnRemoveSongFromList.Click += (s, e) => RemoveSongFromSonglistClicked?.Invoke(this, EventArgs.Empty);
+            btnMoveUp.Click += (s, e) => MoveSongUpClicked?.Invoke(this, EventArgs.Empty);
+            btnMoveDown.Click += (s, e) => MoveSongDownClicked?.Invoke(this, EventArgs.Empty);
+
+            txtSearchAvailable.TextChanged += (s, e) => AvailableSongsSearchTextChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #region ISonglistsView Implementation
 
-        /// <summary>
-        /// Gets the currently selected <see cref="Songlist"/> document.
-        /// </summary>
         public Songlist? SelectedSonglist
         {
             get
@@ -46,115 +50,95 @@ namespace SongManager.Views
             }
         }
 
-        /// <summary>
-        /// Gets the currently selected song from the available library grid.
-        /// </summary>
-        public Song? SelectedAvailableSong
+        public SongDisplayDto? SelectedAvailableSong
         {
             get
             {
-                if (dgvAvailableSongs.CurrentRow != null && dgvAvailableSongs.CurrentRow.Tag is Song song)
+                if (dgvAvailableSongs.CurrentRow != null && dgvAvailableSongs.CurrentRow.Tag is SongDisplayDto dto)
                 {
-                    return song;
+                    return dto;
                 }
                 return null;
             }
         }
 
-        /// <summary>
-        /// Gets the currently selected song from the playlist grid.
-        /// </summary>
-        public Song? SelectedPlaylistSong
+        public SongDisplayDto? SelectedAssignedSong
         {
             get
             {
-                if (dgvSonglistSongs.CurrentRow != null && dgvSonglistSongs.CurrentRow.Tag is Song song)
+                if (dgvSonglistSongs.CurrentRow != null && dgvSonglistSongs.CurrentRow.Tag is SongDisplayDto dto)
                 {
-                    return song;
+                    return dto;
                 }
                 return null;
             }
         }
 
-        /// <summary>
-        /// Occurs when the selected songlist changes in the ListBox.
-        /// </summary>
+        public bool IsFilterMySonglistsOnlyActive => chkMyListsOnly.Checked;
+
+        public string AvailableSongsSearchTerm => txtSearchAvailable.Text.Trim();
+
         public event EventHandler? SonglistSelectionChanged;
-
-        /// <summary>
-        /// Occurs when the user clicks the button to add a song to the active playlist.
-        /// </summary>
-        public event EventHandler? AddSongToPlaylistClicked;
-
-        /// <summary>
-        /// Occurs when the user clicks the button to remove a song from the active playlist.
-        /// </summary>
-        public event EventHandler? RemoveSongFromPlaylistClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to create a new songlist.
-        /// </summary>
+        public event EventHandler? FilterMySonglistsOnlyChanged;
         public event EventHandler? CreateSonglistClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to delete the active songlist.
-        /// </summary>
         public event EventHandler? DeleteSonglistClicked;
 
-        /// <summary>
-        /// Binds the collection of available songlists to the ListBox.
-        /// </summary>
-        /// <param name="songlists">The collection of songlist documents.</param>
-        public void DisplaySonglists (IEnumerable<Songlist> songlists)
+        public event EventHandler? AddSongToSonglistClicked;
+        public event EventHandler? RemoveSongFromSonglistClicked;
+        public event EventHandler? MoveSongUpClicked;
+        public event EventHandler? MoveSongDownClicked;
+        public event EventHandler? AvailableSongsSearchTextChanged;
+
+        public void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId)
         {
             lstSetlists.Items.Clear();
             foreach (var songlist in songlists)
             {
-                lstSetlists.Items.Add(new ListBoxItemWrapper(songlist.Name, songlist));
+                string prefix = songlist.CreatorId == currentUserId ? "👤 " : "🌐 ";
+                string displayName = $"{prefix}{songlist.Name}";
+                lstSetlists.Items.Add(new ListBoxItemWrapper(displayName, songlist));
+            }
+
+            if (lstSetlists.Items.Count > 0 && lstSetlists.SelectedIndex == -1)
+            {
+                lstSetlists.SelectedIndex = 0;
             }
         }
 
-        /// <summary>
-        /// Binds available songs to the left DataGridView.
-        /// </summary>
-        /// <param name="songs">The collection of available song entities.</param>
-        /// <param name="artistNames">A dictionary mapping Artist IDs to Artist Names.</param>
-        public void DisplayAvailableSongs (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
+        public void DisplayAvailableSongs (IEnumerable<SongDisplayDto> songs)
         {
             dgvAvailableSongs.Rows.Clear();
             foreach (var song in songs)
             {
-                string artistName = "Unbekannt";
-                if (!string.IsNullOrEmpty(song.ArtistId) && artistNames.TryGetValue(song.ArtistId, out var resolved))
-                {
-                    artistName = resolved;
-                }
-
-                int index = dgvAvailableSongs.Rows.Add(song.Title, artistName);
+                int index = dgvAvailableSongs.Rows.Add(song.Title, song.ArtistName, song.SongbookInfo);
                 dgvAvailableSongs.Rows[index].Tag = song;
             }
         }
 
-        /// <summary>
-        /// Binds songs contained in the selected songlist to the right DataGridView.
-        /// </summary>
-        /// <param name="songs">The collection of assigned song entities.</param>
-        /// <param name="artistNames">A dictionary mapping Artist IDs to Artist Names.</param>
-        public void DisplayPlaylistSongs (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
+        public void DisplayAssignedSongs (IEnumerable<SongDisplayDto> songs)
         {
             dgvSonglistSongs.Rows.Clear();
             int pos = 1;
+
             foreach (var song in songs)
             {
-                string artistName = "Unbekannt";
-                if (!string.IsNullOrEmpty(song.ArtistId) && artistNames.TryGetValue(song.ArtistId, out var resolved))
-                {
-                    artistName = resolved;
-                }
-
-                int index = dgvSonglistSongs.Rows.Add(pos++, song.Title, artistName);
+                int index = dgvSonglistSongs.Rows.Add(pos++, song.Title, song.ArtistName);
                 dgvSonglistSongs.Rows[index].Tag = song;
             }
+
+            var activeList = SelectedSonglist;
+            lblActiveSetlistTitle.Text = activeList != null ? activeList.Name : "Keine Setlist aktiv";
+        }
+
+        public void SetReadOnlyState (bool isReadOnly)
+        {
+            bool enableEditing = !isReadOnly;
+
+            btnAddSongToList.Enabled = enableEditing;
+            btnRemoveSongFromList.Enabled = enableEditing;
+            btnMoveUp.Enabled = enableEditing;
+            btnMoveDown.Enabled = enableEditing;
+            btnDeleteList.Enabled = enableEditing;
         }
 
         #endregion

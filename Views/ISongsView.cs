@@ -1,4 +1,5 @@
 ﻿using MongoDB_SongManager.Models;
+using MongoDB_SongManager.Services.DTOs;
 
 namespace MongoDB_SongManager.Views;
 
@@ -15,9 +16,9 @@ public interface ISongsView
     string SearchTerm { get; }
 
     /// <summary>
-    /// Gets the currently selected song in the UI data grid.
+    /// Gets the currently selected song display DTO in the UI data grid.
     /// </summary>
-    Song? SelectedSong { get; }
+    SongDisplayDto? SelectedSong { get; }
 
     /// <summary>
     /// Gets the currently selected song list in the UI list box.
@@ -107,11 +108,10 @@ public interface ISongsView
     #region Display Methods
 
     /// <summary>
-    /// Binds the songs and their associated artist lookup names to the main UI data grid.
+    /// Binds the presentation song DTOs to the main UI data grid.
     /// </summary>
-    /// <param name="songs">The list of songs to display.</param>
-    /// <param name="artistNames">A dictionary mapping ArtistId to Artist Name.</param>
-    void DisplaySongs (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames);
+    /// <param name="songs">The collection of song display DTOs to render.</param>
+    void DisplaySongs (IEnumerable<SongDisplayDto> songs);
 
     /// <summary>
     /// Displays detailed metadata for a single selected song in the details panel.
@@ -124,6 +124,7 @@ public interface ISongsView
     /// Binds the collection of available song lists to the sidebar list box.
     /// </summary>
     /// <param name="songlists">The list of song list entities to display.</param>
+    /// <param name="currentUserId">The ID of the active user for sorting/visual cues.</param>
     void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId);
 
     #endregion

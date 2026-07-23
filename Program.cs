@@ -29,10 +29,12 @@ namespace MongoDB_SongManager
 
             // 3. Instantiate domain services
             var currentUserService = new CurrentUserService();
+            IDtoService dtoService = new DtoService();
 
             // 4. Launch Main Form with all required dependencies injected
             Application.Run(new MainForm(
                 currentUserService,
+                dtoService,
                 userRepository,
                 songRepository,
                 artistRepository,

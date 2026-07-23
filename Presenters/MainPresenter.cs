@@ -1,7 +1,6 @@
 ﻿using MongoDB_SongManager.Data.Repositories;
 using MongoDB_SongManager.Models;
 using MongoDB_SongManager.Services;
-using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace MongoDB_SongManager.Presenters;
@@ -15,17 +14,20 @@ public class MainPresenter
     private readonly ISongRepository _songRepository;
     private readonly IArtistRepository _artistRepository;
     private readonly ICsvService _csvService;
+    private readonly IDtoService _dtoService;
 
     public MainPresenter (
         IMainView view,
         ISongRepository songRepository,
         IArtistRepository artistRepository,
-        ICsvService csvService)
+        ICsvService csvService,
+        IDtoService dtoService)
     {
-        _view = view;
-        _songRepository = songRepository;
-        _artistRepository = artistRepository;
-        _csvService = csvService;
+        _view = view ?? throw new ArgumentNullException(nameof(view));
+        _songRepository = songRepository ?? throw new ArgumentNullException(nameof(songRepository));
+        _artistRepository = artistRepository ?? throw new ArgumentNullException(nameof(artistRepository));
+        _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
+        _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
 
         // Wire event subscriptions
         _view.ViewLoaded += OnViewLoadedAsync;
@@ -95,17 +97,8 @@ public class MainPresenter
                 songs = songs.Where(s => s.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var displayDtos = songs.Select(s => new SongDisplayDto
-            {
-                Id = s.Id,
-                Title = s.Title,
-                ArtistName = !string.IsNullOrEmpty(s.ArtistId) && artistDict.TryGetValue(s.ArtistId, out var artistName)
-                    ? artistName
-                    : "Unknown",
-                ChordsUrl = s.ChordsUrl,
-                YoutubeUrl = s.YoutubeUrl,
-                SongbookInfo = s.Liederbuchnummer.HasValue ? $"Book #{s.Liederbuchnummer} / Page {s.Liederbuchseite}" : "-"
-            }).ToList();
+            // Centralized transformation using IDtoService
+            var displayDtos = _dtoService.MapToSongDisplayDtos(songs, artistDict).ToList();
 
             _view.DisplaySongs(displayDtos);
         }

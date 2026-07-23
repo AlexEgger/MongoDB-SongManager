@@ -68,7 +68,7 @@
             btnNavSonglists.Name = "btnNavSonglists";
             btnNavSonglists.Size = new Size(130, 30);
             btnNavSonglists.TabIndex = 1;
-            btnNavSonglists.Text = "🎵 Setlists / Listen";
+            btnNavSonglists.Text = "🎵 Songlists";
             btnNavSonglists.UseVisualStyleBackColor = true;
             // 
             // btnNavSongs
@@ -77,7 +77,7 @@
             btnNavSongs.Name = "btnNavSongs";
             btnNavSongs.Size = new Size(135, 30);
             btnNavSongs.TabIndex = 0;
-            btnNavSongs.Text = "🎼 Songs & Interpreten";
+            btnNavSongs.Text = "🎼 Songs";
             btnNavSongs.UseVisualStyleBackColor = true;
             // 
             // pnlContentContainer

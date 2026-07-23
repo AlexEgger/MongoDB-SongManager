@@ -1,4 +1,5 @@
 ﻿using MongoDB_SongManager.Models;
+using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace SongManager.Views
@@ -29,7 +30,7 @@ namespace SongManager.Views
             btnFilterFavorites.Click += (s, e) =>
             {
                 _isFavoritesFilterActive = !_isFavoritesFilterActive;
-                btnFilterFavorites.Text = _isFavoritesFilterActive ? "⭐ Nur Favoriten" : "⭐ Favoriten";
+                btnFilterFavorites.Text = _isFavoritesFilterActive ? " Nur ⭐" : "⭐ Favoriten";
                 FilterFavoritesClicked?.Invoke(this, EventArgs.Empty);
             };
 
@@ -57,15 +58,15 @@ namespace SongManager.Views
         public string SearchTerm => txtSearch?.Text ?? string.Empty;
 
         /// <summary>
-        /// Gets the currently selected <see cref="Song"/> object stored in the active DataGridView row's Tag property.
+        /// Gets the currently selected <see cref="SongDisplayDto"/> object stored in the active DataGridView row's Tag property.
         /// </summary>
-        public Song? SelectedSong
+        public SongDisplayDto? SelectedSong
         {
             get
             {
-                if (dgvSongs.CurrentRow != null && dgvSongs.CurrentRow.Tag is Song song)
+                if (dgvSongs.CurrentRow != null && dgvSongs.CurrentRow.Tag is SongDisplayDto dto)
                 {
-                    return song;
+                    return dto;
                 }
                 return null;
             }
@@ -95,73 +96,23 @@ namespace SongManager.Views
 
         #region Song Events
 
-        /// <summary>
-        /// Occurs when the user changes the text in the search input box.
-        /// </summary>
         public event EventHandler? SearchTextChanged;
-
-        /// <summary>
-        /// Occurs when the selected row in the songs DataGridView changes.
-        /// </summary>
         public event EventHandler? SongSelectionChanged;
-
-        /// <summary>
-        /// Occurs when the user clicks the button to add a new song.
-        /// </summary>
         public event EventHandler? AddSongClicked;
-
-        /// <summary>
-        /// Occurs when the user clicks the button to edit the selected song.
-        /// </summary>
         public event EventHandler? EditSongClicked;
-
-        /// <summary>
-        /// Occurs when the user clicks the delete song button.
-        /// </summary>
         public event EventHandler? DeleteSongClicked;
-
-        /// <summary>
-        /// Occurs when the user toggles the favorites filter button.
-        /// </summary>
         public event EventHandler? FilterFavoritesClicked;
-
-        /// <summary>
-        /// Occurs when the user toggles the favorite status of a song.
-        /// </summary>
         public event EventHandler? ToggleFavoriteClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to create a new artist.
-        /// </summary>
         public event EventHandler? AddArtistClicked;
 
         #endregion
 
         #region Songlist Events
 
-        /// <summary>
-        /// Occurs when the user selects a different song list from the list box.
-        /// </summary>
         public event EventHandler? SonglistSelectionChanged;
-
-        /// <summary>
-        /// Occurs when the user requests to create a new song list.
-        /// </summary>
         public event EventHandler? CreateSonglistClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to delete the selected song list.
-        /// </summary>
         public event EventHandler? DeleteSonglistClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to add the selected song to the active song list.
-        /// </summary>
         public event EventHandler? AddSongToSonglistClicked;
-
-        /// <summary>
-        /// Occurs when the user requests to remove the selected song from the active song list.
-        /// </summary>
         public event EventHandler? RemoveSongFromSonglistClicked;
 
         #endregion
@@ -169,25 +120,18 @@ namespace SongManager.Views
         #region Display Methods
 
         /// <summary>
-        /// Displays the collection of songs in the DataGridView, resolving artist names via lookup.
+        /// Displays the collection of song DTOs in the DataGridView.
         /// </summary>
-        /// <param name="songs">The collection of active song documents.</param>
-        /// <param name="artistNames">A lookup dictionary mapping artist IDs to artist names.</param>
-        public void DisplaySongs (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
+        /// <param name="songs">The collection of song DTOs tailored for presentation.</param>
+        public void DisplaySongs (IEnumerable<SongDisplayDto> songs)
         {
             dgvSongs.Rows.Clear();
 
             foreach (var song in songs)
             {
-                string artistName = "Unbekannt";
-                if (!string.IsNullOrEmpty(song.ArtistId) && artistNames.TryGetValue(song.ArtistId, out var resolvedName))
-                {
-                    artistName = resolvedName;
-                }
+                int rowIndex = dgvSongs.Rows.Add(song.Title, song.ArtistName);
 
-                int rowIndex = dgvSongs.Rows.Add(song.Title, artistName);
-
-                // Store entity reference directly in row Tag
+                // Store DTO reference directly in row Tag
                 dgvSongs.Rows[rowIndex].Tag = song;
             }
         }
@@ -227,17 +171,23 @@ namespace SongManager.Views
 
         /// <summary>
         /// Binds the collection of available song lists to the sidebar list box.
+        /// Sorts the user's own playlists to the top of the list.
         /// </summary>
         public void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId)
         {
             lstSongLists.Items.Clear();
 
-            // Option für "Alle Songs (Keine Filterung)"
+            // Option for "All Songs (No filtering)"
             lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 Alle Songs", null!));
 
-            foreach (var songlist in songlists)
+            // Sort playlists: user's own playlists first, then secondary sort alphabetically by name
+            var sortedSonglists = songlists
+                                    .OrderByDescending(s => s.CreatorId == currentUserId)
+                                    .ThenBy(s => s.Name);
+
+            foreach (var songlist in sortedSonglists)
             {
-                // Indikator-Icon zur Abgrenzung: Ist es meine Liste oder eine fremde/öffentliche?
+                // Visual indicator: User's own playlist vs. public/other creator's playlist
                 string prefix = songlist.CreatorId == currentUserId ? "👤 " : "🌐 ";
                 string displayName = $"{prefix}{songlist.Name}";
 
