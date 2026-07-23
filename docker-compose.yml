@@ -1,0 +1,20 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: songmanager_db
+    ports:
+      - "27017:27017" # Binds local port 27017 to the MongoDB container port
+    volumes:
+      - mongo_data:/data/db # Persists database data on the local system
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: songmanager_ui
+    ports:
+      - "8081:8081" # Access the web interface via http://localhost:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH: "false"
+
+volumes:
+  mongo_data: # Declares the named volume for data persistence

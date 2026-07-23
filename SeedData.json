@@ -1,0 +1,903 @@
+{
+  "Artists": [
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c001" },
+      "Name": "Queen",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c002" },
+      "Name": "The Beatles",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c003" },
+      "Name": "Ed Sheeran",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c004" },
+      "Name": "AC/DC",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c005" },
+      "Name": "Taylor Swift",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c006" },
+      "Name": "Pink Floyd",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c007" },
+      "Name": "Coldplay",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c008" },
+      "Name": "Metallica",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c009" },
+      "Name": "Eminem",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c010" },
+      "Name": "ABBA",
+      "IsDeleted": false
+    }
+  ],
+  "Songs": [
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c101" },
+      "Title": "Bohemian Rhapsody",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c001",
+      "Tempo": 72,
+      "ChordsUrl": "https://example.com/chords/bohemian-rhapsody",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+      "Liederbuchnummer": 3,
+      "Liederbuchseite": 42,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c102" },
+      "Title": "Don't Stop Me Now",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c001",
+      "Tempo": 156,
+      "ChordsUrl": "https://example.com/chords/dont-stop-me-now",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=HgzGwKwLmgM",
+      "Liederbuchnummer": 1,
+      "Liederbuchseite": 58,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c103" },
+      "Title": "Hey Jude",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c002",
+      "Tempo": 75,
+      "ChordsUrl": "https://example.com/chords/hey-jude",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=A_MjCqQoA8k",
+      "Liederbuchnummer": 4,
+      "Liederbuchseite": 102,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c104" },
+      "Title": "Let It Be",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c002",
+      "Tempo": 71,
+      "ChordsUrl": "https://example.com/chords/let-it-be",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=QDYfEBY9NM4",
+      "Liederbuchnummer": 2,
+      "Liederbuchseite": 115,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c105" },
+      "Title": "Yesterday",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c002",
+      "Tempo": 96,
+      "ChordsUrl": "https://example.com/chords/yesterday",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=NrgmdOz227I",
+      "Liederbuchnummer": 1,
+      "Liederbuchseite": 140,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
+      "Title": "Shape of You",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c003",
+      "Tempo": 96,
+      "ChordsUrl": "https://example.com/chords/shape-of-you",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=JGwWNGJdvx8",
+      "Liederbuchnummer": 4,
+      "Liederbuchseite": 12,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c107" },
+      "Title": "Perfect",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c003",
+      "Tempo": 63,
+      "ChordsUrl": "https://example.com/chords/perfect",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=2Vv-BfVoq4g",
+      "Liederbuchnummer": 2,
+      "Liederbuchseite": 18,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c108" },
+      "Title": "Back In Black",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c004",
+      "Tempo": 91,
+      "ChordsUrl": "https://example.com/chords/back-in-black",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=pAgnJDJN4VA",
+      "Liederbuchnummer": 3,
+      "Liederbuchseite": 88,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c109" },
+      "Title": "Highway to Hell",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c004",
+      "Tempo": 116,
+      "ChordsUrl": "https://example.com/chords/highway-to-hell",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=gEPmA3USJdI",
+      "Liederbuchnummer": 1,
+      "Liederbuchseite": 94,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c110" },
+      "Title": "Thunderstruck",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c004",
+      "Tempo": 133,
+      "ChordsUrl": "https://example.com/chords/thunderstruck",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=v2AC41fpeIM",
+      "Liederbuchnummer": 4,
+      "Liederbuchseite": 102,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c111" },
+      "Title": "Shake It Off",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c005",
+      "Tempo": 160,
+      "ChordsUrl": "https://example.com/chords/shake-it-off",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=nfWlot6h_JM",
+      "Liederbuchnummer": 2,
+      "Liederbuchseite": 5,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c112" },
+      "Title": "Blank Space",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c005",
+      "Tempo": 96,
+      "ChordsUrl": "https://example.com/chords/blank-space",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=e-ORhEE9VVg",
+      "Liederbuchnummer": 3,
+      "Liederbuchseite": 12,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c113" },
+      "Title": "Wish You Were Here",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c006",
+      "Tempo": 60,
+      "ChordsUrl": "https://example.com/chords/wish-you-were-here",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=IXdNnw99-IC",
+      "Liederbuchnummer": 1,
+      "Liederbuchseite": 210,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c114" },
+      "Title": "Comfortably Numb",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c006",
+      "Tempo": 63,
+      "ChordsUrl": "https://example.com/chords/comfortably-numb",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=_FrOQC-zSZg",
+      "Liederbuchnummer": 4,
+      "Liederbuchseite": 224,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c115" },
+      "Title": "Yellow",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c007",
+      "Tempo": 87,
+      "ChordsUrl": "https://example.com/chords/yellow",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=yKNxeF4KMsY",
+      "Liederbuchnummer": 2,
+      "Liederbuchseite": 33,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c116" },
+      "Title": "Fix You",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c007",
+      "Tempo": 138,
+      "ChordsUrl": "https://example.com/chords/fix-you",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=k4V3Mo61hJM",
+      "Liederbuchnummer": 3,
+      "Liederbuchseite": 45,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c117" },
+      "Title": "Enter Sandman",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c008",
+      "Tempo": 123,
+      "ChordsUrl": "https://example.com/chords/enter-sandman",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=CD-E-LDc384",
+      "Liederbuchnummer": 1,
+      "Liederbuchseite": 15,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
+      "Title": "Master of Puppets",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c008",
+      "Tempo": 212,
+      "ChordsUrl": "https://example.com/chords/master-of-puppets",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=E0ozmU9c_83",
+      "Liederbuchnummer": 4,
+      "Liederbuchseite": 28,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c119" },
+      "Title": "Lose Yourself",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c009",
+      "Tempo": 171,
+      "ChordsUrl": "https://example.com/chords/lose-yourself",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=_Yhyp-_hX2s",
+      "Liederbuchnummer": 2,
+      "Liederbuchseite": 8,
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c120" },
+      "Title": "Dancing Queen",
+      "ArtistId": "65f1a2b3c4d5e6f7a8b9c010",
+      "Tempo": 101,
+      "ChordsUrl": "https://example.com/chords/dancing-queen",
+      "YoutubeUrl": "https://www.youtube.com/watch?v=xFrGuyw1V8s",
+      "Liederbuchnummer": 3,
+      "Liederbuchseite": 62,
+      "IsDeleted": false
+    }
+  ],
+  "Users": [
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "Name": "Alice",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "Name": "Bob",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "Name": "Charlie",
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "Name": "Diana",
+      "IsDeleted": false
+    }
+  ],
+  "Songlists": [
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c301" },
+      "Name": "Classic Rock Essentials",
+      "CreatorId": "65f1a2b3c4d5e6f7a8b9c201",
+      "SongIds": [
+        "65f1a2b3c4d5e6f7a8b9c101",
+        "65f1a2b3c4d5e6f7a8b9c102",
+        "65f1a2b3c4d5e6f7a8b9c108",
+        "65f1a2b3c4d5e6f7a8b9c109",
+        "65f1a2b3c4d5e6f7a8b9c113"
+      ],
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c302" },
+      "Name": "Acoustic & Soft Pop",
+      "CreatorId": "65f1a2b3c4d5e6f7a8b9c202",
+      "SongIds": [
+        "65f1a2b3c4d5e6f7a8b9c103",
+        "65f1a2b3c4d5e6f7a8b9c104",
+        "65f1a2b3c4d5e6f7a8b9c107",
+        "65f1a2b3c4d5e6f7a8b9c115"
+      ],
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c303" },
+      "Name": "High Energy Workout",
+      "CreatorId": "65f1a2b3c4d5e6f7a8b9c203",
+      "SongIds": [
+        "65f1a2b3c4d5e6f7a8b9c110",
+        "65f1a2b3c4d5e6f7a8b9c111",
+        "65f1a2b3c4d5e6f7a8b9c117",
+        "65f1a2b3c4d5e6f7a8b9c118",
+        "65f1a2b3c4d5e6f7a8b9c119"
+      ],
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c304" },
+      "Name": "Roadtrip Radio",
+      "CreatorId": "65f1a2b3c4d5e6f7a8b9c201",
+      "SongIds": [
+        "65f1a2b3c4d5e6f7a8b9c102",
+        "65f1a2b3c4d5e6f7a8b9c106",
+        "65f1a2b3c4d5e6f7a8b9c112",
+        "65f1a2b3c4d5e6f7a8b9c120"
+      ],
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c305" },
+      "Name": "Late Night Chilling",
+      "CreatorId": "65f1a2b3c4d5e6f7a8b9c204",
+      "SongIds": [
+        "65f1a2b3c4d5e6f7a8b9c105",
+        "65f1a2b3c4d5e6f7a8b9c114",
+        "65f1a2b3c4d5e6f7a8b9c116"
+      ],
+      "IsDeleted": false
+    }
+  ],
+  "UserSongInteractions": [
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c403" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c101" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 4
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 5
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 5
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "A bit overplayed, but technically brilliant.",
+      "UpdatedAt": { "$date": "2026-03-12T10:05:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c404" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 2
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Catchy rhythm, easy to pick up.",
+      "UpdatedAt": { "$date": "2026-03-12T11:15:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c405" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 3
+        }
+      ],
+      "Notes": "Fun acoustic song for campfire jam sessions.",
+      "UpdatedAt": { "$date": "2026-03-12T12:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c406" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 5
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 5
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Downpicking nightmare on guitar!",
+      "UpdatedAt": { "$date": "2026-03-12T13:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c407" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 5
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 2
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Very fast tempo, need more stamina.",
+      "UpdatedAt": { "$date": "2026-03-12T14:10:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c408" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c113" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Iconic acoustic intro.",
+      "UpdatedAt": { "$date": "2026-03-12T15:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c409" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c113" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Love the 12-string guitar tone.",
+      "UpdatedAt": { "$date": "2026-03-12T15:45:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c410" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c116" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Emotional crescendo at the end.",
+      "UpdatedAt": { "$date": "2026-03-12T16:20:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c411" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c119" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 4
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Incredible lyricism and flow.",
+      "UpdatedAt": { "$date": "2026-03-12T17:05:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c412" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c120" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Classic party track.",
+      "UpdatedAt": { "$date": "2026-03-12T18:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c413" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c101" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 5
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 5
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Guitar solo section requires clean sweep picking.",
+      "UpdatedAt": { "$date": "2026-03-13T09:12:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c414" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 1
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 2
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 3
+        }
+      ],
+      "Notes": "Great warm-up song for beginner vocalists.",
+      "UpdatedAt": { "$date": "2026-03-13T10:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c415" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c122" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 2
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 2
+        }
+      ],
+      "Notes": "Bassline is surprisingly tricky in syncope.",
+      "UpdatedAt": { "$date": "2026-03-13T11:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c416" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c122" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 3
+        }
+      ],
+      "Notes": "Decent track, but repetitive drumming.",
+      "UpdatedAt": { "$date": "2026-03-13T12:15:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c417" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c125" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 5
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 5
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Odd time signature shifts between 7/8 and 4/4.",
+      "UpdatedAt": { "$date": "2026-03-13T14:40:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c418" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c125" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 4
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 5
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Need to practice the polyrhythms slowly.",
+      "UpdatedAt": { "$date": "2026-03-13T15:20:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c419" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 5
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Pure adrenaline. Great thrash metal masterpiece.",
+      "UpdatedAt": { "$date": "2026-03-13T16:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c420" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c130" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 1
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 1
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 1
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 1
+        }
+      ],
+      "Notes": "Soft-deleted test entry.",
+      "UpdatedAt": { "$date": "2026-03-13T17:10:00Z" },
+      "IsDeleted": true
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c421" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c131" },
+      "IsFavorite": true,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 5
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Requires serious vocal control on the high notes.",
+      "UpdatedAt": { "$date": "2026-03-13T18:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c422" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c131" },
+      "IsFavorite": false,
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Fun duet option.",
+      "UpdatedAt": { "$date": "2026-03-13T18:45:00Z" },
+      "IsDeleted": false
+    }
+  ]
+}
