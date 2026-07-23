@@ -42,6 +42,9 @@ namespace SongManager.Views
             // Songlist Selection & CRUD Events
             lstSongLists.SelectedIndexChanged += (s, e) => SonglistSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnCreateList.Click += (s, e) => CreateSonglistClicked?.Invoke(this, EventArgs.Empty);
+
+            // Artist CRUD Events
+            btnAddArtist.Click += (s, e) => AddArtistClicked?.Invoke(this, EventArgs.Empty);
         }
 
         #region ISongsView Implementation
@@ -126,6 +129,11 @@ namespace SongManager.Views
         /// Occurs when the user toggles the favorite status of a song.
         /// </summary>
         public event EventHandler? ToggleFavoriteClicked;
+
+        /// <summary>
+        /// Occurs when the user requests to create a new artist.
+        /// </summary>
+        public event EventHandler? AddArtistClicked;
 
         #endregion
 
@@ -220,14 +228,20 @@ namespace SongManager.Views
         /// <summary>
         /// Binds the collection of available song lists to the sidebar list box.
         /// </summary>
-        /// <param name="songlists">The collection of song lists to display.</param>
-        public void DisplaySonglists (IEnumerable<Songlist> songlists)
+        public void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId)
         {
             lstSongLists.Items.Clear();
 
+            // Option für "Alle Songs (Keine Filterung)"
+            lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 Alle Songs", null!));
+
             foreach (var songlist in songlists)
             {
-                lstSongLists.Items.Add(new ListBoxItemWrapper(songlist.Name, songlist));
+                // Indikator-Icon zur Abgrenzung: Ist es meine Liste oder eine fremde/öffentliche?
+                string prefix = songlist.CreatorId == currentUserId ? "👤 " : "🌐 ";
+                string displayName = $"{prefix}{songlist.Name}";
+
+                lstSongLists.Items.Add(new ListBoxItemWrapper(displayName, songlist));
             }
         }
 

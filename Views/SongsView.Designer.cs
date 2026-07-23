@@ -2,15 +2,8 @@
 {
     partial class SongsView
     {
-        /// <summary> 
-        /// Erforderliche Designervariable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
-        /// Verwendete Ressourcen bereinigen.
-        /// </summary>
-        /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
         protected override void Dispose (bool disposing)
         {
             if (disposing && (components != null))
@@ -22,10 +15,6 @@
 
         #region Vom Komponenten-Designer generierter Code
 
-        /// <summary> 
-        /// Erforderliche Methode für die Designerunterstützung. 
-        /// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
-        /// </summary>
         private void InitializeComponent ()
         {
             mainLayout = new TableLayoutPanel();
@@ -42,6 +31,7 @@
             btnFilterFavorites = new Button();
             pnlButtons = new FlowLayoutPanel();
             btnAddSong = new Button();
+            btnAddArtist = new Button();
             btnEditSong = new Button();
             btnDeleteSong = new Button();
             pnlRight = new Panel();
@@ -195,6 +185,7 @@
             // pnlButtons
             // 
             pnlButtons.Controls.Add(btnAddSong);
+            pnlButtons.Controls.Add(btnAddArtist);
             pnlButtons.Controls.Add(btnEditSong);
             pnlButtons.Controls.Add(btnDeleteSong);
             pnlButtons.Dock = DockStyle.Bottom;
@@ -210,26 +201,36 @@
             btnAddSong.Name = "btnAddSong";
             btnAddSong.Size = new Size(81, 25);
             btnAddSong.TabIndex = 0;
-            btnAddSong.Text = "Neuer Song";
+            btnAddSong.Text = "+ Song";
             btnAddSong.UseVisualStyleBackColor = true;
+            // 
+            // btnAddArtist
+            // 
+            btnAddArtist.AutoSize = true;
+            btnAddArtist.Location = new Point(90, 3);
+            btnAddArtist.Name = "btnAddArtist";
+            btnAddArtist.Size = new Size(85, 25);
+            btnAddArtist.TabIndex = 1;
+            btnAddArtist.Text = "+ Interpret";
+            btnAddArtist.UseVisualStyleBackColor = true;
             // 
             // btnEditSong
             // 
             btnEditSong.AutoSize = true;
-            btnEditSong.Location = new Point(90, 3);
+            btnEditSong.Location = new Point(181, 3);
             btnEditSong.Name = "btnEditSong";
             btnEditSong.Size = new Size(75, 25);
-            btnEditSong.TabIndex = 1;
+            btnEditSong.TabIndex = 2;
             btnEditSong.Text = "Bearbeiten";
             btnEditSong.UseVisualStyleBackColor = true;
             // 
             // btnDeleteSong
             // 
             btnDeleteSong.AutoSize = true;
-            btnDeleteSong.Location = new Point(171, 3);
+            btnDeleteSong.Location = new Point(262, 3);
             btnDeleteSong.Name = "btnDeleteSong";
             btnDeleteSong.Size = new Size(75, 25);
-            btnDeleteSong.TabIndex = 2;
+            btnDeleteSong.TabIndex = 3;
             btnDeleteSong.Text = "Löschen";
             btnDeleteSong.UseVisualStyleBackColor = true;
             // 
@@ -354,6 +355,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colArtist;
         private System.Windows.Forms.FlowLayoutPanel pnlButtons;
         private System.Windows.Forms.Button btnAddSong;
+        private System.Windows.Forms.Button btnAddArtist;
         private System.Windows.Forms.Button btnEditSong;
         private System.Windows.Forms.Button btnDeleteSong;
         private System.Windows.Forms.Panel pnlRight;

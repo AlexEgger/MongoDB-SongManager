@@ -35,6 +35,7 @@ public class SongsPresenter
         _view.AddSongClicked += OnAddSongClicked;
         _view.EditSongClicked += OnEditSongClicked;
         _view.DeleteSongClicked += OnDeleteSongClicked;
+        _view.AddArtistClicked += OnAddArtistClicked;
 
         LoadAllSongs();
     }
@@ -154,5 +155,18 @@ public class SongsPresenter
     {
         return _artistRepository.GetAll()
             .ToDictionary(a => a.Id, a => a.Name);
+    }
+
+    /// <summary>
+    /// Opens the dialog to create a new artist and persists it upon confirmation.
+    /// </summary>
+    private void OnAddArtistClicked (object? sender, EventArgs e)
+    {
+        using var dialog = new ArtistDialog();
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            _artistRepository.Insert(dialog.Artist);
+            LoadAllSongs(); // Refresh view
+        }
     }
 }

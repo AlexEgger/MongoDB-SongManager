@@ -68,6 +68,11 @@ public interface ISongsView
     /// </summary>
     event EventHandler ToggleFavoriteClicked;
 
+    /// <summary>
+    /// Occurs when the user requests to create a new artist.
+    /// </summary>
+    event EventHandler AddArtistClicked;
+
     #endregion
 
     #region Songlist Events
@@ -119,7 +124,7 @@ public interface ISongsView
     /// Binds the collection of available song lists to the sidebar list box.
     /// </summary>
     /// <param name="songlists">The list of song list entities to display.</param>
-    void DisplaySonglists (IEnumerable<Songlist> songlists);
+    void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId);
 
     #endregion
 }
