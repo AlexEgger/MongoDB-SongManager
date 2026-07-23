@@ -17,17 +17,17 @@ public class MongoSonglistRepository : MongoRepository<Songlist>, ISonglistRepos
     }
 
     /// <summary>
-    /// Asynchronously retrieves all active (non-deleted) songlists created by a specific user.
+    /// Retrieves all active (non-deleted) songlists created by a specific user.
     /// </summary>
     /// <param name="creatorId">The unique ID of the creator user.</param>
-    /// <returns>A task representing the asynchronous operation, containing a list of matching <see cref="Songlist"/> documents.</returns>
-    public async Task<List<Songlist>> GetSonglistsByCreatorIdAsync (string creatorId)
+    /// <returns>A collection of matching <see cref="Songlist"/> documents.</returns>
+    public IEnumerable<Songlist> GetSonglistsByCreatorId (string creatorId)
     {
         var filter = Builders<Songlist>.Filter.And(
             Builders<Songlist>.Filter.Eq(s => s.CreatorId, creatorId),
             Builders<Songlist>.Filter.Eq(s => s.IsDeleted, false)
         );
 
-        return await Collection.Find(filter).ToListAsync();
+        return Collection.Find(filter).ToList();
     }
 }

@@ -8,29 +8,36 @@ namespace MongoDB_SongManager
 {
     internal static class Program
     {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         [STAThread]
         static async Task Main ()
         {
             ApplicationConfiguration.Initialize();
 
-            // 1. Database Context & Automatic Seeding
+            // 1. Initialize Database Context and trigger automatic seeding
             var dbContext = new MongoDbContext();
             await DbInitializer.SeedAsync(dbContext);
 
-            // 2. Repositories
-            var songRepo = new MongoRepository<Song>(dbContext.Songs);
-            var artistRepo = new MongoRepository<Artist>(dbContext.Artists);
-            var userRepo = new MongoRepository<User>(dbContext.Users);
+            // 2. Instantiate all concrete repository implementations
+            IRepository<User> userRepository = new MongoRepository<User>(dbContext.Users);
+            ISongRepository songRepository = new MongoSongRepository(dbContext);
+            IArtistRepository artistRepository = new MongoArtistRepository(dbContext);
+            ISonglistRepository songlistRepository = new MongoSonglistRepository(dbContext);
+            IUserInteractionRepository userInteractionRepository = new MongoUserInteractionRepository(dbContext);
 
-            // 3. Singletons / Services
+            // 3. Instantiate domain services
             var currentUserService = new CurrentUserService();
 
-            // 4. Launch Main Form
+            // 4. Launch Main Form with all required dependencies injected
             Application.Run(new MainForm(
                 currentUserService,
-                userRepo,
-                songRepo,
-                artistRepo
+                userRepository,
+                songRepository,
+                artistRepository,
+                songlistRepository,
+                userInteractionRepository
             ));
         }
     }

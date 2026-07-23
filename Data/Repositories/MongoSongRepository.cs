@@ -5,67 +5,45 @@ using MongoDB_SongManager.Models;
 namespace MongoDB_SongManager.Data.Repositories;
 
 /// <summary>
-/// MongoDB implementation of the ISongRepository contract.
+/// MongoDB implementation of the <see cref="ISongRepository"/> contract.
 /// </summary>
-public class MongoSongRepository : ISongRepository
+public class MongoSongRepository : MongoRepository<Song>, ISongRepository
 {
-    private readonly IMongoCollection<Song> _songs;
-
     /// <summary>
-    /// Initializes a new repository instance using the shared database context.
+    /// Initializes a new instance of the <see cref="MongoSongRepository"/> class using the shared database context.
     /// </summary>
     /// <param name="context">The database context instance.</param>
-    public MongoSongRepository (MongoDbContext context)
+    public MongoSongRepository (MongoDbContext context) : base(context.Songs)
     {
-        _songs = context.Songs;
     }
 
-    public async Task<List<Song>> GetAllActiveAsync ()
+    /// <summary>
+    /// Retrieves all active songs associated with a specific artist ID.
+    /// </summary>
+    /// <param name="artistId">The unique identifier of the artist.</param>
+    /// <returns>A collection of matching song entities.</returns>
+    public IEnumerable<Song> GetByArtistId (string artistId)
     {
-        return await _songs.Find(s => !s.IsDeleted).ToListAsync();
+        return Collection.Find(s => s.ArtistId == artistId && !s.IsDeleted).ToList();
     }
 
-    public async Task<Song?> GetByIdAsync (string id)
-    {
-        return await _songs.Find(s => s.Id == id && !s.IsDeleted).FirstOrDefaultAsync();
-    }
-
-    public async Task<List<Song>> GetByArtistIdAsync (string artistId)
-    {
-        return await _songs.Find(s => s.ArtistId == artistId && !s.IsDeleted).ToListAsync();
-    }
-
-    public async Task<List<Song>> SearchByTitleAsync (string titleQuery)
+    /// <summary>
+    /// Performs a case-insensitive search for songs matching the specified title query string.
+    /// </summary>
+    /// <param name="titleQuery">The partial or full song title to search for.</param>
+    /// <returns>A collection of matching song entities.</returns>
+    public IEnumerable<Song> SearchByTitle (string titleQuery)
     {
         if (string.IsNullOrWhiteSpace(titleQuery))
         {
-            return await GetAllActiveAsync();
+            return GetAll();
         }
 
-        // Filter for active songs matching title query (case-insensitive)
         var filter = Builders<Song>.Filter.And(
             Builders<Song>.Filter.Eq(s => s.IsDeleted, false),
             Builders<Song>.Filter.Regex(s => s.Title, new BsonRegularExpression(titleQuery, "i"))
         );
 
-        return await _songs.Find(filter).ToListAsync();
-    }
-
-    public async Task CreateAsync (Song song)
-    {
-        await _songs.InsertOneAsync(song);
-    }
-
-    public async Task UpdateAsync (Song song)
-    {
-        await _songs.ReplaceOneAsync(s => s.Id == song.Id, song);
-    }
-
-    public async Task DeleteSoftAsync (string id)
-    {
-        var filter = Builders<Song>.Filter.Eq(s => s.Id, id);
-        var update = Builders<Song>.Update.Set(s => s.IsDeleted, true);
-
-        await _songs.UpdateOneAsync(filter, update);
+        return Collection.Find(filter).ToList();
     }
 }

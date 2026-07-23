@@ -53,7 +53,7 @@ public class MainPresenter
         try
         {
             var importedEntries = await _csvService.ImportSongsAsync(_view.SelectedCsvPath);
-            var existingArtists = await _artistRepository.GetAllActiveAsync();
+            var existingArtists = _artistRepository.GetAll().ToList();
 
             foreach (var (song, artistName) in importedEntries)
             {
@@ -63,14 +63,14 @@ public class MainPresenter
                     if (artist == null)
                     {
                         artist = new Artist { Name = artistName };
-                        await _artistRepository.CreateAsync(artist);
+                        _artistRepository.Insert(artist);
                         existingArtists.Add(artist);
                     }
 
                     song.ArtistId = artist.Id;
                 }
 
-                await _songRepository.CreateAsync(song);
+                _songRepository.Insert(song);
             }
 
             _view.ShowSuccessMessage("CSV songs successfully imported.");
@@ -86,8 +86,8 @@ public class MainPresenter
     {
         try
         {
-            var songs = await _songRepository.GetAllActiveAsync();
-            var artists = await _artistRepository.GetAllActiveAsync();
+            var songs = _songRepository.GetAll();
+            var artists = _artistRepository.GetAll();
             var artistDict = artists.ToDictionary(a => a.Id, a => a.Name);
 
             if (!string.IsNullOrWhiteSpace(filterText))

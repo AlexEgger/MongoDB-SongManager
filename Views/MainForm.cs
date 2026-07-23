@@ -6,6 +6,9 @@ using SongManager.Views;
 
 namespace MongoDB_SongManager.Views
 {
+    /// <summary>
+    /// Represents the main application form containing top-level navigation and user selection.
+    /// </summary>
     public partial class MainForm : Form
     {
         private readonly CurrentUserService _currentUserService;
@@ -17,28 +20,43 @@ namespace MongoDB_SongManager.Views
         /// <summary>
         /// Initializes the main application window with dependency injection.
         /// </summary>
+        /// <param name="currentUserService">Service tracking active user state.</param>
+        /// <param name="userRepository">Repository for user data access.</param>
+        /// <param name="songRepository">Repository for song data access.</param>
+        /// <param name="artistRepository">Repository for artist data access.</param>
+        /// <param name="songlistRepository">Repository for songlist data access.</param>
+        /// <param name="userInteractionRepository">Repository for user interactions and favorites.</param>
         public MainForm (
             CurrentUserService currentUserService,
             IRepository<User> userRepository,
-            IRepository<Song> songRepository,
-            IRepository<Artist> artistRepository)
+            ISongRepository songRepository,
+            IArtistRepository artistRepository,
+            ISonglistRepository songlistRepository,
+            IUserInteractionRepository userInteractionRepository)
         {
             InitializeComponent();
 
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
 
-            // Initialize Sub-Views & Presenters
+            // Initialize Sub-Views & Presenters with required repositories
             _songsView = new SongsView();
-            _songsPresenter = new SongsPresenter(_songsView, songRepository, artistRepository);
+            _songsPresenter = new SongsPresenter(
+                _songsView,
+                songRepository,
+                artistRepository,
+                songlistRepository,
+                userInteractionRepository,
+                _currentUserService
+            );
 
-            // Setup Navigation
+            // Setup Navigation and Control Event Bindings
             btnNavSongs.Click += (s, e) => ShowView(_songsView);
             cmbUser.SelectedIndexChanged += OnUserSelectionChanged;
 
             LoadUsersIntoComboBox();
 
-            // Default View
+            // Display Default View
             ShowView(_songsView);
         }
 
@@ -60,7 +78,7 @@ namespace MongoDB_SongManager.Views
         }
 
         /// <summary>
-        /// Handles changes in the user ComboBox and informs the CurrentUserService.
+        /// Handles changes in the user ComboBox selection and notifies the <see cref="CurrentUserService"/>.
         /// </summary>
         private void OnUserSelectionChanged (object? sender, EventArgs e)
         {
@@ -73,6 +91,7 @@ namespace MongoDB_SongManager.Views
         /// <summary>
         /// Displays the specified UserControl inside the main content container panel.
         /// </summary>
+        /// <param name="view">The view control to display.</param>
         private void ShowView (UserControl view)
         {
             pnlContentContainer.Controls.Clear();
