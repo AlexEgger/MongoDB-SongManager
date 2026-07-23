@@ -105,6 +105,20 @@ public interface ISongsView
 
     #endregion
 
+    #region CSV Events
+
+    /// <summary>
+    /// Occurs when the user requests to export songs to a CSV file.
+    /// </summary>
+    event EventHandler ExportCsvClicked;
+
+    /// <summary>
+    /// Occurs when the user requests to import songs from a CSV file.
+    /// </summary>
+    event EventHandler ImportCsvClicked;
+
+    #endregion
+
     #region Display Methods
 
     /// <summary>

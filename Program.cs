@@ -12,7 +12,12 @@ namespace MongoDB_SongManager
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static async Task Main ()
+        static void Main ()
+        {
+            MainAsync().GetAwaiter().GetResult();
+        }
+
+        private static async Task MainAsync ()
         {
             ApplicationConfiguration.Initialize();
 
@@ -30,11 +35,13 @@ namespace MongoDB_SongManager
             // 3. Instantiate domain services
             var currentUserService = new CurrentUserService();
             IDtoService dtoService = new DtoService();
+            ICsvService csvService = new CsvService();
 
             // 4. Launch Main Form with all required dependencies injected
             Application.Run(new MainForm(
                 currentUserService,
                 dtoService,
+                csvService,
                 userRepository,
                 songRepository,
                 artistRepository,

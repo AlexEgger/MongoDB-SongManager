@@ -46,6 +46,10 @@ namespace SongManager.Views
 
             // Artist CRUD Events
             btnAddArtist.Click += (s, e) => AddArtistClicked?.Invoke(this, EventArgs.Empty);
+
+            // CSV Export / Import Events
+            btnExportCsv.Click += (s, e) => ExportCsvClicked?.Invoke(this, EventArgs.Empty);
+            btnImportCsv.Click += (s, e) => ImportCsvClicked?.Invoke(this, EventArgs.Empty);
         }
 
         #region ISongsView Implementation
@@ -114,6 +118,13 @@ namespace SongManager.Views
         public event EventHandler? DeleteSonglistClicked;
         public event EventHandler? AddSongToSonglistClicked;
         public event EventHandler? RemoveSongFromSonglistClicked;
+
+        #endregion
+
+        #region CSV Events
+
+        public event EventHandler? ExportCsvClicked;
+        public event EventHandler? ImportCsvClicked;
 
         #endregion
 

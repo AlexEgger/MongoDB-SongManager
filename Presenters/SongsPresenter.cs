@@ -18,6 +18,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly IUserInteractionRepository _userInteractionRepository;
         private readonly CurrentUserService _currentUserService;
         private readonly IDtoService _dtoService;
+        private readonly ICsvService _csvService;
 
         private List<Song> _allSongs = new();
         private List<Songlist> _allSonglists = new();
@@ -33,7 +34,8 @@ namespace MongoDB_SongManager.Presenters
             ISonglistRepository songlistRepository,
             IUserInteractionRepository userInteractionRepository,
             CurrentUserService currentUserService,
-            IDtoService dtoService)
+            IDtoService dtoService,
+            ICsvService csvService)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _songRepository = songRepository ?? throw new ArgumentNullException(nameof(songRepository));
@@ -42,6 +44,7 @@ namespace MongoDB_SongManager.Presenters
             _userInteractionRepository = userInteractionRepository ?? throw new ArgumentNullException(nameof(userInteractionRepository));
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
+            _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
 
             WireUpEvents();
             LoadInitialData();
@@ -60,6 +63,10 @@ namespace MongoDB_SongManager.Presenters
             _view.AddArtistClicked += OnAddArtistClicked;
             _view.EditSongClicked += OnEditSongClicked;
             _view.DeleteSongClicked += OnDeleteSongClicked;
+
+            // CSV Export / Import Events
+            _view.ExportCsvClicked += OnExportCsvClicked;
+            _view.ImportCsvClicked += OnImportCsvClicked;
 
             // Songlist Events
             _view.SonglistSelectionChanged += (s, e) => ApplyFilters();
@@ -243,6 +250,242 @@ namespace MongoDB_SongManager.Presenters
                 _songRepository.Delete(selectedDto.Id);
                 LoadSongs();
                 ApplyFilters();
+            }
+        }
+
+        /// <summary>
+        /// Handles CSV export by exporting all currently filtered songs from the view.
+        /// </summary>
+        private void OnExportCsvClicked (object? sender, EventArgs e)
+        {
+            // Get currently filtered songs directly based on active view filters (Search, Playlist, Favorites)
+            var songsToExport = GetCurrentlyFilteredSongs().ToList();
+
+            if (!songsToExport.Any())
+            {
+                MessageBox.Show("There are no songs in the current view to export.", "Export Notice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string defaultFileName = _view.SelectedSonglist != null
+                ? $"{_view.SelectedSonglist.Name}_export.csv"
+                : "songs_export.csv";
+
+            string? filePath = null;
+
+            // Create dedicated STA thread for SaveFileDialog
+            Thread staThread = new Thread(() =>
+            {
+                using var saveDialog = new SaveFileDialog
+                {
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                    FileName = defaultFileName
+                };
+
+                if (saveDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filePath = saveDialog.FileName;
+                }
+            });
+
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join();
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                ExecuteExportAsync(songsToExport, filePath);
+            }
+        }
+
+        /// <summary>
+        /// Helper to retrieve the current list of filtered songs (mirrors ApplyFilters logic).
+        /// </summary>
+        private IEnumerable<Song> GetCurrentlyFilteredSongs ()
+        {
+            IEnumerable<Song> filtered = _allSongs;
+
+            // 1. Selected playlist filter
+            var selectedList = _view.SelectedSonglist;
+            if (selectedList != null)
+            {
+                var songIdsInList = new HashSet<string>(selectedList.SongIds ?? new List<string>());
+                filtered = filtered.Where(s => songIdsInList.Contains(s.Id));
+            }
+
+            // 2. Favorites filter
+            if (_view.IsFavoritesFilterActive)
+            {
+                string currentUserId = _currentUserService.CurrentUserId;
+                var favoriteSongIds = _userInteractionRepository
+                    .GetFavoritesByUserId(currentUserId)
+                    .Select(i => i.SongId)
+                    .ToHashSet();
+
+                filtered = filtered.Where(s => favoriteSongIds.Contains(s.Id));
+            }
+
+            // 3. Search query filter
+            string search = _view.SearchTerm;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                filtered = filtered.Where(s =>
+                {
+                    string artistName = _artistNames.TryGetValue(s.ArtistId ?? string.Empty, out var name) ? name : string.Empty;
+                    return s.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                           artistName.Contains(search, StringComparison.OrdinalIgnoreCase);
+                });
+            }
+
+            return filtered;
+        }
+
+        private async void ExecuteExportAsync (List<Song> songsToExport, string filePath)
+        {
+            try
+            {
+                var artists = _artistRepository.GetAll().ToList();
+                await _csvService.ExportSongsAsync(songsToExport, artists, filePath);
+                MessageBox.Show($"{songsToExport.Count} songs successfully exported to CSV.", "Export Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error exporting CSV: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Handles CSV import, giving the option to create a playlist or only import songs.
+        /// </summary>
+        private void OnImportCsvClicked (object? sender, EventArgs e)
+        {
+            string? filePath = null;
+
+            // Create dedicated STA thread for OpenFileDialog
+            Thread staThread = new Thread(() =>
+            {
+                using var openDialog = new OpenFileDialog
+                {
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+                };
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filePath = openDialog.FileName;
+                }
+            });
+
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join();
+
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            // Ask user how to proceed with the import
+            var result = MessageBox.Show(
+                "Do you want to create a new playlist for the imported songs?\n\n" +
+                "• Click [Yes] to enter a playlist name and group them.\n" +
+                "• Click [No] to ONLY import missing songs into your library.\n" +
+                "• Click [Cancel] to abort.",
+                "Import Option",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Cancel) return;
+
+            string? playlistName = null;
+
+            if (result == DialogResult.Yes)
+            {
+                string defaultListName = $"Imported - {Path.GetFileNameWithoutExtension(filePath)}";
+                playlistName = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter a name for the new playlist:",
+                    "Create Playlist on Import",
+                    defaultListName);
+
+                // If user cancels the InputBox, cancel the whole import
+                if (string.IsNullOrWhiteSpace(playlistName)) return;
+            }
+
+            // Execute import (playlistName will be null if user clicked 'No')
+            ExecuteImportAsync(filePath, playlistName);
+        }
+
+        private async void ExecuteImportAsync (string filePath, string? playlistName)
+        {
+            try
+            {
+                var importedData = await _csvService.ImportSongsAsync(filePath);
+                var importedSongIds = new List<string>();
+
+                foreach (var (importedSong, artistName) in importedData)
+                {
+                    string? artistId = null;
+
+                    // 1. Resolve or create artist
+                    if (!string.IsNullOrWhiteSpace(artistName))
+                    {
+                        var existingArtist = _artistRepository.GetAll()
+                            .FirstOrDefault(a => string.Equals(a.Name, artistName, StringComparison.OrdinalIgnoreCase));
+
+                        if (existingArtist != null)
+                        {
+                            artistId = existingArtist.Id;
+                        }
+                        else
+                        {
+                            var newArtist = new Artist { Name = artistName };
+                            _artistRepository.Insert(newArtist);
+                            artistId = newArtist.Id;
+                        }
+
+                        importedSong.ArtistId = artistId;
+                    }
+
+                    // 2. Check if song already exists in repository (match by Title and ArtistId)
+                    var existingSong = _allSongs.FirstOrDefault(s =>
+                        string.Equals(s.Title, importedSong.Title, StringComparison.OrdinalIgnoreCase) &&
+                        s.ArtistId == artistId);
+
+                    if (existingSong != null)
+                    {
+                        importedSongIds.Add(existingSong.Id);
+                    }
+                    else
+                    {
+                        _songRepository.Insert(importedSong);
+                        importedSongIds.Add(importedSong.Id);
+                    }
+                }
+
+                // 3. Create playlist ONLY if requested (playlistName is not null)
+                if (!string.IsNullOrWhiteSpace(playlistName))
+                {
+                    var newPlaylist = new Songlist
+                    {
+                        Name = playlistName,
+                        CreatorId = _currentUserService.CurrentUserId,
+                        SongIds = importedSongIds.Distinct().ToList()
+                    };
+
+                    _songlistRepository.Insert(newPlaylist);
+                }
+
+                // Refresh presenter state
+                LoadArtists();
+                LoadSongs();
+                LoadSonglists();
+                ApplyFilters();
+
+                string successMessage = !string.IsNullOrWhiteSpace(playlistName)
+                    ? $"Successfully imported songs and created playlist '{playlistName}'."
+                    : "Songs successfully imported into library.";
+
+                MessageBox.Show(successMessage, "Import Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error importing CSV: {ex.Message}", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

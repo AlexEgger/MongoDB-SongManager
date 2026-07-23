@@ -34,6 +34,8 @@
             btnAddArtist = new Button();
             btnEditSong = new Button();
             btnDeleteSong = new Button();
+            btnExportCsv = new Button();
+            btnImportCsv = new Button();
             pnlRight = new Panel();
             grpSongDetails = new GroupBox();
             lblBookInfo = new Label();
@@ -188,6 +190,8 @@
             pnlButtons.Controls.Add(btnAddArtist);
             pnlButtons.Controls.Add(btnEditSong);
             pnlButtons.Controls.Add(btnDeleteSong);
+            pnlButtons.Controls.Add(btnExportCsv);
+            pnlButtons.Controls.Add(btnImportCsv);
             pnlButtons.Dock = DockStyle.Bottom;
             pnlButtons.Location = new Point(5, 452);
             pnlButtons.Name = "pnlButtons";
@@ -233,6 +237,26 @@
             btnDeleteSong.TabIndex = 3;
             btnDeleteSong.Text = "Löschen";
             btnDeleteSong.UseVisualStyleBackColor = true;
+            // 
+            // btnExportCsv
+            // 
+            btnExportCsv.AutoSize = true;
+            btnExportCsv.Location = new Point(3, 34);
+            btnExportCsv.Name = "btnExportCsv";
+            btnExportCsv.Size = new Size(80, 25);
+            btnExportCsv.TabIndex = 4;
+            btnExportCsv.Text = "📥 Export";
+            btnExportCsv.UseVisualStyleBackColor = true;
+            // 
+            // btnImportCsv
+            // 
+            btnImportCsv.AutoSize = true;
+            btnImportCsv.Location = new Point(89, 34);
+            btnImportCsv.Name = "btnImportCsv";
+            btnImportCsv.Size = new Size(80, 25);
+            btnImportCsv.TabIndex = 5;
+            btnImportCsv.Text = "📤 Import";
+            btnImportCsv.UseVisualStyleBackColor = true;
             // 
             // pnlRight
             // 
@@ -358,6 +382,8 @@
         private System.Windows.Forms.Button btnAddArtist;
         private System.Windows.Forms.Button btnEditSong;
         private System.Windows.Forms.Button btnDeleteSong;
+        private System.Windows.Forms.Button btnExportCsv;
+        private System.Windows.Forms.Button btnImportCsv;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.GroupBox grpSongDetails;
         private System.Windows.Forms.Label lblSongTitle;

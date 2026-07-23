@@ -13,6 +13,7 @@ namespace MongoDB_SongManager.Views
     {
         private readonly CurrentUserService _currentUserService;
         private readonly IDtoService _dtoService;
+        private readonly ICsvService _csvService;
         private readonly IRepository<User> _userRepository;
 
         private readonly SongsView _songsView;
@@ -26,6 +27,7 @@ namespace MongoDB_SongManager.Views
         /// </summary>
         /// <param name="currentUserService">Service tracking active user state.</param>
         /// <param name="dtoService">Service mapping domain models to presentation DTOs.</param>
+        /// <param name="csvService">Service providing CSV import and export capabilities.</param>
         /// <param name="userRepository">Repository for user data access.</param>
         /// <param name="songRepository">Repository for song data access.</param>
         /// <param name="artistRepository">Repository for artist data access.</param>
@@ -34,6 +36,7 @@ namespace MongoDB_SongManager.Views
         public MainForm (
             CurrentUserService currentUserService,
             IDtoService dtoService,
+            ICsvService csvService,
             IRepository<User> userRepository,
             ISongRepository songRepository,
             IArtistRepository artistRepository,
@@ -44,9 +47,10 @@ namespace MongoDB_SongManager.Views
 
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
+            _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
 
-            // Initialize Sub-Views & Presenters with required repositories and DTO service
+            // Initialize Sub-Views & Presenters with required repositories and services
             _songsView = new SongsView();
             _songsPresenter = new SongsPresenter(
                 _songsView,
@@ -55,7 +59,8 @@ namespace MongoDB_SongManager.Views
                 songlistRepository,
                 userInteractionRepository,
                 _currentUserService,
-                _dtoService
+                _dtoService,
+                _csvService
             );
 
             _songlistsView = new SonglistsView();
