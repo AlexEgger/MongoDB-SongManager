@@ -29,8 +29,10 @@
         private void InitializeComponent ()
         {
             pnlHeader = new Panel();
-            cmbUser = new ComboBox();
             lblUserHeader = new Label();
+            cmbUser = new ComboBox();
+            btnAddUser = new Button();
+            btnEditUser = new Button();
             btnNavStatistics = new Button();
             btnNavSonglists = new Button();
             btnNavSongs = new Button();
@@ -41,8 +43,10 @@
             // pnlHeader
             // 
             pnlHeader.BackColor = SystemColors.ControlLight;
-            pnlHeader.Controls.Add(cmbUser);
             pnlHeader.Controls.Add(lblUserHeader);
+            pnlHeader.Controls.Add(cmbUser);
+            pnlHeader.Controls.Add(btnAddUser);
+            pnlHeader.Controls.Add(btnEditUser);
             pnlHeader.Controls.Add(btnNavStatistics);
             pnlHeader.Controls.Add(btnNavSonglists);
             pnlHeader.Controls.Add(btnNavSongs);
@@ -53,27 +57,49 @@
             pnlHeader.Size = new Size(1008, 45);
             pnlHeader.TabIndex = 0;
             // 
-            // cmbUser
-            // 
-            cmbUser.Dock = DockStyle.Right;
-            cmbUser.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbUser.FormattingEnabled = true;
-            cmbUser.Location = new Point(746, 5);
-            cmbUser.Name = "cmbUser";
-            cmbUser.Size = new Size(180, 23);
-            cmbUser.TabIndex = 4;
-            // 
             // lblUserHeader
             // 
             lblUserHeader.AutoSize = true;
             lblUserHeader.Dock = DockStyle.Right;
             lblUserHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblUserHeader.Location = new Point(926, 5);
+            lblUserHeader.Location = new Point(676, 5);
             lblUserHeader.Name = "lblUserHeader";
             lblUserHeader.Padding = new Padding(0, 5, 10, 0);
             lblUserHeader.Size = new Size(72, 20);
             lblUserHeader.TabIndex = 3;
             lblUserHeader.Text = "Benutzer:";
+            // 
+            // cmbUser
+            // 
+            cmbUser.Dock = DockStyle.Right;
+            cmbUser.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbUser.FormattingEnabled = true;
+            cmbUser.Location = new Point(748, 5);
+            cmbUser.Name = "cmbUser";
+            cmbUser.Size = new Size(180, 23);
+            cmbUser.TabIndex = 4;
+            // 
+            // btnAddUser
+            // 
+            btnAddUser.Dock = DockStyle.Right;
+            btnAddUser.Font = new Font("Segoe UI", 8F);
+            btnAddUser.Location = new Point(928, 5);
+            btnAddUser.Name = "btnAddUser";
+            btnAddUser.Size = new Size(35, 35);
+            btnAddUser.TabIndex = 5;
+            btnAddUser.Text = "➕";
+            btnAddUser.UseVisualStyleBackColor = true;
+            // 
+            // btnEditUser
+            // 
+            btnEditUser.Dock = DockStyle.Right;
+            btnEditUser.Font = new Font("Segoe UI", 8F);
+            btnEditUser.Location = new Point(963, 5);
+            btnEditUser.Name = "btnEditUser";
+            btnEditUser.Size = new Size(35, 35);
+            btnEditUser.TabIndex = 6;
+            btnEditUser.Text = "✏️";
+            btnEditUser.UseVisualStyleBackColor = true;
             // 
             // btnNavStatistics
             // 
@@ -134,6 +160,8 @@
         private Button btnNavStatistics;
         private ComboBox cmbUser;
         private Label lblUserHeader;
+        private Button btnAddUser;
+        private Button btnEditUser;
         private Panel pnlContentContainer;
     }
 }

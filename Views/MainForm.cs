@@ -20,6 +20,12 @@ namespace MongoDB_SongManager.Views
         public event EventHandler? NavStatisticsClicked;
 
         /// <inheritdoc />
+        public event EventHandler? AddUserClicked;
+
+        /// <inheritdoc />
+        public event EventHandler? EditUserClicked;
+
+        /// <inheritdoc />
         public UserDto? SelectedUser => cmbUser.SelectedItem as UserDto;
 
         /// <summary>
@@ -34,6 +40,9 @@ namespace MongoDB_SongManager.Views
             btnNavSongs.Click += (s, e) => NavSongsClicked?.Invoke(this, EventArgs.Empty);
             btnNavSonglists.Click += (s, e) => NavSonglistsClicked?.Invoke(this, EventArgs.Empty);
             btnNavStatistics.Click += (s, e) => NavStatisticsClicked?.Invoke(this, EventArgs.Empty);
+
+            btnAddUser.Click += (s, e) => AddUserClicked?.Invoke(this, EventArgs.Empty);
+            btnEditUser.Click += (s, e) => EditUserClicked?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc />
@@ -45,6 +54,25 @@ namespace MongoDB_SongManager.Views
         }
 
         /// <inheritdoc />
+        public void SelectUser (string? userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                cmbUser.SelectedIndex = -1;
+                return;
+            }
+
+            if (cmbUser.DataSource is IEnumerable<UserDto> users)
+            {
+                var targetUser = users.FirstOrDefault(u => u.Id == userId);
+                if (targetUser != null && !Equals(cmbUser.SelectedItem, targetUser))
+                {
+                    cmbUser.SelectedItem = targetUser;
+                }
+            }
+        }
+
+        /// <inheritdoc />
         public void ShowView (System.Windows.Forms.UserControl view)
         {
             pnlContentContainer.SuspendLayout();
@@ -52,6 +80,18 @@ namespace MongoDB_SongManager.Views
             view.Dock = DockStyle.Fill;
             pnlContentContainer.Controls.Add(view);
             pnlContentContainer.ResumeLayout();
+        }
+
+        /// <inheritdoc />
+        public UserDto? GetUserInput (UserDto? userToEdit = null)
+        {
+            using var dialog = userToEdit == null ? new UserEditDialog() : new UserEditDialog(userToEdit);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                return dialog.UserDto;
+            }
+
+            return null;
         }
     }
 }

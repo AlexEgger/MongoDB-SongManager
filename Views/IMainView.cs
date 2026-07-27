@@ -3,7 +3,7 @@
 namespace MongoDB_SongManager.Views
 {
     /// <summary>
-    /// Contract defining the interactions and view-switching capabilities of the main application form.
+    /// Contract defining the interactions, user management capabilities, and view-switching behavior of the main application form.
     /// </summary>
     public interface IMainView
     {
@@ -28,6 +28,16 @@ namespace MongoDB_SongManager.Views
         event EventHandler? NavStatisticsClicked;
 
         /// <summary>
+        /// Occurs when the user requests to create a new user profile.
+        /// </summary>
+        event EventHandler? AddUserClicked;
+
+        /// <summary>
+        /// Occurs when the user requests to edit the currently selected user profile.
+        /// </summary>
+        event EventHandler? EditUserClicked;
+
+        /// <summary>
         /// Gets the currently selected user profile from the dropdown.
         /// </summary>
         UserDto? SelectedUser { get; }
@@ -39,9 +49,22 @@ namespace MongoDB_SongManager.Views
         void DisplayUsers (IEnumerable<UserDto> users);
 
         /// <summary>
+        /// Selects a user profile in the UI dropdown based on the specified user ID.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to select.</param>
+        void SelectUser (string? userId);
+
+        /// <summary>
         /// Displays the given UserControl in the main content container.
         /// </summary>
         /// <param name="view">The UserControl view to load.</param>
         void ShowView (System.Windows.Forms.UserControl view);
+
+        /// <summary>
+        /// Prompts the user via a modal dialog to input or modify user details.
+        /// </summary>
+        /// <param name="userToEdit">The existing user DTO to populate the form with for editing, or null to create a new user.</param>
+        /// <returns>The populated <see cref="UserDto"/> if accepted; otherwise, null.</returns>
+        UserDto? GetUserInput (UserDto? userToEdit = null);
     }
 }

@@ -7,7 +7,7 @@ using SongManager.Views;
 namespace MongoDB_SongManager.Presenters
 {
     /// <summary>
-    /// Presenter responsible for main application orchestration, view hosting, and global user state management.
+    /// Presenter responsible for main application orchestration, view hosting, user CRUD processing, and global user state management.
     /// </summary>
     public class MainPresenter
     {
@@ -91,7 +91,7 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Subscribes to main view UI events.
+        /// Subscribes to main view UI events and global domain service notifications.
         /// </summary>
         private void WireUpEvents ()
         {
@@ -99,6 +99,12 @@ namespace MongoDB_SongManager.Presenters
             _view.NavSongsClicked += OnNavSongsClicked;
             _view.NavSonglistsClicked += OnNavSonglistsClicked;
             _view.NavStatisticsClicked += OnNavStatisticsClicked;
+
+            _view.AddUserClicked += OnAddUserClicked;
+            _view.EditUserClicked += OnEditUserClicked;
+
+            // Reactively update the view when the active user state changes in CurrentUserService
+            _currentUserService.CurrentUserChanged += OnCurrentUserChanged;
         }
 
         /// <summary>
@@ -123,20 +129,86 @@ namespace MongoDB_SongManager.Presenters
 
             _view.DisplayUsers(userDtos);
 
-            if (userDtos.Count > 0)
+            if (userDtos.Count > 0 && _currentUserService.CurrentUser == null)
             {
                 _currentUserService.SetCurrentUser(userDtos[0]);
+            }
+            else if (_currentUserService.CurrentUser != null)
+            {
+                _view.SelectUser(_currentUserService.CurrentUserId);
             }
         }
 
         /// <summary>
-        /// Handles changes to the active user selection.
+        /// Handles state changes emitted by <see cref="ICurrentUserService.CurrentUserChanged"/> to update the UI dropdown.
+        /// </summary>
+        private void OnCurrentUserChanged (object? sender, EventArgs e)
+        {
+            _view.SelectUser(_currentUserService.CurrentUserId);
+        }
+
+        /// <summary>
+        /// Handles changes to the active user selection initiated in the UI view.
         /// </summary>
         private void OnUserSelectionChanged (object? sender, EventArgs e)
         {
             if (_view.SelectedUser != null)
             {
                 _currentUserService.SetCurrentUser(_view.SelectedUser);
+            }
+        }
+
+        /// <summary>
+        /// Handles creation of a new user profile by prompting input, storing the entity, refreshing list, and updating user state.
+        /// </summary>
+        private void OnAddUserClicked (object? sender, EventArgs e)
+        {
+            var inputDto = _view.GetUserInput(null);
+            if (inputDto == null || string.IsNullOrWhiteSpace(inputDto.Name))
+            {
+                return;
+            }
+
+            var newUser = new User
+            {
+                Name = inputDto.Name
+            };
+
+            _userRepository.Insert(newUser);
+            var newUserDto = _dtoService.MapToUserDto(newUser);
+
+            LoadUsers();
+
+            // Setting active user in the service triggers CurrentUserChanged and auto-selects the new user in the UI
+            _currentUserService.SetCurrentUser(newUserDto);
+        }
+
+        /// <summary>
+        /// Handles updating the active user profile's details.
+        /// </summary>
+        private void OnEditUserClicked (object? sender, EventArgs e)
+        {
+            var selectedUser = _view.SelectedUser;
+            if (selectedUser == null)
+            {
+                return;
+            }
+
+            var inputDto = _view.GetUserInput(selectedUser);
+            if (inputDto == null || string.IsNullOrWhiteSpace(inputDto.Name))
+            {
+                return;
+            }
+
+            var existingUser = _userRepository.GetById(selectedUser.Id);
+            if (existingUser != null)
+            {
+                existingUser.Name = inputDto.Name;
+                _userRepository.Update(existingUser);
+
+                var updatedUserDto = _dtoService.MapToUserDto(existingUser);
+                LoadUsers();
+                _currentUserService.SetCurrentUser(updatedUserDto);
             }
         }
 
