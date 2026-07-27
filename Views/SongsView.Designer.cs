@@ -13,7 +13,7 @@
             base.Dispose(disposing);
         }
 
-        #region Vom Komponenten-Designer generierter Code
+        #region Component Designer generated code
 
         private void InitializeComponent ()
         {
@@ -28,7 +28,6 @@
             colArtist = new DataGridViewTextBoxColumn();
             pnlSearch = new Panel();
             txtSearch = new TextBox();
-            btnFilterFavorites = new Button();
             toolStripActionButtons = new ToolStrip();
             btnAddSong = new ToolStripButton();
             btnAddArtist = new ToolStripButton();
@@ -39,6 +38,9 @@
             btnImportCsv = new ToolStripButton();
             pnlRight = new Panel();
             grpSongDetails = new GroupBox();
+            txtNotes = new TextBox();
+            lblNotesHeader = new Label();
+            lblRatings = new Label();
             lblBookInfo = new Label();
             lnkYoutube = new LinkLabel();
             lnkChords = new LinkLabel();
@@ -89,7 +91,7 @@
             // 
             lstSongLists.Dock = DockStyle.Fill;
             lstSongLists.FormattingEnabled = true;
-            lstSongLists.Items.AddRange(new object[] { "⭐ Meine Favoriten", "🎵 Alle Songs", "────────────────", "Band Setlist 2026", "Akustik Duo" });
+            lstSongLists.Items.AddRange(new object[] { "🎵 Alle Songs", "────────────────", "Band Setlist 2026", "Akustik Duo" });
             lstSongLists.Location = new Point(5, 35);
             lstSongLists.Name = "lstSongLists";
             lstSongLists.Size = new Size(143, 417);
@@ -141,7 +143,7 @@
             dgvSongs.ReadOnly = true;
             dgvSongs.RowHeadersVisible = false;
             dgvSongs.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvSongs.Size = new Size(397, 412);
+            dgvSongs.Size = new Size(397, 422);
             dgvSongs.TabIndex = 0;
             // 
             // colTitle
@@ -159,7 +161,6 @@
             // pnlSearch
             // 
             pnlSearch.Controls.Add(txtSearch);
-            pnlSearch.Controls.Add(btnFilterFavorites);
             pnlSearch.Dock = DockStyle.Top;
             pnlSearch.Location = new Point(5, 5);
             pnlSearch.Name = "pnlSearch";
@@ -172,35 +173,17 @@
             txtSearch.Location = new Point(0, 0);
             txtSearch.Name = "txtSearch";
             txtSearch.PlaceholderText = "Suche in Liste...";
-            txtSearch.Size = new Size(307, 23);
+            txtSearch.Size = new Size(397, 23);
             txtSearch.TabIndex = 0;
-            // 
-            // btnFilterFavorites
-            // 
-            btnFilterFavorites.Dock = DockStyle.Right;
-            btnFilterFavorites.Location = new Point(307, 0);
-            btnFilterFavorites.Name = "btnFilterFavorites";
-            btnFilterFavorites.Size = new Size(90, 35);
-            btnFilterFavorites.TabIndex = 1;
-            btnFilterFavorites.Text = "⭐ Favoriten";
-            btnFilterFavorites.UseVisualStyleBackColor = true;
             // 
             // toolStripActionButtons
             // 
-            toolStripActionButtons.CanOverflow = true;
             toolStripActionButtons.Dock = DockStyle.Bottom;
             toolStripActionButtons.GripStyle = ToolStripGripStyle.Hidden;
-            toolStripActionButtons.Items.AddRange(new ToolStripItem[] {
-            btnAddSong,
-            btnAddArtist,
-            btnEditSong,
-            btnDeleteSong,
-            toolStripSeparator1,
-            btnExportCsv,
-            btnImportCsv});
-            toolStripActionButtons.Location = new Point(5, 452);
+            toolStripActionButtons.Items.AddRange(new ToolStripItem[] { btnAddSong, btnAddArtist, btnEditSong, btnDeleteSong, toolStripSeparator1, btnExportCsv, btnImportCsv });
+            toolStripActionButtons.Location = new Point(5, 462);
             toolStripActionButtons.Name = "toolStripActionButtons";
-            toolStripActionButtons.Size = new Size(397, 35);
+            toolStripActionButtons.Size = new Size(397, 25);
             toolStripActionButtons.TabIndex = 2;
             toolStripActionButtons.Text = "Action Toolbar";
             // 
@@ -208,53 +191,47 @@
             // 
             btnAddSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnAddSong.Name = "btnAddSong";
-            btnAddSong.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnAddSong.Size = new Size(54, 32);
+            btnAddSong.Size = new Size(49, 22);
             btnAddSong.Text = "+ Song";
             // 
             // btnAddArtist
             // 
             btnAddArtist.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnAddArtist.Name = "btnAddArtist";
-            btnAddArtist.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnAddArtist.Size = new Size(68, 32);
+            btnAddArtist.Size = new Size(67, 22);
             btnAddArtist.Text = "+ Interpret";
             // 
             // btnEditSong
             // 
             btnEditSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnEditSong.Name = "btnEditSong";
-            btnEditSong.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnEditSong.Size = new Size(67, 32);
+            btnEditSong.Size = new Size(67, 22);
             btnEditSong.Text = "Bearbeiten";
             // 
             // btnDeleteSong
             // 
             btnDeleteSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnDeleteSong.Name = "btnDeleteSong";
-            btnDeleteSong.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnDeleteSong.Size = new Size(56, 32);
+            btnDeleteSong.Size = new Size(55, 22);
             btnDeleteSong.Text = "Löschen";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 35);
+            toolStripSeparator1.Size = new Size(6, 25);
             // 
             // btnExportCsv
             // 
             btnExportCsv.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnExportCsv.Name = "btnExportCsv";
-            btnExportCsv.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnExportCsv.Size = new Size(60, 32);
+            btnExportCsv.Size = new Size(60, 22);
             btnExportCsv.Text = "📥 Export";
             // 
             // btnImportCsv
             // 
             btnImportCsv.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnImportCsv.Name = "btnImportCsv";
-            btnImportCsv.Overflow = ToolStripItemOverflow.AsNeeded;
-            btnImportCsv.Size = new Size(63, 32);
+            btnImportCsv.Size = new Size(62, 22);
             btnImportCsv.Text = "📤 Import";
             // 
             // pnlRight
@@ -269,6 +246,9 @@
             // 
             // grpSongDetails
             // 
+            grpSongDetails.Controls.Add(txtNotes);
+            grpSongDetails.Controls.Add(lblNotesHeader);
+            grpSongDetails.Controls.Add(lblRatings);
             grpSongDetails.Controls.Add(lblBookInfo);
             grpSongDetails.Controls.Add(lnkYoutube);
             grpSongDetails.Controls.Add(lnkChords);
@@ -283,6 +263,36 @@
             grpSongDetails.TabIndex = 0;
             grpSongDetails.TabStop = false;
             grpSongDetails.Text = "Song Details";
+            // 
+            // txtNotes
+            // 
+            txtNotes.Dock = DockStyle.Fill;
+            txtNotes.Location = new Point(10, 251);
+            txtNotes.Multiline = true;
+            txtNotes.Name = "txtNotes";
+            txtNotes.ReadOnly = true;
+            txtNotes.ScrollBars = ScrollBars.Vertical;
+            txtNotes.Size = new Size(188, 221);
+            txtNotes.TabIndex = 8;
+            // 
+            // lblNotesHeader
+            // 
+            lblNotesHeader.Dock = DockStyle.Top;
+            lblNotesHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lblNotesHeader.Location = new Point(10, 226);
+            lblNotesHeader.Name = "lblNotesHeader";
+            lblNotesHeader.Size = new Size(188, 25);
+            lblNotesHeader.TabIndex = 7;
+            lblNotesHeader.Text = "Kommentare & Notizen:";
+            // 
+            // lblRatings
+            // 
+            lblRatings.Dock = DockStyle.Top;
+            lblRatings.Location = new Point(10, 176);
+            lblRatings.Name = "lblRatings";
+            lblRatings.Size = new Size(188, 50);
+            lblRatings.TabIndex = 6;
+            lblRatings.Text = "Bewertungen:\n- Keine -";
             // 
             // lblBookInfo
             // 
@@ -359,6 +369,7 @@
             toolStripActionButtons.PerformLayout();
             pnlRight.ResumeLayout(false);
             grpSongDetails.ResumeLayout(false);
+            grpSongDetails.PerformLayout();
             ResumeLayout(false);
 
         }
@@ -373,7 +384,6 @@
         private System.Windows.Forms.Panel pnlMiddle;
         private System.Windows.Forms.Panel pnlSearch;
         private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.Button btnFilterFavorites;
         private System.Windows.Forms.DataGridView dgvSongs;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTitle;
         private System.Windows.Forms.DataGridViewTextBoxColumn colArtist;
@@ -393,5 +403,8 @@
         private System.Windows.Forms.LinkLabel lnkChords;
         private System.Windows.Forms.LinkLabel lnkYoutube;
         private System.Windows.Forms.Label lblBookInfo;
+        private System.Windows.Forms.Label lblRatings;
+        private System.Windows.Forms.Label lblNotesHeader;
+        private System.Windows.Forms.TextBox txtNotes;
     }
 }

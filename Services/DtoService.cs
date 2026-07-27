@@ -9,7 +9,10 @@ namespace MongoDB_SongManager.Services
     public class DtoService : IDtoService
     {
         /// <inheritdoc />
-        public SongDisplayDto MapToSongDisplayDto (Song song, IReadOnlyDictionary<string, string> artistNames)
+        public SongDisplayDto MapToSongDisplayDto (
+            Song song,
+            IReadOnlyDictionary<string, string> artistNames,
+            UserSongInteraction? interaction = null)
         {
             ArgumentNullException.ThrowIfNull(song);
 
@@ -33,16 +36,29 @@ namespace MongoDB_SongManager.Services
                 ChordsUrl = song.ChordsUrl,
                 YoutubeUrl = song.YoutubeUrl,
                 SongbookInfo = bookInfo,
-                Tempo = song.Tempo
+                Tempo = song.Tempo,
+                Notes = interaction?.Notes,
+                Ratings = interaction?.Ratings ?? new List<Rating>()
             };
         }
 
         /// <inheritdoc />
-        public IEnumerable<SongDisplayDto> MapToSongDisplayDtos (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
+        public IEnumerable<SongDisplayDto> MapToSongDisplayDtos (
+            IEnumerable<Song> songs,
+            IReadOnlyDictionary<string, string> artistNames,
+            IReadOnlyDictionary<string, UserSongInteraction>? interactions = null)
         {
             if (songs == null) return Enumerable.Empty<SongDisplayDto>();
 
-            return songs.Select(song => MapToSongDisplayDto(song, artistNames)).ToList();
+            return songs.Select(song =>
+            {
+                UserSongInteraction? interaction = null;
+                if (interactions != null && interactions.TryGetValue(song.Id, out var userInteraction))
+                {
+                    interaction = userInteraction;
+                }
+                return MapToSongDisplayDto(song, artistNames, interaction);
+            }).ToList();
         }
 
         /// <inheritdoc />

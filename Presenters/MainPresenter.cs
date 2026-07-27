@@ -22,6 +22,9 @@ namespace MongoDB_SongManager.Presenters
         private readonly SonglistsView _songlistsView;
         private readonly SonglistsPresenter _songlistsPresenter;
 
+        private readonly StatisticsView _statisticsView;
+        private readonly StatisticsPresenter _statisticsPresenter;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MainPresenter"/> class and constructs child views and presenters.
         /// </summary>
@@ -40,7 +43,7 @@ namespace MongoDB_SongManager.Presenters
             ISongRepository songRepository,
             IArtistRepository artistRepository,
             ISonglistRepository songlistRepository,
-            IUserInteractionRepository userInteractionRepository,
+            IUserSongInteractionRepository userInteractionRepository,
             ICurrentUserService currentUserService,
             IDtoService dtoService,
             ICsvService csvService)
@@ -73,6 +76,17 @@ namespace MongoDB_SongManager.Presenters
                 _dtoService
             );
 
+            _statisticsView = new StatisticsView();
+            _statisticsPresenter = new StatisticsPresenter(
+                _statisticsView,
+                songRepository,
+                artistRepository,
+                songlistRepository,
+                userInteractionRepository,
+                _currentUserService,
+                _dtoService
+            );
+
             WireUpEvents();
         }
 
@@ -84,6 +98,7 @@ namespace MongoDB_SongManager.Presenters
             _view.UserSelectionChanged += OnUserSelectionChanged;
             _view.NavSongsClicked += OnNavSongsClicked;
             _view.NavSonglistsClicked += OnNavSonglistsClicked;
+            _view.NavStatisticsClicked += OnNavStatisticsClicked;
         }
 
         /// <summary>
@@ -141,6 +156,15 @@ namespace MongoDB_SongManager.Presenters
         {
             _songlistsPresenter.LoadInitialData();
             _view.ShowView(_songlistsView);
+        }
+
+        /// <summary>
+        /// Refreshes statistical calculations and displays the Statistics view.
+        /// </summary>
+        private void OnNavStatisticsClicked (object? sender, EventArgs e)
+        {
+            _statisticsPresenter.LoadStatistics();
+            _view.ShowView(_statisticsView);
         }
     }
 }

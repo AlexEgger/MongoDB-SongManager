@@ -13,16 +13,18 @@ namespace MongoDB_SongManager.Services
         /// </summary>
         /// <param name="song">The song domain model.</param>
         /// <param name="artistNames">A lookup dictionary mapping artist IDs to artist names.</param>
+        /// <param name="interaction">Optional user interaction entity containing personal ratings and notes.</param>
         /// <returns>A mapped <see cref="SongDisplayDto"/> instance.</returns>
-        SongDisplayDto MapToSongDisplayDto (Song song, IReadOnlyDictionary<string, string> artistNames);
+        SongDisplayDto MapToSongDisplayDto (Song song, IReadOnlyDictionary<string, string> artistNames, UserSongInteraction? interaction = null);
 
         /// <summary>
         /// Maps a collection of <see cref="Song"/> models to a collection of presentation <see cref="SongDisplayDto"/> instances.
         /// </summary>
         /// <param name="songs">The collection of song domain models.</param>
         /// <param name="artistNames">A lookup dictionary mapping artist IDs to artist names.</param>
+        /// <param name="interactions">Optional dictionary mapping song IDs to user interaction records.</param>
         /// <returns>A collection of mapped <see cref="SongDisplayDto"/> instances.</returns>
-        IEnumerable<SongDisplayDto> MapToSongDisplayDtos (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames);
+        IEnumerable<SongDisplayDto> MapToSongDisplayDtos (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames, IReadOnlyDictionary<string, UserSongInteraction>? interactions = null);
 
         /// <summary>
         /// Maps a single <see cref="User"/> domain model to a presentation <see cref="UserDto"/>.

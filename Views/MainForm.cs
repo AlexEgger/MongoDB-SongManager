@@ -17,6 +17,9 @@ namespace MongoDB_SongManager.Views
         public event EventHandler? NavSonglistsClicked;
 
         /// <inheritdoc />
+        public event EventHandler? NavStatisticsClicked;
+
+        /// <inheritdoc />
         public UserDto? SelectedUser => cmbUser.SelectedItem as UserDto;
 
         /// <summary>
@@ -26,10 +29,11 @@ namespace MongoDB_SongManager.Views
         {
             InitializeComponent();
 
-            // Forward WinForms events to interface contract
+            // Forward WinForms control events to interface contract events
             cmbUser.SelectedIndexChanged += (s, e) => UserSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnNavSongs.Click += (s, e) => NavSongsClicked?.Invoke(this, EventArgs.Empty);
             btnNavSonglists.Click += (s, e) => NavSonglistsClicked?.Invoke(this, EventArgs.Empty);
+            btnNavStatistics.Click += (s, e) => NavStatisticsClicked?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc />
@@ -41,7 +45,7 @@ namespace MongoDB_SongManager.Views
         }
 
         /// <inheritdoc />
-        public void ShowView (UserControl view)
+        public void ShowView (System.Windows.Forms.UserControl view)
         {
             pnlContentContainer.SuspendLayout();
             pnlContentContainer.Controls.Clear();

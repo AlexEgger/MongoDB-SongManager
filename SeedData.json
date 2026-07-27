@@ -363,7 +363,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c403" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c101" },
-      "IsFavorite": false,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -390,7 +389,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c404" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
-      "IsFavorite": false,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -417,7 +415,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c405" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -444,7 +441,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c406" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -471,7 +467,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c407" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
-      "IsFavorite": false,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -498,7 +493,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c408" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c113" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -525,7 +519,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c409" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c113" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -552,7 +545,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c410" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c116" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -579,7 +571,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c411" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c119" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -606,7 +597,6 @@
       "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c412" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c120" },
-      "IsFavorite": true,
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -630,14 +620,13 @@
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c413" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c423" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
       "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c101" },
-      "IsFavorite": false,
       "Ratings": [
         {
           "Category": "Difficulty",
-          "Value": 5
+          "Value": 4
         },
         {
           "Category": "RhythmComplexity",
@@ -652,77 +641,22 @@
           "Value": 5
         }
       ],
-      "Notes": "Guitar solo section requires clean sweep picking.",
-      "UpdatedAt": { "$date": "2026-03-13T09:12:00Z" },
+      "Notes": "Amazing vocal transitions and epic piano intro.",
+      "UpdatedAt": { "$date": "2026-03-14T09:00:00Z" },
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c414" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c106" },
-      "IsFavorite": true,
-      "Ratings": [
-        {
-          "Category": "Difficulty",
-          "Value": 1
-        },
-        {
-          "Category": "RhythmComplexity",
-          "Value": 2
-        },
-        {
-          "Category": "VocalRange",
-          "Value": 2
-        },
-        {
-          "Category": "OverallQuality",
-          "Value": 3
-        }
-      ],
-      "Notes": "Great warm-up song for beginner vocalists.",
-      "UpdatedAt": { "$date": "2026-03-13T10:30:00Z" },
-      "IsDeleted": false
-    },
-    {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c415" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c122" },
-      "IsFavorite": false,
-      "Ratings": [
-        {
-          "Category": "Difficulty",
-          "Value": 3
-        },
-        {
-          "Category": "RhythmComplexity",
-          "Value": 4
-        },
-        {
-          "Category": "VocalRange",
-          "Value": 2
-        },
-        {
-          "Category": "OverallQuality",
-          "Value": 2
-        }
-      ],
-      "Notes": "Bassline is surprisingly tricky in syncope.",
-      "UpdatedAt": { "$date": "2026-03-13T11:00:00Z" },
-      "IsDeleted": false
-    },
-    {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c416" },
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c424" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c122" },
-      "IsFavorite": false,
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c104" },
       "Ratings": [
         {
           "Category": "Difficulty",
-          "Value": 3
+          "Value": 2
         },
         {
           "Category": "RhythmComplexity",
-          "Value": 3
+          "Value": 2
         },
         {
           "Category": "VocalRange",
@@ -730,45 +664,43 @@
         },
         {
           "Category": "OverallQuality",
-          "Value": 3
+          "Value": 5
         }
       ],
-      "Notes": "Decent track, but repetitive drumming.",
-      "UpdatedAt": { "$date": "2026-03-13T12:15:00Z" },
+      "Notes": "Simple chord progression, great for sing-alongs.",
+      "UpdatedAt": { "$date": "2026-03-14T10:30:00Z" },
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c417" },
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c425" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c125" },
-      "IsFavorite": true,
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c117" },
       "Ratings": [
         {
           "Category": "Difficulty",
-          "Value": 5
-        },
-        {
-          "Category": "RhythmComplexity",
-          "Value": 5
-        },
-        {
-          "Category": "VocalRange",
           "Value": 4
         },
         {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
           "Category": "OverallQuality",
           "Value": 5
         }
       ],
-      "Notes": "Odd time signature shifts between 7/8 and 4/4.",
-      "UpdatedAt": { "$date": "2026-03-13T14:40:00Z" },
+      "Notes": "Heavy riff, perfect energy for driving or workouts.",
+      "UpdatedAt": { "$date": "2026-03-14T11:15:00Z" },
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c418" },
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c426" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c125" },
-      "IsFavorite": false,
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c114" },
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -776,34 +708,7 @@
         },
         {
           "Category": "RhythmComplexity",
-          "Value": 5
-        },
-        {
-          "Category": "VocalRange",
           "Value": 3
-        },
-        {
-          "Category": "OverallQuality",
-          "Value": 4
-        }
-      ],
-      "Notes": "Need to practice the polyrhythms slowly.",
-      "UpdatedAt": { "$date": "2026-03-13T15:20:00Z" },
-      "IsDeleted": false
-    },
-    {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c419" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c205" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c118" },
-      "IsFavorite": true,
-      "Ratings": [
-        {
-          "Category": "Difficulty",
-          "Value": 5
-        },
-        {
-          "Category": "RhythmComplexity",
-          "Value": 4
         },
         {
           "Category": "VocalRange",
@@ -814,42 +719,14 @@
           "Value": 5
         }
       ],
-      "Notes": "Pure adrenaline. Great thrash metal masterpiece.",
-      "UpdatedAt": { "$date": "2026-03-13T16:00:00Z" },
+      "Notes": "One of the best guitar solos of all time.",
+      "UpdatedAt": { "$date": "2026-03-14T14:00:00Z" },
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c420" },
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c427" },
       "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c130" },
-      "IsFavorite": false,
-      "Ratings": [
-        {
-          "Category": "Difficulty",
-          "Value": 1
-        },
-        {
-          "Category": "RhythmComplexity",
-          "Value": 1
-        },
-        {
-          "Category": "VocalRange",
-          "Value": 1
-        },
-        {
-          "Category": "OverallQuality",
-          "Value": 1
-        }
-      ],
-      "Notes": "Soft-deleted test entry.",
-      "UpdatedAt": { "$date": "2026-03-13T17:10:00Z" },
-      "IsDeleted": true
-    },
-    {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c421" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c131" },
-      "IsFavorite": true,
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c109" },
       "Ratings": [
         {
           "Category": "Difficulty",
@@ -861,26 +738,25 @@
         },
         {
           "Category": "VocalRange",
-          "Value": 5
+          "Value": 4
         },
         {
           "Category": "OverallQuality",
-          "Value": 5
+          "Value": 4
         }
       ],
-      "Notes": "Requires serious vocal control on the high notes.",
-      "UpdatedAt": { "$date": "2026-03-13T18:00:00Z" },
+      "Notes": "Classic AC/DC riff, fun to play on guitar.",
+      "UpdatedAt": { "$date": "2026-03-14T15:20:00Z" },
       "IsDeleted": false
     },
     {
-      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c422" },
-      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
-      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c131" },
-      "IsFavorite": false,
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c428" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c115" },
       "Ratings": [
         {
           "Category": "Difficulty",
-          "Value": 3
+          "Value": 2
         },
         {
           "Category": "RhythmComplexity",
@@ -888,15 +764,276 @@
         },
         {
           "Category": "VocalRange",
-          "Value": 4
+          "Value": 3
         },
         {
           "Category": "OverallQuality",
           "Value": 4
         }
       ],
-      "Notes": "Fun duet option.",
-      "UpdatedAt": { "$date": "2026-03-13T18:45:00Z" },
+      "Notes": "Relaxing acoustic vibe.",
+      "UpdatedAt": { "$date": "2026-03-14T16:45:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c429" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c102" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "High energy piano piece.",
+      "UpdatedAt": { "$date": "2026-03-15T10:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c430" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c108" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Unmistakable opening riff.",
+      "UpdatedAt": { "$date": "2026-03-15T10:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c431" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c112" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Good pop arrangement.",
+      "UpdatedAt": { "$date": "2026-03-15T11:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c432" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c201" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c120" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Timeless disco classic.",
+      "UpdatedAt": { "$date": "2026-03-15T11:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c433" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c103" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Great sing-along outro.",
+      "UpdatedAt": { "$date": "2026-03-15T12:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c434" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c202" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c107" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 4
+        }
+      ],
+      "Notes": "Sweet ballad, easy acoustic picking.",
+      "UpdatedAt": { "$date": "2026-03-15T12:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c435" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c110" },
+ 
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 4
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 4
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Fast tapping riff in the beginning.",
+      "UpdatedAt": { "$date": "2026-03-15T13:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c436" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c203" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c111" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 1
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 2
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 3
+        }
+      ],
+      "Notes": "Simple beat, fun for cardio.",
+      "UpdatedAt": { "$date": "2026-03-15T13:30:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c437" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c105" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 2
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 2
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 3
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Beautiful string quartet arrangement.",
+      "UpdatedAt": { "$date": "2026-03-15T14:00:00Z" },
+      "IsDeleted": false
+    },
+    {
+      "_id": { "$oid": "65f1a2b3c4d5e6f7a8b9c438" },
+      "UserId": { "$oid": "65f1a2b3c4d5e6f7a8b9c204" },
+      "SongId": { "$oid": "65f1a2b3c4d5e6f7a8b9c116" },
+      "Ratings": [
+        {
+          "Category": "Difficulty",
+          "Value": 3
+        },
+        {
+          "Category": "RhythmComplexity",
+          "Value": 3
+        },
+        {
+          "Category": "VocalRange",
+          "Value": 4
+        },
+        {
+          "Category": "OverallQuality",
+          "Value": 5
+        }
+      ],
+      "Notes": "Calming tone, slow build-up.",
+      "UpdatedAt": { "$date": "2026-03-15T14:30:00Z" },
       "IsDeleted": false
     }
   ]

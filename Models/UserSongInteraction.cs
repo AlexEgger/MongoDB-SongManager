@@ -28,14 +28,9 @@ public class UserSongInteraction : IEntity
     public string SongId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the song is marked as favorite by the user.
-    /// </summary>
-    public bool IsFavorite { get; set; } = false;
-
-    /// <summary>
     /// Gets or sets the list of category ratings submitted by the user.
     /// </summary>
-    public List<RatingEntry> Ratings { get; set; } = new();
+    public List<Rating> Ratings { get; set; } = new();
 
     /// <summary>
     /// Gets or sets optional personal notes or comments about the song performance.

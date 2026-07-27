@@ -5,7 +5,7 @@ namespace MongoDB_SongManager.Data.Repositories;
 /// <summary>
 /// Defines data access operations for user interactions and song ratings.
 /// </summary>
-public interface IUserInteractionRepository : IRepository<UserSongInteraction>
+public interface IUserSongInteractionRepository : IRepository<UserSongInteraction>
 {
     /// <summary>
     /// Retrieves a specific user interaction record associated with a user and a song.

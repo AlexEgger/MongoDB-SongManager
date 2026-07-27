@@ -2,8 +2,15 @@
 {
     partial class MainForm
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose (bool disposing)
         {
             if (disposing && (components != null))
@@ -15,11 +22,16 @@
 
         #region Windows Form Designer generated code
 
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent ()
         {
             pnlHeader = new Panel();
             cmbUser = new ComboBox();
             lblUserHeader = new Label();
+            btnNavStatistics = new Button();
             btnNavSonglists = new Button();
             btnNavSongs = new Button();
             pnlContentContainer = new Panel();
@@ -31,6 +43,7 @@
             pnlHeader.BackColor = SystemColors.ControlLight;
             pnlHeader.Controls.Add(cmbUser);
             pnlHeader.Controls.Add(lblUserHeader);
+            pnlHeader.Controls.Add(btnNavStatistics);
             pnlHeader.Controls.Add(btnNavSonglists);
             pnlHeader.Controls.Add(btnNavSongs);
             pnlHeader.Dock = DockStyle.Top;
@@ -48,7 +61,7 @@
             cmbUser.Location = new Point(746, 5);
             cmbUser.Name = "cmbUser";
             cmbUser.Size = new Size(180, 23);
-            cmbUser.TabIndex = 3;
+            cmbUser.TabIndex = 4;
             // 
             // lblUserHeader
             // 
@@ -59,8 +72,17 @@
             lblUserHeader.Name = "lblUserHeader";
             lblUserHeader.Padding = new Padding(0, 5, 10, 0);
             lblUserHeader.Size = new Size(72, 20);
-            lblUserHeader.TabIndex = 2;
+            lblUserHeader.TabIndex = 3;
             lblUserHeader.Text = "Benutzer:";
+            // 
+            // btnNavStatistics
+            // 
+            btnNavStatistics.Location = new Point(292, 7);
+            btnNavStatistics.Name = "btnNavStatistics";
+            btnNavStatistics.Size = new Size(130, 30);
+            btnNavStatistics.TabIndex = 2;
+            btnNavStatistics.Text = "Statistik";
+            btnNavStatistics.UseVisualStyleBackColor = true;
             // 
             // btnNavSonglists
             // 
@@ -107,8 +129,9 @@
         #endregion
 
         private Panel pnlHeader;
-        private Button btnNavSonglists;
         private Button btnNavSongs;
+        private Button btnNavSonglists;
+        private Button btnNavStatistics;
         private ComboBox cmbUser;
         private Label lblUserHeader;
         private Panel pnlContentContainer;

@@ -6,7 +6,7 @@ namespace MongoDB_SongManager.Data.Repositories;
 /// <summary>
 /// Implements interaction repository operations in MongoDB.
 /// </summary>
-public class MongoUserInteractionRepository : MongoRepository<UserSongInteraction>, IUserInteractionRepository
+public class MongoUserInteractionRepository : MongoRepository<UserSongInteraction>, IUserSongInteractionRepository
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MongoUserInteractionRepository"/> class.
@@ -37,7 +37,6 @@ public class MongoUserInteractionRepository : MongoRepository<UserSongInteractio
     {
         var filter = Builders<UserSongInteraction>.Filter.And(
             Builders<UserSongInteraction>.Filter.Eq(x => x.UserId, userId),
-            Builders<UserSongInteraction>.Filter.Eq(x => x.IsFavorite, true),
             Builders<UserSongInteraction>.Filter.Eq(x => x.IsDeleted, false)
         );
 

@@ -3,40 +3,45 @@
 namespace MongoDB_SongManager.Views
 {
     /// <summary>
-    /// Represents the contract between the main WinForms top-level view and its presenter.
+    /// Contract defining the interactions and view-switching capabilities of the main application form.
     /// </summary>
     public interface IMainView
     {
         /// <summary>
-        /// Occurs when the user selects a different active user from the header dropdown menu.
+        /// Occurs when the user selects a different user profile in the header dropdown.
         /// </summary>
-        event EventHandler UserSelectionChanged;
+        event EventHandler? UserSelectionChanged;
 
         /// <summary>
-        /// Occurs when the user requests navigation to the songs view.
+        /// Occurs when the navigation button for the Songs view is clicked.
         /// </summary>
-        event EventHandler NavSongsClicked;
+        event EventHandler? NavSongsClicked;
 
         /// <summary>
-        /// Occurs when the user requests navigation to the setlists view.
+        /// Occurs when the navigation button for the Songlists view is clicked.
         /// </summary>
-        event EventHandler NavSonglistsClicked;
+        event EventHandler? NavSonglistsClicked;
 
         /// <summary>
-        /// Gets the currently selected user DTO from the header dropdown control.
+        /// Occurs when the navigation button for the Statistics dashboard view is clicked.
+        /// </summary>
+        event EventHandler? NavStatisticsClicked;
+
+        /// <summary>
+        /// Gets the currently selected user profile from the dropdown.
         /// </summary>
         UserDto? SelectedUser { get; }
 
         /// <summary>
-        /// Displays the list of available users in the header dropdown control.
+        /// Populates the user selection dropdown with user profiles.
         /// </summary>
-        /// <param name="users">The collection of user DTOs to populate.</param>
+        /// <param name="users">The collection of users to display.</param>
         void DisplayUsers (IEnumerable<UserDto> users);
 
         /// <summary>
-        /// Renders the specified sub-view control inside the main content container panel.
+        /// Displays the given UserControl in the main content container.
         /// </summary>
-        /// <param name="view">The user control instance to present.</param>
-        void ShowView (UserControl view);
+        /// <param name="view">The UserControl view to load.</param>
+        void ShowView (System.Windows.Forms.UserControl view);
     }
 }

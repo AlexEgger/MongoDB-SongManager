@@ -8,7 +8,8 @@ using SongManager.Views;
 namespace MongoDB_SongManager.Presenters
 {
     /// <summary>
-    /// Presenter responsible for binding song data using DTOs, managing multi-criteria filters, and handling song lifecycle events.
+    /// Presenter responsible for binding song data using DTOs, managing multi-criteria filters, 
+    /// handling song lifecycle events, and managing user-specific interactions (ratings and notes).
     /// </summary>
     public class SongsPresenter
     {
@@ -16,7 +17,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly ISongRepository _songRepository;
         private readonly IArtistRepository _artistRepository;
         private readonly ISonglistRepository _songlistRepository;
-        private readonly IUserInteractionRepository _userInteractionRepository;
+        private readonly IUserSongInteractionRepository _userInteractionRepository;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDtoService _dtoService;
         private readonly ICsvService _csvService;
@@ -32,7 +33,7 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="songRepository">Repository for song data access.</param>
         /// <param name="artistRepository">Repository for artist data access.</param>
         /// <param name="songlistRepository">Repository for songlist data access.</param>
-        /// <param name="userInteractionRepository">Repository for user interactions and favorites.</param>
+        /// <param name="userInteractionRepository">Repository for user song interactions.</param>
         /// <param name="currentUserService">Service tracking the current user state.</param>
         /// <param name="dtoService">Service for DTO mappings.</param>
         /// <param name="csvService">Service providing CSV import and export capabilities.</param>
@@ -41,7 +42,7 @@ namespace MongoDB_SongManager.Presenters
             ISongRepository songRepository,
             IArtistRepository artistRepository,
             ISonglistRepository songlistRepository,
-            IUserInteractionRepository userInteractionRepository,
+            IUserSongInteractionRepository userInteractionRepository,
             ICurrentUserService currentUserService,
             IDtoService dtoService,
             ICsvService csvService)
@@ -66,12 +67,14 @@ namespace MongoDB_SongManager.Presenters
         {
             // Song Events
             _view.SearchTextChanged += (s, e) => ApplyFilters();
-            _view.FilterFavoritesClicked += (s, e) => ApplyFilters();
             _view.SongSelectionChanged += OnSongSelectionChanged;
             _view.AddSongClicked += OnAddSongClicked;
             _view.AddArtistClicked += OnAddArtistClicked;
             _view.EditSongClicked += OnEditSongClicked;
             _view.DeleteSongClicked += OnDeleteSongClicked;
+
+            // User Interaction Events (Ratings & Notes)
+            _view.SaveInteractionClicked += OnSaveInteractionClicked;
 
             // CSV Export / Import Events
             _view.ExportCsvClicked += OnExportCsvClicked;
@@ -137,7 +140,8 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Applies active playlist, favorite status, and search string filters concurrently.
+        /// Applies active playlist and search string filters concurrently, safely fetching 
+        /// user interactions only when a valid user ID is set.
         /// </summary>
         private void ApplyFilters ()
         {
@@ -151,20 +155,7 @@ namespace MongoDB_SongManager.Presenters
                 filtered = filtered.Where(s => songIdsInList.Contains(s.Id));
             }
 
-            // 2. Filter by favorite status via UserSongInteraction records
-            if (_view.IsFavoritesFilterActive)
-            {
-                string currentUserId = _currentUserService.CurrentUserId;
-
-                var favoriteSongIds = _userInteractionRepository
-                    .GetFavoritesByUserId(currentUserId)
-                    .Select(interaction => interaction.SongId)
-                    .ToHashSet();
-
-                filtered = filtered.Where(s => favoriteSongIds.Contains(s.Id));
-            }
-
-            // 3. Filter by search query (song title or artist name)
+            // 2. Filter by search query (song title or artist name)
             string search = _view.SearchTerm;
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -176,18 +167,91 @@ namespace MongoDB_SongManager.Presenters
                 });
             }
 
+            // 3. Fetch user-isolated interactions only if a valid CurrentUserId is active.
+            // This prevents FormatException when MongoDB attempts to parse an empty string into an ObjectId.
+            string currentUserId = _currentUserService.CurrentUserId;
+            var userInteractions = new Dictionary<string, UserSongInteraction>();
+
+            if (!string.IsNullOrWhiteSpace(currentUserId))
+            {
+                userInteractions = _userInteractionRepository
+                    .Find(x => x.UserId == currentUserId)
+                    .ToDictionary(i => i.SongId);
+            }
+
             // Transform domain models to presentation DTOs via DtoService
-            var songDtos = _dtoService.MapToSongDisplayDtos(filtered, _artistNames);
+            var songDtos = _dtoService.MapToSongDisplayDtos(filtered, _artistNames, userInteractions);
             _view.DisplaySongs(songDtos);
         }
 
         /// <summary>
-        /// Displays detailed song information when selection changes using presentation DTOs.
+        /// Displays detailed song information and the active user's interaction when song selection changes.
         /// </summary>
         private void OnSongSelectionChanged (object? sender, EventArgs e)
         {
             var selectedDto = _view.SelectedSong;
+            if (selectedDto == null)
+            {
+                _view.DisplaySongDetails(null);
+                _view.DisplayUserInteraction(null);
+                return;
+            }
+
             _view.DisplaySongDetails(selectedDto);
+
+            // Load user-isolated interaction for the selected song
+            var interaction = _userInteractionRepository.GetInteraction(_currentUserService.CurrentUserId, selectedDto.Id);
+            var interactionDto = MapToInteractionDto(interaction);
+
+            _view.DisplayUserInteraction(interactionDto);
+        }
+
+        /// <summary>
+        /// Saves or updates the user-isolated interaction (ratings and notes) for the currently selected song.
+        /// </summary>
+        private void OnSaveInteractionClicked (object? sender, EventArgs e)
+        {
+            var selectedSong = _view.SelectedSong;
+            if (selectedSong == null) return;
+
+            var interactionInput = _view.GetUserInteractionInput();
+            if (interactionInput == null) return;
+
+            string currentUserId = _currentUserService.CurrentUserId;
+            var existingEntity = _userInteractionRepository.GetInteraction(currentUserId, selectedSong.Id);
+
+            if (existingEntity != null)
+            {
+                existingEntity.Ratings = interactionInput.Ratings.Select(r => new Rating
+                {
+                    Category = Enum.TryParse<MongoDB_SongManager.Models.Enums.RatingType>(r.Category, true, out var ratingType) ? ratingType : default,
+                    Value = r.Value
+                }).ToList();
+                existingEntity.Notes = interactionInput.Notes ?? string.Empty;
+                existingEntity.UpdatedAt = DateTime.UtcNow;
+
+                _userInteractionRepository.Update(existingEntity);
+            }
+            else
+            {
+                var newEntity = new UserSongInteraction
+                {
+                    Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
+                    UserId = currentUserId,
+                    SongId = selectedSong.Id,
+                    Ratings = interactionInput.Ratings.Select(r => new Rating
+                    {
+                        Category = Enum.TryParse<MongoDB_SongManager.Models.Enums.RatingType>(r.Category, true, out var ratingType) ? ratingType : default,
+                        Value = r.Value
+                    }).ToList(),
+                    Notes = interactionInput.Notes ?? string.Empty,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _userInteractionRepository.Insert(newEntity);
+            }
+
+            ApplyFilters();
         }
 
         /// <summary>
@@ -348,17 +412,6 @@ namespace MongoDB_SongManager.Presenters
             {
                 var songIdsInList = new HashSet<string>(selectedListDto.SongIds ?? new List<string>());
                 filtered = filtered.Where(s => songIdsInList.Contains(s.Id));
-            }
-
-            if (_view.IsFavoritesFilterActive)
-            {
-                string currentUserId = _currentUserService.CurrentUserId;
-                var favoriteSongIds = _userInteractionRepository
-                    .GetFavoritesByUserId(currentUserId)
-                    .Select(i => i.SongId)
-                    .ToHashSet();
-
-                filtered = filtered.Where(s => favoriteSongIds.Contains(s.Id));
             }
 
             string search = _view.SearchTerm;
@@ -635,6 +688,28 @@ namespace MongoDB_SongManager.Presenters
                 YoutubeUrl = dto.YoutubeUrl,
                 Liederbuchnummer = dto.Liederbuchnummer,
                 Liederbuchseite = dto.Liederbuchseite
+            };
+        }
+
+        /// <summary>
+        /// Maps a <see cref="UserSongInteraction"/> entity to a <see cref="UserSongInteractionDto"/>.
+        /// </summary>
+        private static UserSongInteractionDto? MapToInteractionDto (UserSongInteraction? interaction)
+        {
+            if (interaction == null) return null;
+
+            return new UserSongInteractionDto
+            {
+                Id = interaction.Id,
+                UserId = interaction.UserId,
+                SongId = interaction.SongId,
+                Ratings = interaction.Ratings?.Select(r => new RatingDto
+                {
+                    Category = r.Category.ToString(),
+                    Value = r.Value
+                }).ToList() ?? new List<RatingDto>(),
+                Notes = interaction.Notes,
+                UpdatedAt = interaction.UpdatedAt
             };
         }
 

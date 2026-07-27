@@ -6,7 +6,7 @@ namespace SongManager.Views
     /// <summary>
     /// UserControl representing the songlist/setlist management view implementation operating on DTOs.
     /// </summary>
-    public partial class SonglistsView : UserControl, ISonglistsView
+    public partial class SonglistsView : System.Windows.Forms.UserControl, ISonglistsView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SonglistsView"/> class.

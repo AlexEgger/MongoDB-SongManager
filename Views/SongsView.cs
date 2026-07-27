@@ -4,12 +4,14 @@ using MongoDB_SongManager.Views;
 namespace SongManager.Views
 {
     /// <summary>
-    /// UserControl representing the main song management view implementation using DTO objects.
+    /// UserControl representing the main song management view implementation using DTO objects,
+    /// complete with user-isolated interaction controls.
     /// </summary>
-    public partial class SongsView : UserControl, ISongsView
+    public partial class SongsView : System.Windows.Forms.UserControl, ISongsView
     {
-        private bool _isFavoritesFilterActive;
         private ContextMenuStrip _songlistContextMenu = null!;
+        private Button _btnEditInteraction = null!;
+        private UserSongInteractionDto? _currentDisplayedInteraction;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SongsView"/> class.
@@ -17,8 +19,26 @@ namespace SongManager.Views
         public SongsView ()
         {
             InitializeComponent();
+            InitializeAdditionalControls();
             InitializeSonglistContextMenu();
             WireUpEvents();
+        }
+
+        /// <summary>
+        /// Adds extra runtime controls, such as the button to edit user interactions inside the details pane.
+        /// </summary>
+        private void InitializeAdditionalControls ()
+        {
+            _btnEditInteraction = new Button
+            {
+                Text = "⭐ Rate / Comment Song",
+                Dock = DockStyle.Bottom,
+                Height = 30,
+                UseVisualStyleBackColor = true
+            };
+
+            grpSongDetails.Controls.Add(_btnEditInteraction);
+            grpSongDetails.Controls.SetChildIndex(_btnEditInteraction, 2);
         }
 
         /// <summary>
@@ -32,10 +52,8 @@ namespace SongManager.Views
             renameMenuItem.Click += (s, e) => RenameSonglistClicked?.Invoke(this, EventArgs.Empty);
             _songlistContextMenu.Items.Add(renameMenuItem);
 
-            // Attach context menu to the playlist list box
             lstSongLists.ContextMenuStrip = _songlistContextMenu;
 
-            // Ensure right-clicking selects the item under the cursor before showing the context menu
             lstSongLists.MouseDown += (s, e) =>
             {
                 if (e.Button == MouseButtons.Right)
@@ -54,31 +72,28 @@ namespace SongManager.Views
         /// </summary>
         private void WireUpEvents ()
         {
-            // Search & Filter Events
             txtSearch.TextChanged += (s, e) => SearchTextChanged?.Invoke(this, EventArgs.Empty);
-            btnFilterFavorites.Click += (s, e) =>
-            {
-                _isFavoritesFilterActive = !_isFavoritesFilterActive;
-                btnFilterFavorites.Text = _isFavoritesFilterActive ? " Only ⭐" : "⭐ Favorites";
-                FilterFavoritesClicked?.Invoke(this, EventArgs.Empty);
-            };
 
-            // Song Selection & CRUD Events (Using ToolStripButtons)
             dgvSongs.SelectionChanged += (s, e) => SongSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnAddSong.Click += (s, e) => AddSongClicked?.Invoke(this, EventArgs.Empty);
             btnEditSong.Click += (s, e) => EditSongClicked?.Invoke(this, EventArgs.Empty);
             btnDeleteSong.Click += (s, e) => DeleteSongClicked?.Invoke(this, EventArgs.Empty);
 
-            // Songlist Selection & CRUD Events
             lstSongLists.SelectedIndexChanged += (s, e) => SonglistSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnCreateList.Click += (s, e) => CreateSonglistClicked?.Invoke(this, EventArgs.Empty);
-
-            // Artist CRUD Events
             btnAddArtist.Click += (s, e) => AddArtistClicked?.Invoke(this, EventArgs.Empty);
 
-            // CSV Export / Import Events
             btnExportCsv.Click += (s, e) => ExportCsvClicked?.Invoke(this, EventArgs.Empty);
             btnImportCsv.Click += (s, e) => ImportCsvClicked?.Invoke(this, EventArgs.Empty);
+
+            // Trigger the SaveInteractionClicked event expected by the Presenter when user confirms dialog
+            _btnEditInteraction.Click += (s, e) =>
+            {
+                if (SelectedSong != null)
+                {
+                    SaveInteractionClicked?.Invoke(this, EventArgs.Empty);
+                }
+            };
         }
 
         #region ISongsView Implementation
@@ -120,23 +135,17 @@ namespace SongManager.Views
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the favorites filter toggle button is active.
-        /// </summary>
-        public bool IsFavoritesFilterActive => _isFavoritesFilterActive;
-
         #endregion
 
-        #region Song Events
+        #region Song & Interaction Events
 
         public event EventHandler? SearchTextChanged;
         public event EventHandler? SongSelectionChanged;
         public event EventHandler? AddSongClicked;
         public event EventHandler? EditSongClicked;
         public event EventHandler? DeleteSongClicked;
-        public event EventHandler? FilterFavoritesClicked;
-        public event EventHandler? ToggleFavoriteClicked;
         public event EventHandler? AddArtistClicked;
+        public event EventHandler? SaveInteractionClicked;
 
         #endregion
 
@@ -158,7 +167,7 @@ namespace SongManager.Views
 
         #endregion
 
-        #region Display Methods
+        #region Display Methods & Input Retrieval
 
         /// <summary>
         /// Displays the collection of song DTOs in the DataGridView.
@@ -171,8 +180,6 @@ namespace SongManager.Views
             foreach (var song in songs)
             {
                 int rowIndex = dgvSongs.Rows.Add(song.Title, song.ArtistName);
-
-                // Store DTO reference directly in row Tag
                 dgvSongs.Rows[rowIndex].Tag = song;
             }
         }
@@ -191,6 +198,7 @@ namespace SongManager.Views
                 lblBookInfo.Text = "Songbook: -";
                 lnkChords.Text = "No link";
                 lnkYoutube.Text = "No link";
+                txtNotes.Text = string.Empty;
                 return;
             }
 
@@ -204,29 +212,71 @@ namespace SongManager.Views
         }
 
         /// <summary>
+        /// Displays the active user's personal interaction (ratings & notes) in the right panel.
+        /// </summary>
+        /// <param name="interaction">The user interaction DTO containing personal ratings and comments.</param>
+        public void DisplayUserInteraction (UserSongInteractionDto? interaction)
+        {
+            _currentDisplayedInteraction = interaction;
+
+            if (interaction == null || (interaction.Ratings.Count == 0 && string.IsNullOrWhiteSpace(interaction.Notes)))
+            {
+                lblRatings.Text = "My Ratings:\n- None -";
+                txtNotes.Text = "No personal notes available.";
+                return;
+            }
+
+            if (interaction.Ratings != null && interaction.Ratings.Count > 0)
+            {
+                var formattedRatings = string.Join(", ", interaction.Ratings.Select(r => $"{r.Category}: {r.Value}"));
+                lblRatings.Text = $"My Ratings:\n{formattedRatings}";
+            }
+            else
+            {
+                lblRatings.Text = "My Ratings:\n- None -";
+            }
+
+            txtNotes.Text = string.IsNullOrWhiteSpace(interaction.Notes) ? "No personal notes available." : interaction.Notes;
+        }
+
+        /// <summary>
         /// Binds the collection of available song lists DTOs to the sidebar list box.
-        /// Sorts the user's own playlists to the top of the list.
         /// </summary>
         public void DisplaySonglists (IEnumerable<SonglistDto> songlists, string currentUserId)
         {
             lstSongLists.Items.Clear();
 
-            // Option for "All Songs (No filtering)"
             lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 All Songs", null!));
 
-            // Sort playlists: user's own playlists first, then secondary sort alphabetically by name
             var sortedSonglists = songlists
                                     .OrderByDescending(s => s.CreatorId == currentUserId)
                                     .ThenBy(s => s.Name);
 
             foreach (var songlist in sortedSonglists)
             {
-                // Visual indicator: User's own playlist vs. public/other creator's playlist
                 string prefix = songlist.CreatorId == currentUserId ? "👤 " : "🌐 ";
                 string displayName = $"{prefix}{songlist.Name}";
 
                 lstSongLists.Items.Add(new ListBoxItemWrapper(displayName, songlist));
             }
+        }
+
+        /// <summary>
+        /// Opens the <see cref="UserSongInteractionDialog"/> and returns the user input wrapper.
+        /// </summary>
+        /// <returns>The populated <see cref="SaveUserSongInteractionDto"/> or null if cancelled.</returns>
+        public SaveUserSongInteractionDto? GetUserInteractionInput ()
+        {
+            var selectedSong = SelectedSong;
+            if (selectedSong == null) return null;
+
+            using var dialog = new UserSongInteractionDialog(selectedSong.Title, _currentDisplayedInteraction);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                return dialog.InteractionDto;
+            }
+
+            return null;
         }
 
         #endregion

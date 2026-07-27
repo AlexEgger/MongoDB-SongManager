@@ -31,7 +31,7 @@ namespace MongoDB_SongManager
             ISongRepository songRepository = new MongoSongRepository(dbContext);
             IArtistRepository artistRepository = new MongoArtistRepository(dbContext);
             ISonglistRepository songlistRepository = new MongoSonglistRepository(dbContext);
-            IUserInteractionRepository userInteractionRepository = new MongoUserInteractionRepository(dbContext);
+            IUserSongInteractionRepository userInteractionRepository = new MongoUserInteractionRepository(dbContext);
 
             // 3. Instantiate domain services
             ICurrentUserService currentUserService = new CurrentUserService();

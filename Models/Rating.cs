@@ -7,7 +7,7 @@ namespace MongoDB_SongManager.Models;
 /// <summary>
 /// Represents a score assigned to a specific rating category.
 /// </summary>
-public class RatingEntry
+public class Rating
 {
     /// <summary>
     /// Gets or sets the category of the rating.
