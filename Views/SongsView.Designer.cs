@@ -1,9 +1,22 @@
-﻿namespace SongManager.Views
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace SongManager.Views
 {
+    /// <summary>
+    /// Designer partial class for <see cref="SongsView"/> containing UI control definitions and layout setup.
+    /// </summary>
     partial class SongsView
     {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">True if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose (bool disposing)
         {
             if (disposing && (components != null))
@@ -15,6 +28,10 @@
 
         #region Component Designer generated code
 
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent ()
         {
             mainLayout = new TableLayoutPanel();
@@ -133,8 +150,8 @@
             // dgvSongs
             // 
             dgvSongs.AllowUserToAddRows = false;
-            dgvSongs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvSongs.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvSongs.ColumnHeadersHeight = 35;
+            dgvSongs.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dgvSongs.Columns.AddRange(new DataGridViewColumn[] { colTitle, colArtist });
             dgvSongs.Dock = DockStyle.Fill;
             dgvSongs.Location = new Point(5, 40);
@@ -148,12 +165,16 @@
             // 
             // colTitle
             // 
+            colTitle.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colTitle.FillWeight = 50F;
             colTitle.HeaderText = "Titel";
             colTitle.Name = "colTitle";
             colTitle.ReadOnly = true;
             // 
             // colArtist
             // 
+            colArtist.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            colArtist.FillWeight = 50F;
             colArtist.HeaderText = "Interpret";
             colArtist.Name = "colArtist";
             colArtist.ReadOnly = true;
@@ -371,40 +392,39 @@
             grpSongDetails.ResumeLayout(false);
             grpSongDetails.PerformLayout();
             ResumeLayout(false);
-
         }
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel mainLayout;
-        private System.Windows.Forms.Panel pnlLeft;
-        private System.Windows.Forms.Label lblListsHeader;
-        private System.Windows.Forms.ListBox lstSongLists;
-        private System.Windows.Forms.Button btnCreateList;
-        private System.Windows.Forms.Panel pnlMiddle;
-        private System.Windows.Forms.Panel pnlSearch;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.DataGridView dgvSongs;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colTitle;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colArtist;
-        private System.Windows.Forms.ToolStrip toolStripActionButtons;
-        private System.Windows.Forms.ToolStripButton btnAddSong;
-        private System.Windows.Forms.ToolStripButton btnAddArtist;
-        private System.Windows.Forms.ToolStripButton btnEditSong;
-        private System.Windows.Forms.ToolStripButton btnDeleteSong;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton btnExportCsv;
-        private System.Windows.Forms.ToolStripButton btnImportCsv;
-        private System.Windows.Forms.Panel pnlRight;
-        private System.Windows.Forms.GroupBox grpSongDetails;
-        private System.Windows.Forms.Label lblSongTitle;
-        private System.Windows.Forms.Label lblArtist;
-        private System.Windows.Forms.Label lblTempo;
-        private System.Windows.Forms.LinkLabel lnkChords;
-        private System.Windows.Forms.LinkLabel lnkYoutube;
-        private System.Windows.Forms.Label lblBookInfo;
-        private System.Windows.Forms.Label lblRatings;
-        private System.Windows.Forms.Label lblNotesHeader;
-        private System.Windows.Forms.TextBox txtNotes;
+        private TableLayoutPanel mainLayout;
+        private Panel pnlLeft;
+        private Label lblListsHeader;
+        private ListBox lstSongLists;
+        private Button btnCreateList;
+        private Panel pnlMiddle;
+        private Panel pnlSearch;
+        private TextBox txtSearch;
+        private DataGridView dgvSongs;
+        private DataGridViewTextBoxColumn colTitle;
+        private DataGridViewTextBoxColumn colArtist;
+        private ToolStrip toolStripActionButtons;
+        private ToolStripButton btnAddSong;
+        private ToolStripButton btnAddArtist;
+        private ToolStripButton btnEditSong;
+        private ToolStripButton btnDeleteSong;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton btnExportCsv;
+        private ToolStripButton btnImportCsv;
+        private Panel pnlRight;
+        private GroupBox grpSongDetails;
+        private Label lblSongTitle;
+        private Label lblArtist;
+        private Label lblTempo;
+        private LinkLabel lnkChords;
+        private LinkLabel lnkYoutube;
+        private Label lblBookInfo;
+        private Label lblRatings;
+        private Label lblNotesHeader;
+        private TextBox txtNotes;
     }
 }
