@@ -8,8 +8,8 @@ using SongManager.Views;
 namespace MongoDB_SongManager.Presenters
 {
     /// <summary>
-    /// Presenter responsible for binding song data using DTOs, managing multi-criteria filters, 
-    /// handling song lifecycle events, and managing user-specific interactions (ratings and notes).
+    /// Presenter responsible for binding song and artist data using DTOs, managing multi-criteria filters, 
+    /// handling song/artist lifecycle events, and managing user-specific interactions (ratings and notes).
     /// </summary>
     public class SongsPresenter
     {
@@ -23,6 +23,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly ICsvService _csvService;
 
         private List<Song> _allSongs = new();
+        private List<Artist> _allArtists = new();
         private List<Songlist> _allSonglists = new();
         private Dictionary<string, string> _artistNames = new();
 
@@ -65,13 +66,15 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void WireUpEvents ()
         {
-            // Song Events
+            // Song & Artist Events
             _view.SearchTextChanged += (s, e) => ApplyFilters();
             _view.SongSelectionChanged += OnSongSelectionChanged;
             _view.AddSongClicked += OnAddSongClicked;
             _view.AddArtistClicked += OnAddArtistClicked;
             _view.EditSongClicked += OnEditSongClicked;
             _view.DeleteSongClicked += OnDeleteSongClicked;
+            _view.EditArtistClicked += OnEditArtistClicked;
+            _view.DeleteArtistClicked += OnDeleteArtistClicked;
 
             // User Interaction Events (Ratings & Notes)
             _view.SaveInteractionClicked += OnSaveInteractionClicked;
@@ -80,10 +83,12 @@ namespace MongoDB_SongManager.Presenters
             _view.ExportCsvClicked += OnExportCsvClicked;
             _view.ImportCsvClicked += OnImportCsvClicked;
 
-            // Songlist Events
+            // Songlist / Sidebar Mode Events
             _view.SonglistSelectionChanged += (s, e) => ApplyFilters();
-            _view.CreateSonglistClicked += OnCreateSonglistClicked;
             _view.RenameSonglistClicked += OnRenameSonglistClicked;
+            _view.DeleteSonglistClicked += OnDeleteSonglistClicked;
+            _view.AddSongToSonglistClicked += OnAddSongToSonglistClicked;
+            _view.RemoveSongFromSonglistClicked += OnRemoveSongFromSonglistClicked;
 
             // Current User Changed
             _currentUserService.CurrentUserChanged += (s, e) =>
@@ -105,12 +110,12 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Fetches all active artists and populates the artist lookup dictionary.
+        /// Fetches all active artists and populates the artist lookup dictionary and collection.
         /// </summary>
         private void LoadArtists ()
         {
-            var artists = _artistRepository.GetAll();
-            _artistNames = artists.ToDictionary(a => a.Id, a => a.Name);
+            _allArtists = _artistRepository.GetAll().ToList();
+            _artistNames = _allArtists.ToDictionary(a => a.Id, a => a.Name);
         }
 
         /// <summary>
@@ -127,24 +132,34 @@ namespace MongoDB_SongManager.Presenters
         private void LoadSonglists ()
         {
             _allSonglists = _songlistRepository.GetAll().ToList();
-
-            var songlistDtos = _allSonglists.Select(sl => new SonglistDto
-            {
-                Id = sl.Id,
-                Name = sl.Name,
-                CreatorId = sl.CreatorId,
-                SongIds = sl.SongIds
-            }).ToList();
-
+            var songlistDtos = _dtoService.MapToSonglistDtos(_allSonglists).ToList();
             _view.DisplaySonglists(songlistDtos, _currentUserService.CurrentUserId);
         }
 
         /// <summary>
-        /// Applies active playlist and search string filters concurrently, safely fetching 
+        /// Applies active playlist, artist mode, and search string filters concurrently, safely fetching 
         /// user interactions only when a valid user ID is set.
         /// </summary>
         private void ApplyFilters ()
         {
+            // Check if user selected the "All Artists" view mode in the sidebar
+            if (_view.IsArtistModeActive)
+            {
+                IEnumerable<Artist> filteredArtists = _allArtists;
+
+                string search = _view.SearchTerm;
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    filteredArtists = filteredArtists.Where(a => a.Name.Contains(search, StringComparison.OrdinalIgnoreCase));
+                }
+
+                var artistDtos = _dtoService.MapToArtistDtos(filteredArtists);
+                _view.DisplayArtists(artistDtos);
+                _view.DisplaySongDetails(null);
+                _view.DisplayUserInteraction(null);
+                return;
+            }
+
             IEnumerable<Song> filtered = _allSongs;
 
             // 1. Filter by selected setlist/playlist DTO
@@ -156,19 +171,18 @@ namespace MongoDB_SongManager.Presenters
             }
 
             // 2. Filter by search query (song title or artist name)
-            string search = _view.SearchTerm;
-            if (!string.IsNullOrWhiteSpace(search))
+            string searchQuery = _view.SearchTerm;
+            if (!string.IsNullOrWhiteSpace(searchQuery))
             {
                 filtered = filtered.Where(s =>
                 {
                     string artistName = _artistNames.TryGetValue(s.ArtistId ?? string.Empty, out var name) ? name : string.Empty;
-                    return s.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                           artistName.Contains(search, StringComparison.OrdinalIgnoreCase);
+                    return s.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                           artistName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
                 });
             }
 
             // 3. Fetch user-isolated interactions only if a valid CurrentUserId is active.
-            // This prevents FormatException when MongoDB attempts to parse an empty string into an ObjectId.
             string currentUserId = _currentUserService.CurrentUserId;
             var userInteractions = new Dictionary<string, UserSongInteraction>();
 
@@ -189,6 +203,13 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnSongSelectionChanged (object? sender, EventArgs e)
         {
+            if (_view.IsArtistModeActive)
+            {
+                _view.DisplaySongDetails(null);
+                _view.DisplayUserInteraction(null);
+                return;
+            }
+
             var selectedDto = _view.SelectedSong;
             if (selectedDto == null)
             {
@@ -201,7 +222,7 @@ namespace MongoDB_SongManager.Presenters
 
             // Load user-isolated interaction for the selected song
             var interaction = _userInteractionRepository.GetInteraction(_currentUserService.CurrentUserId, selectedDto.Id);
-            var interactionDto = MapToInteractionDto(interaction);
+            var interactionDto = _dtoService.MapToInteractionDto(interaction);
 
             _view.DisplayUserInteraction(interactionDto);
         }
@@ -218,40 +239,28 @@ namespace MongoDB_SongManager.Presenters
             if (interactionInput == null) return;
 
             string currentUserId = _currentUserService.CurrentUserId;
+            interactionInput.SongId = selectedSong.Id;
+
             var existingEntity = _userInteractionRepository.GetInteraction(currentUserId, selectedSong.Id);
+            var interactionEntity = _dtoService.MapToInteractionEntity(interactionInput, currentUserId);
+
+            if (interactionEntity == null) return;
 
             if (existingEntity != null)
             {
-                existingEntity.Ratings = interactionInput.Ratings.Select(r => new Rating
-                {
-                    Category = Enum.TryParse<MongoDB_SongManager.Models.Enums.RatingType>(r.Category, true, out var ratingType) ? ratingType : default,
-                    Value = r.Value
-                }).ToList();
-                existingEntity.Notes = interactionInput.Notes ?? string.Empty;
-                existingEntity.UpdatedAt = DateTime.UtcNow;
-
-                _userInteractionRepository.Update(existingEntity);
+                interactionEntity.Id = existingEntity.Id;
+                _userInteractionRepository.Update(interactionEntity);
             }
             else
             {
-                var newEntity = new UserSongInteraction
-                {
-                    Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
-                    UserId = currentUserId,
-                    SongId = selectedSong.Id,
-                    Ratings = interactionInput.Ratings.Select(r => new Rating
-                    {
-                        Category = Enum.TryParse<MongoDB_SongManager.Models.Enums.RatingType>(r.Category, true, out var ratingType) ? ratingType : default,
-                        Value = r.Value
-                    }).ToList(),
-                    Notes = interactionInput.Notes ?? string.Empty,
-                    UpdatedAt = DateTime.UtcNow
-                };
-
-                _userInteractionRepository.Insert(newEntity);
+                _userInteractionRepository.Insert(interactionEntity);
             }
 
             ApplyFilters();
+
+            // Refresh selected song details view to show updated interaction state
+            var updatedInteraction = _userInteractionRepository.GetInteraction(currentUserId, selectedSong.Id);
+            _view.DisplayUserInteraction(_dtoService.MapToInteractionDto(updatedInteraction));
         }
 
         /// <summary>
@@ -259,19 +268,98 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnAddArtistClicked (object? sender, EventArgs e)
         {
-            using var dialog = new ArtistDialog();
+            using var dialog = new ArtistEditDialog();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    _artistRepository.Insert(dialog.Artist);
-                    LoadArtists();
-                    ApplyFilters();
+                    var artistEntity = _dtoService.MapToArtistEntity(dialog.Artist);
+                    if (artistEntity != null)
+                    {
+                        _artistRepository.Insert(artistEntity);
+                        LoadArtists();
+                        ApplyFilters();
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {
                     MessageBox.Show(ex.Message, "Duplicate Artist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Opens a dialog to edit the selected artist and updates database records.
+        /// </summary>
+        private void OnEditArtistClicked (object? sender, EventArgs e)
+        {
+            var selectedArtistDto = _view.SelectedArtist;
+            if (selectedArtistDto == null)
+            {
+                MessageBox.Show("Please select an artist to edit.", "Edit Artist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var artistEntity = _allArtists.FirstOrDefault(a => a.Id == selectedArtistDto.Id);
+            if (artistEntity == null) return;
+
+            using var dialog = new ArtistEditDialog(_dtoService.MapToArtistDto(artistEntity));
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var updatedEntity = _dtoService.MapToArtistEntity(dialog.Artist);
+                    if (updatedEntity != null)
+                    {
+                        updatedEntity.Id = artistEntity.Id;
+                        _artistRepository.Update(updatedEntity);
+                        LoadArtists();
+                        LoadSongs();
+                        ApplyFilters();
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Duplicate Artist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Prompts confirmation before deleting the selected artist and handling referencing songs.
+        /// </summary>
+        private void OnDeleteArtistClicked (object? sender, EventArgs e)
+        {
+            var selectedArtistDto = _view.SelectedArtist;
+            if (selectedArtistDto == null)
+            {
+                MessageBox.Show("Please select an artist to delete.", "Delete Artist", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int dependentSongsCount = _allSongs.Count(s => s.ArtistId == selectedArtistDto.Id);
+
+            if (dependentSongsCount > 0)
+            {
+                MessageBox.Show(
+                    $"Cannot delete artist '{selectedArtistDto.Name}' because {dependentSongsCount} song(s) are still assigned to them. Please reassign or delete those songs first.",
+                    "Deletion Blocked",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                $"Are you sure you want to delete the artist '{selectedArtistDto.Name}'?",
+                "Delete Artist",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
+            {
+                _artistRepository.Delete(selectedArtistDto.Id);
+                LoadArtists();
+                ApplyFilters();
             }
         }
 
@@ -286,17 +374,20 @@ namespace MongoDB_SongManager.Presenters
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var createdDto = dialog.SongDto;
-                var songEntity = MapToSongEntity(createdDto);
+                var songEntity = _dtoService.MapToSongEntity(createdDto);
 
-                try
+                if (songEntity != null)
                 {
-                    _songRepository.Insert(songEntity);
-                    LoadSongs();
-                    ApplyFilters();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    try
+                    {
+                        _songRepository.Insert(songEntity);
+                        LoadSongs();
+                        ApplyFilters();
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
             }
         }
@@ -312,24 +403,27 @@ namespace MongoDB_SongManager.Presenters
             var selectedSong = _allSongs.FirstOrDefault(s => s.Id == selectedDisplayDto.Id);
             if (selectedSong == null) return;
 
-            var songDtoToEdit = MapToSongDto(selectedSong);
+            var songDtoToEdit = _dtoService.MapToSongDto(selectedSong);
             var artistDtos = GetArtistDtos();
 
             using var dialog = new SongDialog(songDtoToEdit, artistDtos);
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 var updatedDto = dialog.SongDto;
-                var updatedEntity = MapToSongEntity(updatedDto);
+                var updatedEntity = _dtoService.MapToSongEntity(updatedDto);
 
-                try
+                if (updatedEntity != null)
                 {
-                    _songRepository.Update(updatedEntity);
-                    LoadSongs();
-                    ApplyFilters();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    try
+                    {
+                        _songRepository.Update(updatedEntity);
+                        LoadSongs();
+                        ApplyFilters();
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
             }
         }
@@ -357,10 +451,99 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
+        /// Handles adding the selected song to the currently selected songlist.
+        /// </summary>
+        private void OnAddSongToSonglistClicked (object? sender, EventArgs e)
+        {
+            var selectedSong = _view.SelectedSong;
+            var selectedListDto = _view.SelectedSonglist;
+
+            if (selectedSong == null || selectedListDto == null) return;
+
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId)
+            {
+                MessageBox.Show("You can only edit songlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var entityToUpdate = _allSonglists.FirstOrDefault(sl => sl.Id == selectedListDto.Id);
+            if (entityToUpdate == null) return;
+
+            if (!entityToUpdate.SongIds.Contains(selectedSong.Id))
+            {
+                entityToUpdate.SongIds.Add(selectedSong.Id);
+                _songlistRepository.Update(entityToUpdate);
+                LoadSonglists();
+                ApplyFilters();
+            }
+        }
+
+        /// <summary>
+        /// Handles removing the selected song from the currently selected songlist.
+        /// </summary>
+        private void OnRemoveSongFromSonglistClicked (object? sender, EventArgs e)
+        {
+            var selectedSong = _view.SelectedSong;
+            var selectedListDto = _view.SelectedSonglist;
+
+            if (selectedSong == null || selectedListDto == null) return;
+
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId)
+            {
+                MessageBox.Show("You can only edit songlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var entityToUpdate = _allSonglists.FirstOrDefault(sl => sl.Id == selectedListDto.Id);
+            if (entityToUpdate == null) return;
+
+            if (entityToUpdate.SongIds.Remove(selectedSong.Id))
+            {
+                _songlistRepository.Update(entityToUpdate);
+                LoadSonglists();
+                ApplyFilters();
+            }
+        }
+
+        /// <summary>
+        /// Prompts confirmation before soft-deleting the selected songlist.
+        /// </summary>
+        private void OnDeleteSonglistClicked (object? sender, EventArgs e)
+        {
+            var selectedListDto = _view.SelectedSonglist;
+            if (selectedListDto == null) return;
+
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId)
+            {
+                MessageBox.Show("You can only delete songlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show(
+                $"Are you sure you want to delete playlist '{selectedListDto.Name}'?",
+                "Delete Songlist",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm == DialogResult.Yes)
+            {
+                _songlistRepository.Delete(selectedListDto.Id);
+                LoadSonglists();
+                ApplyFilters();
+            }
+        }
+
+        /// <summary>
         /// Handles CSV export by exporting all currently filtered songs from the view.
         /// </summary>
         private void OnExportCsvClicked (object? sender, EventArgs e)
         {
+            if (_view.IsArtistModeActive)
+            {
+                MessageBox.Show("CSV export is only available for songs.", "Export Notice", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             var songsToExport = GetCurrentlyFilteredSongs().ToList();
 
             if (!songsToExport.Any())
@@ -375,7 +558,6 @@ namespace MongoDB_SongManager.Presenters
 
             string? filePath = null;
 
-            // Dedicated STA thread for WinForms file dialogs
             Thread staThread = new Thread(() =>
             {
                 using var saveDialog = new SaveFileDialog
@@ -587,26 +769,6 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Prompts user input and inserts a new songlist.
-        /// </summary>
-        private void OnCreateSonglistClicked (object? sender, EventArgs e)
-        {
-            string listName = Microsoft.VisualBasic.Interaction.InputBox("Name of the new list:", "New Songlist", "New Setlist");
-            if (!string.IsNullOrWhiteSpace(listName))
-            {
-                var newList = new Songlist
-                {
-                    Name = listName,
-                    CreatorId = _currentUserService.CurrentUserId,
-                    SongIds = new List<string>()
-                };
-
-                _songlistRepository.Insert(newList);
-                LoadSonglists();
-            }
-        }
-
-        /// <summary>
         /// Handles renaming the selected songlist if authorized.
         /// </summary>
         private void OnRenameSonglistClicked (object? sender, EventArgs e)
@@ -641,78 +803,13 @@ namespace MongoDB_SongManager.Presenters
             }
         }
 
-        #region Helper Mapping Methods
-
         /// <summary>
-        /// Retrieves active artists mapped to <see cref="ArtistDto"/> instances.
+        /// Retrieves active artists mapped to <see cref="ArtistDto"/> instances via <see cref="IDtoService"/>.
         /// </summary>
         private IEnumerable<ArtistDto> GetArtistDtos ()
         {
-            return _artistRepository.GetAll().Select(a => new ArtistDto
-            {
-                Id = a.Id,
-                Name = a.Name
-            }).ToList();
+            var artists = _artistRepository.GetAll();
+            return _dtoService.MapToArtistDtos(artists);
         }
-
-        /// <summary>
-        /// Maps a <see cref="Song"/> entity to a <see cref="SongDto"/> transfer object.
-        /// </summary>
-        private static SongDto MapToSongDto (Song song)
-        {
-            return new SongDto
-            {
-                Id = song.Id,
-                Title = song.Title,
-                ArtistId = song.ArtistId,
-                Tempo = song.Tempo,
-                ChordsUrl = song.ChordsUrl,
-                YoutubeUrl = song.YoutubeUrl,
-                Liederbuchnummer = song.Liederbuchnummer,
-                Liederbuchseite = song.Liederbuchseite
-            };
-        }
-
-        /// <summary>
-        /// Maps a <see cref="SongDto"/> transfer object back to a <see cref="Song"/> domain entity.
-        /// </summary>
-        private static Song MapToSongEntity (SongDto dto)
-        {
-            return new Song
-            {
-                Id = dto.Id,
-                Title = dto.Title,
-                ArtistId = dto.ArtistId,
-                Tempo = dto.Tempo,
-                ChordsUrl = dto.ChordsUrl,
-                YoutubeUrl = dto.YoutubeUrl,
-                Liederbuchnummer = dto.Liederbuchnummer,
-                Liederbuchseite = dto.Liederbuchseite
-            };
-        }
-
-        /// <summary>
-        /// Maps a <see cref="UserSongInteraction"/> entity to a <see cref="UserSongInteractionDto"/>.
-        /// </summary>
-        private static UserSongInteractionDto? MapToInteractionDto (UserSongInteraction? interaction)
-        {
-            if (interaction == null) return null;
-
-            return new UserSongInteractionDto
-            {
-                Id = interaction.Id,
-                UserId = interaction.UserId,
-                SongId = interaction.SongId,
-                Ratings = interaction.Ratings?.Select(r => new RatingDto
-                {
-                    Category = r.Category.ToString(),
-                    Value = r.Value
-                }).ToList() ?? new List<RatingDto>(),
-                Notes = interaction.Notes,
-                UpdatedAt = interaction.UpdatedAt
-            };
-        }
-
-        #endregion
     }
 }

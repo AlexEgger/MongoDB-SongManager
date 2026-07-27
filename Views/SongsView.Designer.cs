@@ -38,7 +38,6 @@ namespace SongManager.Views
             pnlLeft = new Panel();
             lstSongLists = new ListBox();
             lblListsHeader = new Label();
-            btnCreateList = new Button();
             pnlMiddle = new Panel();
             dgvSongs = new DataGridView();
             colTitle = new DataGridViewTextBoxColumn();
@@ -96,7 +95,6 @@ namespace SongManager.Views
             // 
             pnlLeft.Controls.Add(lstSongLists);
             pnlLeft.Controls.Add(lblListsHeader);
-            pnlLeft.Controls.Add(btnCreateList);
             pnlLeft.Dock = DockStyle.Fill;
             pnlLeft.Location = new Point(4, 4);
             pnlLeft.Name = "pnlLeft";
@@ -111,7 +109,7 @@ namespace SongManager.Views
             lstSongLists.Items.AddRange(new object[] { "🎵 Alle Songs", "────────────────", "Band Setlist 2026", "Akustik Duo" });
             lstSongLists.Location = new Point(5, 35);
             lstSongLists.Name = "lstSongLists";
-            lstSongLists.Size = new Size(143, 417);
+            lstSongLists.Size = new Size(143, 452);
             lstSongLists.TabIndex = 0;
             // 
             // lblListsHeader
@@ -124,16 +122,6 @@ namespace SongManager.Views
             lblListsHeader.TabIndex = 1;
             lblListsHeader.Text = "Meine Listen";
             lblListsHeader.TextAlign = ContentAlignment.MiddleLeft;
-            // 
-            // btnCreateList
-            // 
-            btnCreateList.Dock = DockStyle.Bottom;
-            btnCreateList.Location = new Point(5, 452);
-            btnCreateList.Name = "btnCreateList";
-            btnCreateList.Size = new Size(143, 35);
-            btnCreateList.TabIndex = 2;
-            btnCreateList.Text = "+ Neue Liste";
-            btnCreateList.UseVisualStyleBackColor = true;
             // 
             // pnlMiddle
             // 
@@ -400,7 +388,6 @@ namespace SongManager.Views
         private Panel pnlLeft;
         private Label lblListsHeader;
         private ListBox lstSongLists;
-        private Button btnCreateList;
         private Panel pnlMiddle;
         private Panel pnlSearch;
         private TextBox txtSearch;

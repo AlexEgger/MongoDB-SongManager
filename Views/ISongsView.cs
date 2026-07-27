@@ -3,7 +3,7 @@
 namespace MongoDB_SongManager.Views
 {
     /// <summary>
-    /// Defines the view contract for displaying and interacting with songs, song lists, and song details in the UI using DTOs.
+    /// Defines the view contract for displaying and interacting with songs, song lists, artists, and song details in the UI using DTOs.
     /// </summary>
     public interface ISongsView
     {
@@ -20,9 +20,19 @@ namespace MongoDB_SongManager.Views
         SongDisplayDto? SelectedSong { get; }
 
         /// <summary>
+        /// Gets the currently selected artist DTO in the UI data grid when in artist mode.
+        /// </summary>
+        ArtistDto? SelectedArtist { get; }
+
+        /// <summary>
         /// Gets the currently selected song list DTO in the UI list box.
         /// </summary>
         SonglistDto? SelectedSonglist { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the "All Artists" view mode is currently active.
+        /// </summary>
+        bool IsArtistModeActive { get; }
 
         #endregion
 
@@ -34,7 +44,7 @@ namespace MongoDB_SongManager.Views
         event EventHandler SearchTextChanged;
 
         /// <summary>
-        /// Occurs when the user selects a different song in the grid.
+        /// Occurs when the user selects a different song or artist in the grid.
         /// </summary>
         event EventHandler SongSelectionChanged;
 
@@ -58,6 +68,16 @@ namespace MongoDB_SongManager.Views
         /// </summary>
         event EventHandler AddArtistClicked;
 
+        /// <summary>
+        /// Occurs when the user requests to edit the selected artist.
+        /// </summary>
+        event EventHandler EditArtistClicked;
+
+        /// <summary>
+        /// Occurs when the user requests to delete the selected artist.
+        /// </summary>
+        event EventHandler DeleteArtistClicked;
+
         #endregion
 
         #region User Interaction Events
@@ -72,14 +92,9 @@ namespace MongoDB_SongManager.Views
         #region Songlist Events
 
         /// <summary>
-        /// Occurs when the user selects a different song list from the list box.
+        /// Occurs when the selected song list or sidebar option changes from the list box.
         /// </summary>
         event EventHandler SonglistSelectionChanged;
-
-        /// <summary>
-        /// Occurs when the user requests to create a new song list.
-        /// </summary>
-        event EventHandler CreateSonglistClicked;
 
         /// <summary>
         /// Occurs when the user requests to delete the selected song list.
@@ -124,6 +139,12 @@ namespace MongoDB_SongManager.Views
         /// </summary>
         /// <param name="songs">The collection of song display DTOs to render.</param>
         void DisplaySongs (IEnumerable<SongDisplayDto> songs);
+
+        /// <summary>
+        /// Binds the collection of artist DTOs to the main UI data grid when in artist mode.
+        /// </summary>
+        /// <param name="artists">The collection of artist DTOs to render.</param>
+        void DisplayArtists (IEnumerable<ArtistDto> artists);
 
         /// <summary>
         /// Displays detailed metadata for a single selected song in the details panel using its presentation DTO.

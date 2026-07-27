@@ -106,12 +106,26 @@ namespace SongManager.Views
 
             dgvSongs.SelectionChanged += (s, e) => SongSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnAddSong.Click += (s, e) => AddSongClicked?.Invoke(this, EventArgs.Empty);
-            btnEditSong.Click += (s, e) => EditSongClicked?.Invoke(this, EventArgs.Empty);
-            btnDeleteSong.Click += (s, e) => DeleteSongClicked?.Invoke(this, EventArgs.Empty);
+            btnAddArtist.Click += (s, e) => AddArtistClicked?.Invoke(this, EventArgs.Empty);
+
+            // Context-aware button handlers for Edit and Delete
+            btnEditSong.Click += (s, e) =>
+            {
+                if (IsArtistModeActive)
+                    EditArtistClicked?.Invoke(this, EventArgs.Empty);
+                else
+                    EditSongClicked?.Invoke(this, EventArgs.Empty);
+            };
+
+            btnDeleteSong.Click += (s, e) =>
+            {
+                if (IsArtistModeActive)
+                    DeleteArtistClicked?.Invoke(this, EventArgs.Empty);
+                else
+                    DeleteSongClicked?.Invoke(this, EventArgs.Empty);
+            };
 
             lstSongLists.SelectedIndexChanged += (s, e) => SonglistSelectionChanged?.Invoke(this, EventArgs.Empty);
-            btnCreateList.Click += (s, e) => CreateSonglistClicked?.Invoke(this, EventArgs.Empty);
-            btnAddArtist.Click += (s, e) => AddArtistClicked?.Invoke(this, EventArgs.Empty);
 
             btnExportCsv.Click += (s, e) => ExportCsvClicked?.Invoke(this, EventArgs.Empty);
             btnImportCsv.Click += (s, e) => ImportCsvClicked?.Invoke(this, EventArgs.Empty);
@@ -138,13 +152,43 @@ namespace SongManager.Views
         public string SearchTerm => txtSearch?.Text ?? string.Empty;
 
         /// <summary>
+        /// Gets a value indicating whether the "All Artists" view mode is currently active based on sidebar selection.
+        /// </summary>
+        public bool IsArtistModeActive
+        {
+            get
+            {
+                if (lstSongLists.SelectedItem is ListBoxItemWrapper wrapper)
+                {
+                    return wrapper.Value is string tagStr && tagStr == "ALL_ARTISTS_MODE";
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Gets the currently selected <see cref="SongDisplayDto"/> object stored in the active DataGridView row's Tag property.
         /// </summary>
         public SongDisplayDto? SelectedSong
         {
             get
             {
-                if (dgvSongs.CurrentRow != null && dgvSongs.CurrentRow.Tag is SongDisplayDto dto)
+                if (!IsArtistModeActive && dgvSongs.CurrentRow != null && dgvSongs.CurrentRow.Tag is SongDisplayDto dto)
+                {
+                    return dto;
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the currently selected <see cref="ArtistDto"/> object stored in the active DataGridView row's Tag property during artist mode.
+        /// </summary>
+        public ArtistDto? SelectedArtist
+        {
+            get
+            {
+                if (IsArtistModeActive && dgvSongs.CurrentRow != null && dgvSongs.CurrentRow.Tag is ArtistDto dto)
                 {
                     return dto;
                 }
@@ -177,7 +221,7 @@ namespace SongManager.Views
         public event EventHandler? SearchTextChanged;
 
         /// <summary>
-        /// Occurs when the active song selection in the DataGridView changes.
+        /// Occurs when the active song or artist selection in the DataGridView changes.
         /// </summary>
         public event EventHandler? SongSelectionChanged;
 
@@ -202,6 +246,16 @@ namespace SongManager.Views
         public event EventHandler? AddArtistClicked;
 
         /// <summary>
+        /// Occurs when the edit artist button is clicked.
+        /// </summary>
+        public event EventHandler? EditArtistClicked;
+
+        /// <summary>
+        /// Occurs when the delete artist button is clicked.
+        /// </summary>
+        public event EventHandler? DeleteArtistClicked;
+
+        /// <summary>
         /// Occurs when saving a user song interaction is triggered.
         /// </summary>
         public event EventHandler? SaveInteractionClicked;
@@ -211,14 +265,9 @@ namespace SongManager.Views
         #region Songlist Events
 
         /// <summary>
-        /// Occurs when the selected songlist/playlist changes in the sidebar.
+        /// Occurs when the selected songlist/playlist or view mode changes in the sidebar.
         /// </summary>
         public event EventHandler? SonglistSelectionChanged;
-
-        /// <summary>
-        /// Occurs when the create new songlist button is clicked.
-        /// </summary>
-        public event EventHandler? CreateSonglistClicked;
 
         /// <summary>
         /// Occurs when the rename songlist context menu item is clicked.
@@ -292,11 +341,51 @@ namespace SongManager.Views
 
                     var ratingEntry = song.Ratings.FirstOrDefault(r => r.Category.ToString() == category);
 
-                    // Store pure numerical value or null for clean numeric sorting
                     row.Cells[colName].Value = ratingEntry?.Value;
                 }
 
                 row.Tag = song;
+            }
+        }
+
+        /// <summary>
+        /// Displays the collection of artist DTOs in the DataGridView by configuring columns specifically for artist presentation.
+        /// </summary>
+        /// <param name="artists">The collection of artist DTOs to display.</param>
+        public void DisplayArtists (IEnumerable<ArtistDto> artists)
+        {
+            // Clear rating columns when switching to artist mode
+            var ratingColumns = dgvSongs.Columns
+                .Cast<DataGridViewColumn>()
+                .Where(c => c.Name.StartsWith(RatingColPrefix))
+                .ToList();
+
+            foreach (var col in ratingColumns)
+            {
+                dgvSongs.Columns.Remove(col);
+            }
+
+            // Ensure standard columns are configured for artist display (showing only name)
+            if (dgvSongs.Columns.Contains("colTitle"))
+            {
+                dgvSongs.Columns["colTitle"].HeaderText = "Interpret Name";
+                dgvSongs.Columns["colTitle"].FillWeight = 100F;
+            }
+
+            if (dgvSongs.Columns.Contains("colArtist"))
+            {
+                dgvSongs.Columns["colArtist"].Visible = false;
+            }
+
+            dgvSongs.Rows.Clear();
+
+            foreach (var artist in artists)
+            {
+                int rowIndex = dgvSongs.Rows.Add();
+                var row = dgvSongs.Rows[rowIndex];
+
+                row.Cells["colTitle"].Value = artist.Name;
+                row.Tag = artist;
             }
         }
 
@@ -306,6 +395,19 @@ namespace SongManager.Views
         /// <param name="activeCategories">List of active rating category names present in the song collection.</param>
         private void SyncRatingColumns (List<string> activeCategories)
         {
+            if (dgvSongs.Columns.Contains("colTitle"))
+            {
+                dgvSongs.Columns["colTitle"].HeaderText = "Titel";
+                dgvSongs.Columns["colTitle"].FillWeight = 50F;
+            }
+
+            if (dgvSongs.Columns.Contains("colArtist"))
+            {
+                dgvSongs.Columns["colArtist"].Visible = true;
+                dgvSongs.Columns["colArtist"].HeaderText = "Interpret";
+                dgvSongs.Columns["colArtist"].FillWeight = 50F;
+            }
+
             var activeColumnNames = activeCategories.Select(c => RatingColPrefix + c).ToHashSet();
 
             var columnsToRemove = dgvSongs.Columns
@@ -373,7 +475,7 @@ namespace SongManager.Views
         /// <param name="e">Event args containing column index information.</param>
         private void DgvSongs_ColumnHeaderMouseClick (object? sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.ColumnIndex < 0) return;
+            if (e.ColumnIndex < 0 || IsArtistModeActive) return;
 
             var column = dgvSongs.Columns[e.ColumnIndex];
 
@@ -403,7 +505,6 @@ namespace SongManager.Views
                 double? val1 = e.CellValue1 != null && e.CellValue1 != DBNull.Value ? Convert.ToDouble(e.CellValue1) : null;
                 double? val2 = e.CellValue2 != null && e.CellValue2 != DBNull.Value ? Convert.ToDouble(e.CellValue2) : null;
 
-                // Determine if current sort direction is descending
                 bool isDescending = dgvSongs.SortOrder == SortOrder.Descending;
 
                 if (!val1.HasValue && !val2.HasValue)
@@ -412,19 +513,14 @@ namespace SongManager.Views
                 }
                 else if (!val1.HasValue)
                 {
-                    // Null always goes to the bottom: 
-                    // In Ascending, val1 > val2 pushes val1 down (Result = 1).
-                    // In Descending, WinForms flips the result, so we pass -1 to ensure it stays down.
                     e.SortResult = isDescending ? -1 : 1;
                 }
                 else if (!val2.HasValue)
                 {
-                    // Null always goes to the bottom
                     e.SortResult = isDescending ? 1 : -1;
                 }
                 else
                 {
-                    // Standard numerical comparison for cells with values
                     e.SortResult = val1.Value.CompareTo(val2.Value);
                 }
 
@@ -439,6 +535,8 @@ namespace SongManager.Views
         /// <param name="e">Event args containing formatting configuration and value.</param>
         private void DgvSongs_CellFormatting (object? sender, DataGridViewCellFormattingEventArgs e)
         {
+            if (IsArtistModeActive) return;
+
             if (e.ColumnIndex >= 0 && dgvSongs.Columns[e.ColumnIndex].Name.StartsWith(RatingColPrefix))
             {
                 string categoryName = dgvSongs.Columns[e.ColumnIndex].ToolTipText;
@@ -576,7 +674,7 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Binds the collection of available song lists DTOs to the sidebar list box.
+        /// Binds the collection of available song lists DTOs to the sidebar list box, including the All Artists mode entry.
         /// </summary>
         /// <param name="songlists">Collection of songlist DTOs to display.</param>
         /// <param name="currentUserId">Identifier of the logged-in user to prioritize personal playlists.</param>
@@ -585,6 +683,8 @@ namespace SongManager.Views
             lstSongLists.Items.Clear();
 
             lstSongLists.Items.Add(new ListBoxItemWrapper("🎵 All Songs", null!));
+            lstSongLists.Items.Add(new ListBoxItemWrapper("🎤 All Artists", "ALL_ARTISTS_MODE"));
+            lstSongLists.Items.Add(new ListBoxItemWrapper("────────────────", null!));
 
             var sortedSonglists = songlists
                                     .OrderByDescending(s => s.CreatorId == currentUserId)
@@ -622,7 +722,7 @@ namespace SongManager.Views
         #endregion
 
         /// <summary>
-        /// Helper wrapper class for displaying songlists inside a standard ListBox control.
+        /// Helper wrapper class for displaying songlists and view options inside a standard ListBox control.
         /// </summary>
         private class ListBoxItemWrapper
         {

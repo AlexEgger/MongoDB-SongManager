@@ -137,13 +137,7 @@ namespace MongoDB_SongManager.Presenters
                 .ThenBy(s => s.Name)
                 .ToList();
 
-            var songlistDtos = sortedList.Select(s => new SonglistDto
-            {
-                Id = s.Id,
-                Name = s.Name,
-                CreatorId = s.CreatorId,
-                SongIds = s.SongIds != null ? new List<string>(s.SongIds) : new List<string>()
-            });
+            var songlistDtos = _dtoService.MapToSonglistDtos(sortedList);
 
             _view.DisplaySonglists(songlistDtos, currentUserId);
             UpdateReadOnlyState();
