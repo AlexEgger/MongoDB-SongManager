@@ -4,7 +4,7 @@ using MongoDB_SongManager.Services.DTOs;
 namespace MongoDB_SongManager.Services
 {
     /// <summary>
-    /// Service responsible for transforming domain models into DTOs tailored for UI presentation.
+    /// Service responsible for transforming domain models into DTOs tailored for UI presentation and editing.
     /// </summary>
     public class DtoService : IDtoService
     {
@@ -32,7 +32,8 @@ namespace MongoDB_SongManager.Services
                 ArtistName = artistName,
                 ChordsUrl = song.ChordsUrl,
                 YoutubeUrl = song.YoutubeUrl,
-                SongbookInfo = bookInfo
+                SongbookInfo = bookInfo,
+                Tempo = song.Tempo
             };
         }
 

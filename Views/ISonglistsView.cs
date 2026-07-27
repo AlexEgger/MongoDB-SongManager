@@ -1,15 +1,15 @@
-﻿using MongoDB_SongManager.Models;
-using MongoDB_SongManager.Services.DTOs;
+﻿using MongoDB_SongManager.Services.DTOs;
 
 namespace MongoDB_SongManager.Views
 {
     /// <summary>
     /// View contract defining interaction capabilities for setlists and playlist song assignments.
+    /// Uses DTOs for all data binding and selection operations.
     /// </summary>
     public interface ISonglistsView
     {
         // Selected Items
-        Songlist? SelectedSonglist { get; }
+        SonglistDto? SelectedSonglist { get; }
         SongDisplayDto? SelectedAvailableSong { get; }
         SongDisplayDto? SelectedAssignedSong { get; }
 
@@ -32,7 +32,7 @@ namespace MongoDB_SongManager.Views
         event EventHandler? AvailableSongsSearchTextChanged;
 
         // UI Display Operations
-        void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId);
+        void DisplaySonglists (IEnumerable<SonglistDto> songlists, string currentUserId);
         void DisplayAvailableSongs (IEnumerable<SongDisplayDto> songs);
         void DisplayAssignedSongs (IEnumerable<SongDisplayDto> songs);
         void SetReadOnlyState (bool isReadOnly);

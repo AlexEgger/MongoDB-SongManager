@@ -1,10 +1,9 @@
-﻿using MongoDB_SongManager.Models;
-using MongoDB_SongManager.Services.DTOs;
+﻿using MongoDB_SongManager.Services.DTOs;
 
 namespace MongoDB_SongManager.Views;
 
 /// <summary>
-/// Defines the view contract for displaying and interacting with songs, song lists, and song details in the UI.
+/// Defines the view contract for displaying and interacting with songs, song lists, and song details in the UI using DTOs.
 /// </summary>
 public interface ISongsView
 {
@@ -21,9 +20,9 @@ public interface ISongsView
     SongDisplayDto? SelectedSong { get; }
 
     /// <summary>
-    /// Gets the currently selected song list in the UI list box.
+    /// Gets the currently selected song list DTO in the UI list box.
     /// </summary>
-    Songlist? SelectedSonglist { get; }
+    SonglistDto? SelectedSonglist { get; }
 
     /// <summary>
     /// Gets a value indicating whether the favorite songs filter is active.
@@ -133,18 +132,17 @@ public interface ISongsView
     void DisplaySongs (IEnumerable<SongDisplayDto> songs);
 
     /// <summary>
-    /// Displays detailed metadata for a single selected song in the details panel.
+    /// Displays detailed metadata for a single selected song in the details panel using its presentation DTO.
     /// </summary>
-    /// <param name="song">The song entity to display.</param>
-    /// <param name="artistName">The resolved name of the artist, if available.</param>
-    void DisplaySongDetails (Song? song, string? artistName);
+    /// <param name="song">The song display DTO containing metadata, or null to clear panel.</param>
+    void DisplaySongDetails (SongDisplayDto? song);
 
     /// <summary>
-    /// Binds the collection of available song lists to the sidebar list box.
+    /// Binds the collection of available song list DTOs to the sidebar list box.
     /// </summary>
-    /// <param name="songlists">The list of song list entities to display.</param>
+    /// <param name="songlists">The collection of song list DTOs to display.</param>
     /// <param name="currentUserId">The ID of the active user for sorting/visual cues.</param>
-    void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId);
+    void DisplaySonglists (IEnumerable<SonglistDto> songlists, string currentUserId);
 
     #endregion
 }

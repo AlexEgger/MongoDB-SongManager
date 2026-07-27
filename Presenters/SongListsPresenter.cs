@@ -1,12 +1,14 @@
 ﻿using MongoDB_SongManager.Data.Repositories;
 using MongoDB_SongManager.Models;
 using MongoDB_SongManager.Services;
+using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace MongoDB_SongManager.Presenters
 {
     /// <summary>
     /// Presenter responsible for managing setlists, song transfers, item reordering, and read-only protection for non-owned setlists.
+    /// Uses DTOs for all view interactions and prevents duplicate songs in setlists.
     /// </summary>
     public class SonglistsPresenter
     {
@@ -118,7 +120,7 @@ namespace MongoDB_SongManager.Presenters
 
         /// <summary>
         /// Refreshes the songlist sidebar display based on the "Only My Songlists" filter checkbox.
-        /// Own setlists are prioritized at the top.
+        /// Maps domain models to DTOs for view consumption.
         /// </summary>
         private void ApplySonglistFilter ()
         {
@@ -135,7 +137,15 @@ namespace MongoDB_SongManager.Presenters
                 .ThenBy(s => s.Name)
                 .ToList();
 
-            _view.DisplaySonglists(sortedList, currentUserId);
+            var songlistDtos = sortedList.Select(s => new SonglistDto
+            {
+                Id = s.Id,
+                Name = s.Name,
+                CreatorId = s.CreatorId,
+                SongIds = s.SongIds != null ? new List<string>(s.SongIds) : new List<string>()
+            });
+
+            _view.DisplaySonglists(songlistDtos, currentUserId);
             UpdateReadOnlyState();
         }
 
@@ -173,14 +183,21 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Loads assigned songs for the currently selected setlist in their specified order.
+        /// Loads assigned songs for the currently selected setlist DTO in their specified order.
         /// </summary>
         private void RefreshAssignedSongs ()
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedDto = _view.SelectedSonglist;
+            if (selectedDto == null)
+            {
+                _view.DisplayAssignedSongs(Enumerable.Empty<SongDisplayDto>());
+                return;
+            }
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedDto.Id);
             if (selectedList == null || selectedList.SongIds == null || !selectedList.SongIds.Any())
             {
-                _view.DisplayAssignedSongs(Enumerable.Empty<Services.DTOs.SongDisplayDto>());
+                _view.DisplayAssignedSongs(Enumerable.Empty<SongDisplayDto>());
                 return;
             }
 
@@ -207,17 +224,26 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Adds a selected song to the active setlist.
+        /// Adds a selected song to the active setlist, ensuring duplicates are prevented.
         /// </summary>
         /// <param name="sender">The event source.</param>
         /// <param name="e">Event args.</param>
         private void OnAddSongToSonglistClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedListDto = _view.SelectedSonglist;
             var songToAdd = _view.SelectedAvailableSong;
 
-            if (selectedList == null || songToAdd == null) return;
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId) return;
+            if (selectedListDto == null || songToAdd == null) return;
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId) return;
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedListDto.Id);
+            if (selectedList == null) return;
+
+            // Ensure duplicate songs cannot be added to the same playlist
+            if (selectedList.SongIds.Contains(songToAdd.Id))
+            {
+                return;
+            }
 
             selectedList.SongIds.Add(songToAdd.Id);
             _songlistRepository.Update(selectedList);
@@ -232,11 +258,14 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="e">Event args.</param>
         private void OnRemoveSongFromSonglistClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedListDto = _view.SelectedSonglist;
             var songToRemove = _view.SelectedAssignedSong;
 
-            if (selectedList == null || songToRemove == null) return;
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId) return;
+            if (selectedListDto == null || songToRemove == null) return;
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId) return;
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedListDto.Id);
+            if (selectedList == null) return;
 
             selectedList.SongIds.Remove(songToRemove.Id);
             _songlistRepository.Update(selectedList);
@@ -251,11 +280,14 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="e">Event args.</param>
         private void OnMoveSongUpClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedListDto = _view.SelectedSonglist;
             var selectedSong = _view.SelectedAssignedSong;
 
-            if (selectedList == null || selectedSong == null) return;
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId) return;
+            if (selectedListDto == null || selectedSong == null) return;
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId) return;
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedListDto.Id);
+            if (selectedList == null) return;
 
             int index = selectedList.SongIds.IndexOf(selectedSong.Id);
             if (index > 0)
@@ -275,11 +307,14 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="e">Event args.</param>
         private void OnMoveSongDownClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedListDto = _view.SelectedSonglist;
             var selectedSong = _view.SelectedAssignedSong;
 
-            if (selectedList == null || selectedSong == null) return;
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId) return;
+            if (selectedListDto == null || selectedSong == null) return;
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId) return;
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedListDto.Id);
+            if (selectedList == null) return;
 
             int index = selectedList.SongIds.IndexOf(selectedSong.Id);
             if (index >= 0 && index < selectedList.SongIds.Count - 1)
@@ -321,19 +356,22 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="e">Event args.</param>
         private void OnRenameSonglistClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
+            var selectedListDto = _view.SelectedSonglist;
 
-            if (selectedList == null)
+            if (selectedListDto == null)
             {
                 MessageBox.Show("Please select a setlist to rename.", "Rename Setlist", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId)
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId)
             {
                 MessageBox.Show("You can only rename setlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            var selectedList = _allSonglists.FirstOrDefault(s => s.Id == selectedListDto.Id);
+            if (selectedList == null) return;
 
             string newName = Microsoft.VisualBasic.Interaction.InputBox(
                 "Enter a new name for the setlist:",
@@ -357,19 +395,19 @@ namespace MongoDB_SongManager.Presenters
         /// <param name="e">Event args.</param>
         private void OnDeleteSonglistClicked (object? sender, EventArgs e)
         {
-            var selectedList = _view.SelectedSonglist;
-            if (selectedList == null) return;
-            if (selectedList.CreatorId != _currentUserService.CurrentUserId) return;
+            var selectedListDto = _view.SelectedSonglist;
+            if (selectedListDto == null) return;
+            if (selectedListDto.CreatorId != _currentUserService.CurrentUserId) return;
 
             var confirm = MessageBox.Show(
-                $"Are you sure you want to delete the setlist '{selectedList.Name}'?",
+                $"Are you sure you want to delete the setlist '{selectedListDto.Name}'?",
                 "Delete Setlist",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (confirm == DialogResult.Yes)
             {
-                _songlistRepository.Delete(selectedList.Id);
+                _songlistRepository.Delete(selectedListDto.Id);
                 LoadSonglists();
             }
         }

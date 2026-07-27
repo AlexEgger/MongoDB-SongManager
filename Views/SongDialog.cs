@@ -1,29 +1,29 @@
-﻿using MongoDB_SongManager.Models;
+﻿using MongoDB_SongManager.Services.DTOs;
 
 namespace SongManager.Views
 {
     /// <summary>
-    /// Modal dialog form for creating or editing a <see cref="Song"/> entity.
+    /// Modal dialog form for creating or editing a song using a <see cref="SongDto"/>.
     /// </summary>
     public partial class SongDialog : Form
     {
-        private readonly Song _song;
+        private readonly SongDto _songDto;
 
         /// <summary>
-        /// Gets the updated or newly created <see cref="Song"/> document.
+        /// Gets the updated or newly created <see cref="SongDto"/>.
         /// </summary>
-        public Song Song => _song;
+        public SongDto SongDto => _songDto;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SongDialog"/> form.
+        /// Initializes a new instance of the <see cref="SongDialog"/> form using DTO parameters.
         /// </summary>
-        /// <param name="song">The song entity to edit, or null/new song for creation mode.</param>
-        /// <param name="artists">The collection of available active artists for selection.</param>
-        public SongDialog (Song? song, IEnumerable<Artist> artists)
+        /// <param name="songDto">The song DTO to edit, or null for creation mode.</param>
+        /// <param name="artists">The collection of available active artist DTOs for selection.</param>
+        public SongDialog (SongDto? songDto, IEnumerable<ArtistDto> artists)
         {
             InitializeComponent();
 
-            _song = song ?? new Song();
+            _songDto = songDto ?? new SongDto();
 
             PopulateArtistComboBox(artists);
             BindDataToControls();
@@ -31,15 +31,15 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Populates the artist dropdown ComboBox with available artist records.
+        /// Populates the artist dropdown ComboBox with available artist DTOs.
         /// </summary>
-        /// <param name="artists">The list of active artists.</param>
-        private void PopulateArtistComboBox (IEnumerable<Artist> artists)
+        /// <param name="artists">The list of active artist DTOs.</param>
+        private void PopulateArtistComboBox (IEnumerable<ArtistDto> artists)
         {
             var artistList = artists.ToList();
 
             // Insert default option for unassigned artist
-            artistList.Insert(0, new Artist { Id = string.Empty, Name = "-- Kein Interpret --" });
+            artistList.Insert(0, new ArtistDto { Id = string.Empty, Name = "-- Kein Interpret --" });
 
             cmbArtist.DataSource = artistList;
             cmbArtist.DisplayMember = "Name";
@@ -47,22 +47,22 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Binds values from the <see cref="Song"/> entity model to UI input controls.
+        /// Binds values from the <see cref="SongDto"/> instance to UI input controls.
         /// </summary>
         private void BindDataToControls ()
         {
-            Text = string.IsNullOrEmpty(_song.Id) ? "Neuen Song erstellen" : "Song bearbeiten";
+            Text = string.IsNullOrEmpty(_songDto.Id) ? "Neuen Song erstellen" : "Song bearbeiten";
 
-            txtTitle.Text = _song.Title;
-            numTempo.Value = _song.Tempo.HasValue ? Math.Min(_song.Tempo.Value, numTempo.Maximum) : 0;
-            txtChordsUrl.Text = _song.ChordsUrl ?? string.Empty;
-            txtYoutubeUrl.Text = _song.YoutubeUrl ?? string.Empty;
-            numLiederbuchnummer.Value = _song.Liederbuchnummer.HasValue ? Math.Min(_song.Liederbuchnummer.Value, numLiederbuchnummer.Maximum) : 0;
-            numLiederbuchseite.Value = _song.Liederbuchseite.HasValue ? Math.Min(_song.Liederbuchseite.Value, numLiederbuchseite.Maximum) : 0;
+            txtTitle.Text = _songDto.Title;
+            numTempo.Value = _songDto.Tempo.HasValue ? Math.Min(_songDto.Tempo.Value, numTempo.Maximum) : 0;
+            txtChordsUrl.Text = _songDto.ChordsUrl ?? string.Empty;
+            txtYoutubeUrl.Text = _songDto.YoutubeUrl ?? string.Empty;
+            numLiederbuchnummer.Value = _songDto.Liederbuchnummer.HasValue ? Math.Min(_songDto.Liederbuchnummer.Value, numLiederbuchnummer.Maximum) : 0;
+            numLiederbuchseite.Value = _songDto.Liederbuchseite.HasValue ? Math.Min(_songDto.Liederbuchseite.Value, numLiederbuchseite.Maximum) : 0;
 
-            if (!string.IsNullOrEmpty(_song.ArtistId))
+            if (!string.IsNullOrEmpty(_songDto.ArtistId))
             {
-                cmbArtist.SelectedValue = _song.ArtistId;
+                cmbArtist.SelectedValue = _songDto.ArtistId;
             }
             else
             {
@@ -80,7 +80,7 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Validates user input and saves entered data into the <see cref="Song"/> model instance.
+        /// Validates user input and saves entered data into the <see cref="SongDto"/> instance.
         /// </summary>
         private void OnSaveClicked (object? sender, EventArgs e)
         {
@@ -113,19 +113,19 @@ namespace SongManager.Views
                 return;
             }
 
-            // Write back inputs to model object
-            _song.Title = txtTitle.Text.Trim();
-            _song.ArtistId = cmbArtist.SelectedValue as string;
-            if (string.IsNullOrEmpty(_song.ArtistId))
+            // Write back inputs to DTO object
+            _songDto.Title = txtTitle.Text.Trim();
+            _songDto.ArtistId = cmbArtist.SelectedValue as string;
+            if (string.IsNullOrEmpty(_songDto.ArtistId))
             {
-                _song.ArtistId = null;
+                _songDto.ArtistId = null;
             }
 
-            _song.Tempo = numTempo.Value > 0 ? (uint?)numTempo.Value : null;
-            _song.ChordsUrl = string.IsNullOrEmpty(chordsUrl) ? null : chordsUrl;
-            _song.YoutubeUrl = string.IsNullOrEmpty(youtubeUrl) ? null : youtubeUrl;
-            _song.Liederbuchnummer = numLiederbuchnummer.Value > 0 ? (uint?)numLiederbuchnummer.Value : null;
-            _song.Liederbuchseite = numLiederbuchseite.Value > 0 ? (uint?)numLiederbuchseite.Value : null;
+            _songDto.Tempo = numTempo.Value > 0 ? (uint?)numTempo.Value : null;
+            _songDto.ChordsUrl = string.IsNullOrEmpty(chordsUrl) ? null : chordsUrl;
+            _songDto.YoutubeUrl = string.IsNullOrEmpty(youtubeUrl) ? null : youtubeUrl;
+            _songDto.Liederbuchnummer = numLiederbuchnummer.Value > 0 ? (uint?)numLiederbuchnummer.Value : null;
+            _songDto.Liederbuchseite = numLiederbuchseite.Value > 0 ? (uint?)numLiederbuchseite.Value : null;
 
             DialogResult = DialogResult.OK;
             Close();

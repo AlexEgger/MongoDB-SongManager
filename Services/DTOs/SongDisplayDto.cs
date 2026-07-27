@@ -11,4 +11,5 @@ public class SongDisplayDto
     public string? ChordsUrl { get; set; }
     public string? YoutubeUrl { get; set; }
     public string SongbookInfo { get; set; } = string.Empty;
+    public uint? Tempo { get; set; }
 }

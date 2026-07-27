@@ -1,11 +1,10 @@
-﻿using MongoDB_SongManager.Models;
-using MongoDB_SongManager.Services.DTOs;
+﻿using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace SongManager.Views
 {
     /// <summary>
-    /// UserControl representing the songlist/setlist management view implementation.
+    /// UserControl representing the songlist/setlist management view implementation operating on DTOs.
     /// </summary>
     public partial class SonglistsView : UserControl, ISonglistsView
     {
@@ -58,13 +57,13 @@ namespace SongManager.Views
 
         #region ISonglistsView Implementation
 
-        public Songlist? SelectedSonglist
+        public SonglistDto? SelectedSonglist
         {
             get
             {
-                if (lstSetlists.SelectedItem is ListBoxItemWrapper wrapper && wrapper.Value is Songlist songlist)
+                if (lstSetlists.SelectedItem is ListBoxItemWrapper wrapper && wrapper.Value is SonglistDto songlistDto)
                 {
-                    return songlist;
+                    return songlistDto;
                 }
                 return null;
             }
@@ -110,7 +109,7 @@ namespace SongManager.Views
         public event EventHandler? MoveSongDownClicked;
         public event EventHandler? AvailableSongsSearchTextChanged;
 
-        public void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId)
+        public void DisplaySonglists (IEnumerable<SonglistDto> songlists, string currentUserId)
         {
             lstSetlists.Items.Clear();
             foreach (var songlist in songlists)
@@ -166,7 +165,7 @@ namespace SongManager.Views
         #endregion
 
         /// <summary>
-        /// Helper wrapper class for binding objects to ListBox controls.
+        /// Helper wrapper class for binding DTO objects to ListBox controls.
         /// </summary>
         private class ListBoxItemWrapper
         {

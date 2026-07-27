@@ -1,11 +1,10 @@
-﻿using MongoDB_SongManager.Models;
-using MongoDB_SongManager.Services.DTOs;
+﻿using MongoDB_SongManager.Services.DTOs;
 using MongoDB_SongManager.Views;
 
 namespace SongManager.Views
 {
     /// <summary>
-    /// UserControl representing the main song management view implementation of <see cref="ISongsView"/>.
+    /// UserControl representing the main song management view implementation using DTO objects.
     /// </summary>
     public partial class SongsView : UserControl, ISongsView
     {
@@ -107,13 +106,13 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Gets the currently selected <see cref="Songlist"/> object stored in the active ListBox item's Tag property.
+        /// Gets the currently selected <see cref="SonglistDto"/> object stored in the active ListBox item's Tag property.
         /// </summary>
-        public Songlist? SelectedSonglist
+        public SonglistDto? SelectedSonglist
         {
             get
             {
-                if (lstSongLists.SelectedItem is ListBoxItemWrapper wrapper && wrapper.Value is Songlist songlist)
+                if (lstSongLists.SelectedItem is ListBoxItemWrapper wrapper && wrapper.Value is SonglistDto songlist)
                 {
                     return songlist;
                 }
@@ -179,11 +178,10 @@ namespace SongManager.Views
         }
 
         /// <summary>
-        /// Displays the detailed metadata of a song in the details panel.
+        /// Displays the detailed metadata of a song using its presentation DTO.
         /// </summary>
-        /// <param name="song">The song entity to display.</param>
-        /// <param name="artistName">The resolved name of the associated artist.</param>
-        public void DisplaySongDetails (Song? song, string? artistName)
+        /// <param name="song">The song display DTO containing metadata, or null to clear panel.</param>
+        public void DisplaySongDetails (SongDisplayDto? song)
         {
             if (song == null)
             {
@@ -197,25 +195,19 @@ namespace SongManager.Views
             }
 
             lblSongTitle.Text = $"Title: {song.Title}";
-            lblArtist.Text = $"Artist: {artistName ?? "Unknown"}";
+            lblArtist.Text = $"Artist: {song.ArtistName}";
             lblTempo.Text = song.Tempo.HasValue ? $"Tempo: {song.Tempo} BPM" : "Tempo: -";
-
-            string bookInfo = "-";
-            if (song.Liederbuchnummer.HasValue || song.Liederbuchseite.HasValue)
-            {
-                bookInfo = $"No. {song.Liederbuchnummer?.ToString() ?? "-"}, p. {song.Liederbuchseite?.ToString() ?? "-"}";
-            }
-            lblBookInfo.Text = $"Songbook: {bookInfo}";
+            lblBookInfo.Text = $"Songbook: {song.SongbookInfo}";
 
             lnkChords.Text = string.IsNullOrEmpty(song.ChordsUrl) ? "No link" : "🎸 Open Chords";
             lnkYoutube.Text = string.IsNullOrEmpty(song.YoutubeUrl) ? "No link" : "▶️ YouTube Video";
         }
 
         /// <summary>
-        /// Binds the collection of available song lists to the sidebar list box.
+        /// Binds the collection of available song lists DTOs to the sidebar list box.
         /// Sorts the user's own playlists to the top of the list.
         /// </summary>
-        public void DisplaySonglists (IEnumerable<Songlist> songlists, string currentUserId)
+        public void DisplaySonglists (IEnumerable<SonglistDto> songlists, string currentUserId)
         {
             lstSongLists.Items.Clear();
 

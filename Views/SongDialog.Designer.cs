@@ -1,7 +1,4 @@
-﻿using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace SongManager.Views
+﻿namespace SongManager.Views
 {
     partial class SongDialog
     {
