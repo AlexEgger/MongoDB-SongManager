@@ -55,14 +55,14 @@ public class MongoRepository<T> : IRepository<T> where T : class, IEntity
     /// Inserts a new entity document into the MongoDB collection.
     /// </summary>
     /// <param name="entity">The entity to insert.</param>
-    public void Insert (T entity) => Collection.InsertOne(entity);
+    public virtual void Insert (T entity) => Collection.InsertOne(entity);
 
     /// <summary>
     /// Replaces an existing active entity document with updated values.
     /// </summary>
     /// <param name="entity">The updated entity instance.</param>
     /// <returns><c>true</c> if the document was successfully modified; otherwise, <c>false</c>.</returns>
-    public bool Update (T entity)
+    public virtual bool Update (T entity)
     {
         var filter = Builders<T>.Filter.And(
             Builders<T>.Filter.Eq(e => e.Id, entity.Id),

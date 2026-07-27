@@ -63,7 +63,7 @@ namespace SongManager.Views
                 FilterFavoritesClicked?.Invoke(this, EventArgs.Empty);
             };
 
-            // Song Selection & CRUD Events
+            // Song Selection & CRUD Events (Using ToolStripButtons)
             dgvSongs.SelectionChanged += (s, e) => SongSelectionChanged?.Invoke(this, EventArgs.Empty);
             btnAddSong.Click += (s, e) => AddSongClicked?.Invoke(this, EventArgs.Empty);
             btnEditSong.Click += (s, e) => EditSongClicked?.Invoke(this, EventArgs.Empty);

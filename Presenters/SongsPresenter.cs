@@ -198,9 +198,16 @@ namespace MongoDB_SongManager.Presenters
             using var dialog = new ArtistDialog();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                _artistRepository.Insert(dialog.Artist);
-                LoadArtists();
-                ApplyFilters();
+                try
+                {
+                    _artistRepository.Insert(dialog.Artist);
+                    LoadArtists();
+                    ApplyFilters();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Duplicate Artist", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -217,9 +224,16 @@ namespace MongoDB_SongManager.Presenters
                 var createdDto = dialog.SongDto;
                 var songEntity = MapToSongEntity(createdDto);
 
-                _songRepository.Insert(songEntity);
-                LoadSongs();
-                ApplyFilters();
+                try
+                {
+                    _songRepository.Insert(songEntity);
+                    LoadSongs();
+                    ApplyFilters();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -243,9 +257,16 @@ namespace MongoDB_SongManager.Presenters
                 var updatedDto = dialog.SongDto;
                 var updatedEntity = MapToSongEntity(updatedDto);
 
-                _songRepository.Update(updatedEntity);
-                LoadSongs();
-                ApplyFilters();
+                try
+                {
+                    _songRepository.Update(updatedEntity);
+                    LoadSongs();
+                    ApplyFilters();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Duplicate Song", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -449,26 +470,37 @@ namespace MongoDB_SongManager.Presenters
                         }
                         else
                         {
-                            var newArtist = new Artist { Name = artistName };
-                            _artistRepository.Insert(newArtist);
-                            artistId = newArtist.Id;
+                            try
+                            {
+                                var newArtist = new Artist { Name = artistName };
+                                _artistRepository.Insert(newArtist);
+                                artistId = newArtist.Id;
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                artistId = _artistRepository.GetAll()
+                                    .FirstOrDefault(a => string.Equals(a.Name, artistName, StringComparison.OrdinalIgnoreCase))?.Id;
+                            }
                         }
 
                         importedSong.ArtistId = artistId;
                     }
 
-                    var existingSong = _allSongs.FirstOrDefault(s =>
-                        string.Equals(s.Title, importedSong.Title, StringComparison.OrdinalIgnoreCase) &&
-                        s.ArtistId == artistId);
-
-                    if (existingSong != null)
-                    {
-                        importedSongIds.Add(existingSong.Id);
-                    }
-                    else
+                    try
                     {
                         _songRepository.Insert(importedSong);
                         importedSongIds.Add(importedSong.Id);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        var existingSong = _allSongs.FirstOrDefault(s =>
+                            string.Equals(s.Title, importedSong.Title, StringComparison.OrdinalIgnoreCase) &&
+                            s.ArtistId == artistId);
+
+                        if (existingSong != null)
+                        {
+                            importedSongIds.Add(existingSong.Id);
+                        }
                     }
                 }
 

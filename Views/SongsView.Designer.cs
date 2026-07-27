@@ -29,13 +29,14 @@
             pnlSearch = new Panel();
             txtSearch = new TextBox();
             btnFilterFavorites = new Button();
-            pnlButtons = new FlowLayoutPanel();
-            btnAddSong = new Button();
-            btnAddArtist = new Button();
-            btnEditSong = new Button();
-            btnDeleteSong = new Button();
-            btnExportCsv = new Button();
-            btnImportCsv = new Button();
+            toolStripActionButtons = new ToolStrip();
+            btnAddSong = new ToolStripButton();
+            btnAddArtist = new ToolStripButton();
+            btnEditSong = new ToolStripButton();
+            btnDeleteSong = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            btnExportCsv = new ToolStripButton();
+            btnImportCsv = new ToolStripButton();
             pnlRight = new Panel();
             grpSongDetails = new GroupBox();
             lblBookInfo = new Label();
@@ -49,7 +50,7 @@
             pnlMiddle.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSongs).BeginInit();
             pnlSearch.SuspendLayout();
-            pnlButtons.SuspendLayout();
+            toolStripActionButtons.SuspendLayout();
             pnlRight.SuspendLayout();
             grpSongDetails.SuspendLayout();
             SuspendLayout();
@@ -119,7 +120,7 @@
             // 
             pnlMiddle.Controls.Add(dgvSongs);
             pnlMiddle.Controls.Add(pnlSearch);
-            pnlMiddle.Controls.Add(pnlButtons);
+            pnlMiddle.Controls.Add(toolStripActionButtons);
             pnlMiddle.Dock = DockStyle.Fill;
             pnlMiddle.Location = new Point(164, 4);
             pnlMiddle.Name = "pnlMiddle";
@@ -184,79 +185,77 @@
             btnFilterFavorites.Text = "⭐ Favoriten";
             btnFilterFavorites.UseVisualStyleBackColor = true;
             // 
-            // pnlButtons
+            // toolStripActionButtons
             // 
-            pnlButtons.Controls.Add(btnAddSong);
-            pnlButtons.Controls.Add(btnAddArtist);
-            pnlButtons.Controls.Add(btnEditSong);
-            pnlButtons.Controls.Add(btnDeleteSong);
-            pnlButtons.Controls.Add(btnExportCsv);
-            pnlButtons.Controls.Add(btnImportCsv);
-            pnlButtons.Dock = DockStyle.Bottom;
-            pnlButtons.Location = new Point(5, 452);
-            pnlButtons.Name = "pnlButtons";
-            pnlButtons.Size = new Size(397, 35);
-            pnlButtons.TabIndex = 2;
+            toolStripActionButtons.CanOverflow = true;
+            toolStripActionButtons.Dock = DockStyle.Bottom;
+            toolStripActionButtons.GripStyle = ToolStripGripStyle.Hidden;
+            toolStripActionButtons.Items.AddRange(new ToolStripItem[] {
+            btnAddSong,
+            btnAddArtist,
+            btnEditSong,
+            btnDeleteSong,
+            toolStripSeparator1,
+            btnExportCsv,
+            btnImportCsv});
+            toolStripActionButtons.Location = new Point(5, 452);
+            toolStripActionButtons.Name = "toolStripActionButtons";
+            toolStripActionButtons.Size = new Size(397, 35);
+            toolStripActionButtons.TabIndex = 2;
+            toolStripActionButtons.Text = "Action Toolbar";
             // 
             // btnAddSong
             // 
-            btnAddSong.AutoSize = true;
-            btnAddSong.Location = new Point(3, 3);
+            btnAddSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnAddSong.Name = "btnAddSong";
-            btnAddSong.Size = new Size(81, 25);
-            btnAddSong.TabIndex = 0;
+            btnAddSong.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnAddSong.Size = new Size(54, 32);
             btnAddSong.Text = "+ Song";
-            btnAddSong.UseVisualStyleBackColor = true;
             // 
             // btnAddArtist
             // 
-            btnAddArtist.AutoSize = true;
-            btnAddArtist.Location = new Point(90, 3);
+            btnAddArtist.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnAddArtist.Name = "btnAddArtist";
-            btnAddArtist.Size = new Size(85, 25);
-            btnAddArtist.TabIndex = 1;
+            btnAddArtist.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnAddArtist.Size = new Size(68, 32);
             btnAddArtist.Text = "+ Interpret";
-            btnAddArtist.UseVisualStyleBackColor = true;
             // 
             // btnEditSong
             // 
-            btnEditSong.AutoSize = true;
-            btnEditSong.Location = new Point(181, 3);
+            btnEditSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnEditSong.Name = "btnEditSong";
-            btnEditSong.Size = new Size(75, 25);
-            btnEditSong.TabIndex = 2;
+            btnEditSong.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnEditSong.Size = new Size(67, 32);
             btnEditSong.Text = "Bearbeiten";
-            btnEditSong.UseVisualStyleBackColor = true;
             // 
             // btnDeleteSong
             // 
-            btnDeleteSong.AutoSize = true;
-            btnDeleteSong.Location = new Point(262, 3);
+            btnDeleteSong.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnDeleteSong.Name = "btnDeleteSong";
-            btnDeleteSong.Size = new Size(75, 25);
-            btnDeleteSong.TabIndex = 3;
+            btnDeleteSong.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnDeleteSong.Size = new Size(56, 32);
             btnDeleteSong.Text = "Löschen";
-            btnDeleteSong.UseVisualStyleBackColor = true;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 35);
             // 
             // btnExportCsv
             // 
-            btnExportCsv.AutoSize = true;
-            btnExportCsv.Location = new Point(3, 34);
+            btnExportCsv.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnExportCsv.Name = "btnExportCsv";
-            btnExportCsv.Size = new Size(80, 25);
-            btnExportCsv.TabIndex = 4;
+            btnExportCsv.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnExportCsv.Size = new Size(60, 32);
             btnExportCsv.Text = "📥 Export";
-            btnExportCsv.UseVisualStyleBackColor = true;
             // 
             // btnImportCsv
             // 
-            btnImportCsv.AutoSize = true;
-            btnImportCsv.Location = new Point(89, 34);
+            btnImportCsv.DisplayStyle = ToolStripItemDisplayStyle.Text;
             btnImportCsv.Name = "btnImportCsv";
-            btnImportCsv.Size = new Size(80, 25);
-            btnImportCsv.TabIndex = 5;
+            btnImportCsv.Overflow = ToolStripItemOverflow.AsNeeded;
+            btnImportCsv.Size = new Size(63, 32);
             btnImportCsv.Text = "📤 Import";
-            btnImportCsv.UseVisualStyleBackColor = true;
             // 
             // pnlRight
             // 
@@ -352,11 +351,12 @@
             mainLayout.ResumeLayout(false);
             pnlLeft.ResumeLayout(false);
             pnlMiddle.ResumeLayout(false);
+            pnlMiddle.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvSongs).EndInit();
             pnlSearch.ResumeLayout(false);
             pnlSearch.PerformLayout();
-            pnlButtons.ResumeLayout(false);
-            pnlButtons.PerformLayout();
+            toolStripActionButtons.ResumeLayout(false);
+            toolStripActionButtons.PerformLayout();
             pnlRight.ResumeLayout(false);
             grpSongDetails.ResumeLayout(false);
             ResumeLayout(false);
@@ -377,13 +377,14 @@
         private System.Windows.Forms.DataGridView dgvSongs;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTitle;
         private System.Windows.Forms.DataGridViewTextBoxColumn colArtist;
-        private System.Windows.Forms.FlowLayoutPanel pnlButtons;
-        private System.Windows.Forms.Button btnAddSong;
-        private System.Windows.Forms.Button btnAddArtist;
-        private System.Windows.Forms.Button btnEditSong;
-        private System.Windows.Forms.Button btnDeleteSong;
-        private System.Windows.Forms.Button btnExportCsv;
-        private System.Windows.Forms.Button btnImportCsv;
+        private System.Windows.Forms.ToolStrip toolStripActionButtons;
+        private System.Windows.Forms.ToolStripButton btnAddSong;
+        private System.Windows.Forms.ToolStripButton btnAddArtist;
+        private System.Windows.Forms.ToolStripButton btnEditSong;
+        private System.Windows.Forms.ToolStripButton btnDeleteSong;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton btnExportCsv;
+        private System.Windows.Forms.ToolStripButton btnImportCsv;
         private System.Windows.Forms.Panel pnlRight;
         private System.Windows.Forms.GroupBox grpSongDetails;
         private System.Windows.Forms.Label lblSongTitle;

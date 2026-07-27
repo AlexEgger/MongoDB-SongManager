@@ -18,6 +18,32 @@ public class MongoSongRepository : MongoRepository<Song>, ISongRepository
     }
 
     /// <summary>
+    /// Inserts a new song document only if an active song with the same title and artist does not already exist.
+    /// </summary>
+    /// <param name="entity">The song entity to insert.</param>
+    /// <exception cref="InvalidOperationException">Thrown when a song with the same title and artist already exists.</exception>
+    public override void Insert (Song entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        string normalizedTitle = entity.Title?.Trim().ToLower() ?? string.Empty;
+        string? artistId = entity.ArtistId;
+
+        bool exists = Collection.Find(s =>
+            !s.IsDeleted &&
+            s.ArtistId == artistId &&
+            s.Title.ToLower() == normalizedTitle
+        ).Any();
+
+        if (exists)
+        {
+            throw new InvalidOperationException($"A song with the title '{entity.Title}' already exists for this artist.");
+        }
+
+        base.Insert(entity);
+    }
+
+    /// <summary>
     /// Retrieves all active songs associated with a specific artist ID.
     /// </summary>
     /// <param name="artistId">The unique identifier of the artist.</param>
@@ -45,5 +71,34 @@ public class MongoSongRepository : MongoRepository<Song>, ISongRepository
         );
 
         return Collection.Find(filter).ToList();
+    }
+
+    /// <summary>
+    /// Updates an existing artist entity while ensuring that no other active artist has the same name (case-insensitive).
+    /// </summary>
+    /// <param name="entity"> The song entity to update.</param>
+    /// <returns> True if the update was successful; otherwise, false.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when a song with the same title and artist already exists.</exception>
+    public override bool Update (Song entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        string normalizedTitle = entity.Title?.Trim().ToLower() ?? string.Empty;
+        string? artistId = entity.ArtistId;
+
+        // Check for duplicates
+        bool duplicateExists = Collection.Find(s =>
+        !s.IsDeleted &&
+        s.Id != entity.Id &&
+        s.ArtistId == artistId &&
+        s.Title.ToLower() == normalizedTitle
+                                ).Any();
+
+        if (duplicateExists)
+        {
+            throw new InvalidOperationException($"A song with the title '{entity.Title}' already exists for this artist.");
+        }
+
+        return base.Update(entity);
     }
 }
