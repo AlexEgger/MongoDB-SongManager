@@ -1,46 +1,69 @@
 ﻿using MongoDB_SongManager.Models;
 using MongoDB_SongManager.Services.DTOs;
 
-namespace MongoDB_SongManager.Services;
-
-/// <summary>
-/// Service responsible for transforming domain models into DTOs tailored for UI presentation.
-/// </summary>
-public class DtoService : IDtoService
+namespace MongoDB_SongManager.Services
 {
-    /// <inheritdoc />
-    public SongDisplayDto MapToSongDisplayDto (Song song, IReadOnlyDictionary<string, string> artistNames)
+    /// <summary>
+    /// Service responsible for transforming domain models into DTOs tailored for UI presentation.
+    /// </summary>
+    public class DtoService : IDtoService
     {
-        ArgumentNullException.ThrowIfNull(song);
-
-        string artistName = "Unknown";
-        if (!string.IsNullOrEmpty(song.ArtistId) && artistNames != null && artistNames.TryGetValue(song.ArtistId, out var resolvedName))
+        /// <inheritdoc />
+        public SongDisplayDto MapToSongDisplayDto (Song song, IReadOnlyDictionary<string, string> artistNames)
         {
-            artistName = resolvedName;
+            ArgumentNullException.ThrowIfNull(song);
+
+            string artistName = "Unknown";
+            if (!string.IsNullOrEmpty(song.ArtistId) && artistNames != null && artistNames.TryGetValue(song.ArtistId, out var resolvedName))
+            {
+                artistName = resolvedName;
+            }
+
+            string bookInfo = "-";
+            if (song.Liederbuchnummer.HasValue || song.Liederbuchseite.HasValue)
+            {
+                bookInfo = $"Book #{song.Liederbuchnummer?.ToString() ?? "-"} / Page {song.Liederbuchseite?.ToString() ?? "-"}";
+            }
+
+            return new SongDisplayDto
+            {
+                Id = song.Id ?? string.Empty,
+                Title = song.Title ?? string.Empty,
+                ArtistName = artistName,
+                ChordsUrl = song.ChordsUrl,
+                YoutubeUrl = song.YoutubeUrl,
+                SongbookInfo = bookInfo
+            };
         }
 
-        string bookInfo = "-";
-        if (song.Liederbuchnummer.HasValue || song.Liederbuchseite.HasValue)
+        /// <inheritdoc />
+        public IEnumerable<SongDisplayDto> MapToSongDisplayDtos (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
         {
-            bookInfo = $"Book #{song.Liederbuchnummer?.ToString() ?? "-"} / Page {song.Liederbuchseite?.ToString() ?? "-"}";
+            if (songs == null) return Enumerable.Empty<SongDisplayDto>();
+
+            return songs.Select(song => MapToSongDisplayDto(song, artistNames)).ToList();
         }
 
-        return new SongDisplayDto
+        /// <inheritdoc />
+        public UserDto? MapToUserDto (User? user)
         {
-            Id = song.Id ?? string.Empty,
-            Title = song.Title ?? string.Empty,
-            ArtistName = artistName,
-            ChordsUrl = song.ChordsUrl,
-            YoutubeUrl = song.YoutubeUrl,
-            SongbookInfo = bookInfo
-        };
-    }
+            if (user == null) return null;
 
-    /// <inheritdoc />
-    public IEnumerable<SongDisplayDto> MapToSongDisplayDtos (IEnumerable<Song> songs, IReadOnlyDictionary<string, string> artistNames)
-    {
-        if (songs == null) return Enumerable.Empty<SongDisplayDto>();
+            return new UserDto
+            {
+                Id = user.Id ?? string.Empty,
+                Name = user.Name ?? string.Empty
+            };
+        }
 
-        return songs.Select(song => MapToSongDisplayDto(song, artistNames)).ToList();
+        /// <inheritdoc />
+        public IEnumerable<UserDto> MapToUserDtos (IEnumerable<User> users)
+        {
+            if (users == null) return Enumerable.Empty<UserDto>();
+
+            return users.Select(user => MapToUserDto(user)!)
+                        .Where(dto => dto != null)
+                        .ToList();
+        }
     }
 }

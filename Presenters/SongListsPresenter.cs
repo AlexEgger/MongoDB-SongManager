@@ -14,7 +14,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly ISonglistRepository _songlistRepository;
         private readonly ISongRepository _songRepository;
         private readonly IArtistRepository _artistRepository;
-        private readonly CurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IDtoService _dtoService;
 
         private List<Songlist> _allSonglists = new();
@@ -24,12 +24,19 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Initializes a new instance of the <see cref="SonglistsPresenter"/> class.
         /// </summary>
+        /// <param name="view">The songlists view interface.</param>
+        /// <param name="songlistRepository">The repository for setlist data operations.</param>
+        /// <param name="songRepository">The repository for song data operations.</param>
+        /// <param name="artistRepository">The repository for artist data operations.</param>
+        /// <param name="currentUserService">The service tracking the active application user.</param>
+        /// <param name="dtoService">The service handling data transfer object mappings.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any required dependency is null.</exception>
         public SonglistsPresenter (
             ISonglistsView view,
             ISonglistRepository songlistRepository,
             ISongRepository songRepository,
             IArtistRepository artistRepository,
-            CurrentUserService currentUserService,
+            ICurrentUserService currentUserService,
             IDtoService dtoService)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
@@ -157,6 +164,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Updates the assigned songs grid when the selected songlist changes and evaluates read-only rules.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnSonglistSelectionChanged (object? sender, EventArgs e)
         {
             RefreshAssignedSongs();
@@ -200,6 +209,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Adds a selected song to the active setlist.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnAddSongToSonglistClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;
@@ -217,6 +228,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Removes a selected song from the active setlist.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnRemoveSongFromSonglistClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;
@@ -234,6 +247,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Moves a song up one position in the setlist sequence.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnMoveSongUpClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;
@@ -256,6 +271,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Moves a song down one position in the setlist sequence.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnMoveSongDownClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;
@@ -278,6 +295,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Prompts user input and creates a new songlist.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnCreateSonglistClicked (object? sender, EventArgs e)
         {
             string listName = Microsoft.VisualBasic.Interaction.InputBox("Name of the new setlist:", "New Setlist", "New Setlist");
@@ -298,6 +317,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Prompts user input and renames the currently selected setlist if authorized.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnRenameSonglistClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;
@@ -332,6 +353,8 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Soft-deletes the selected songlist after user confirmation.
         /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event args.</param>
         private void OnDeleteSonglistClicked (object? sender, EventArgs e)
         {
             var selectedList = _view.SelectedSonglist;

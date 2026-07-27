@@ -1,35 +1,27 @@
-﻿using MongoDB_SongManager.Models;
+﻿using MongoDB_SongManager.Services.DTOs;
 
 namespace MongoDB_SongManager.Services
 {
     /// <summary>
-    /// Singleton/Service responsible for managing the state of the currently active user in the application.
+    /// Service implementation responsible for tracking the currently active user DTO and notifying listeners upon change.
     /// </summary>
-    public class CurrentUserService
+    public class CurrentUserService : ICurrentUserService
     {
-        private User? _currentUser;
+        private UserDto? _currentUser;
 
-        /// <summary>
-        /// Gets the currently active <see cref="User"/>.
-        /// </summary>
-        public User? CurrentUser => _currentUser;
+        /// <inheritdoc />
+        public UserDto? CurrentUser => _currentUser;
 
-        /// <summary>
-        /// Gets the ID of the currently active user, or an empty string if no user is set.
-        /// </summary>
+        /// <inheritdoc />
         public string CurrentUserId => _currentUser?.Id ?? string.Empty;
 
-        /// <summary>
-        /// Occurs when the active user is changed.
-        /// </summary>
+        /// <inheritdoc />
         public event EventHandler? CurrentUserChanged;
 
-        /// <summary>
-        /// Sets the currently active user and triggers the <see cref="CurrentUserChanged"/> event.
-        /// </summary>
-        /// <param name="user">The user entity to set as active.</param>
-        public void SetCurrentUser (User? user)
+        /// <inheritdoc />
+        public void SetCurrentUser (UserDto? user)
         {
+            // Avoid redundant updates if the user identity hasn't changed
             if (_currentUser?.Id != user?.Id)
             {
                 _currentUser = user;

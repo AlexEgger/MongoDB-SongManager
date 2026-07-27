@@ -1,6 +1,7 @@
 using MongoDB_SongManager.Data;
 using MongoDB_SongManager.Data.Repositories;
 using MongoDB_SongManager.Models;
+using MongoDB_SongManager.Presenters;
 using MongoDB_SongManager.Services;
 using MongoDB_SongManager.Views;
 
@@ -33,21 +34,27 @@ namespace MongoDB_SongManager
             IUserInteractionRepository userInteractionRepository = new MongoUserInteractionRepository(dbContext);
 
             // 3. Instantiate domain services
-            var currentUserService = new CurrentUserService();
+            ICurrentUserService currentUserService = new CurrentUserService();
             IDtoService dtoService = new DtoService();
             ICsvService csvService = new CsvService();
 
-            // 4. Launch Main Form with all required dependencies injected
-            Application.Run(new MainForm(
-                currentUserService,
-                dtoService,
-                csvService,
+            // 4. Instantiate main view and presenter
+            var mainForm = new MainForm();
+            var mainPresenter = new MainPresenter(
+                mainForm,
                 userRepository,
                 songRepository,
                 artistRepository,
                 songlistRepository,
-                userInteractionRepository
-            ));
+                userInteractionRepository,
+                currentUserService,
+                dtoService,
+                csvService
+            );
+
+            // 5. Initialize presenter logic and launch application
+            mainPresenter.Initialize();
+            Application.Run(mainForm);
         }
     }
 }

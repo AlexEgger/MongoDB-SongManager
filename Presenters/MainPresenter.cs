@@ -2,109 +2,145 @@
 using MongoDB_SongManager.Models;
 using MongoDB_SongManager.Services;
 using MongoDB_SongManager.Views;
+using SongManager.Views;
 
-namespace MongoDB_SongManager.Presenters;
-
-/// <summary>
-/// Controls application presentation logic, orchestrating database interaction and UI updates.
-/// </summary>
-public class MainPresenter
+namespace MongoDB_SongManager.Presenters
 {
-    private readonly IMainView _view;
-    private readonly ISongRepository _songRepository;
-    private readonly IArtistRepository _artistRepository;
-    private readonly ICsvService _csvService;
-    private readonly IDtoService _dtoService;
-
-    public MainPresenter (
-        IMainView view,
-        ISongRepository songRepository,
-        IArtistRepository artistRepository,
-        ICsvService csvService,
-        IDtoService dtoService)
+    /// <summary>
+    /// Presenter responsible for main application orchestration, view hosting, and global user state management.
+    /// </summary>
+    public class MainPresenter
     {
-        _view = view ?? throw new ArgumentNullException(nameof(view));
-        _songRepository = songRepository ?? throw new ArgumentNullException(nameof(songRepository));
-        _artistRepository = artistRepository ?? throw new ArgumentNullException(nameof(artistRepository));
-        _csvService = csvService ?? throw new ArgumentNullException(nameof(csvService));
-        _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
+        private readonly IMainView _view;
+        private readonly IRepository<User> _userRepository;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IDtoService _dtoService;
 
-        // Wire event subscriptions
-        _view.ViewLoaded += OnViewLoadedAsync;
-        _view.SearchRequested += OnSearchRequestedAsync;
-        _view.ImportCsvRequested += OnImportCsvRequestedAsync;
-    }
+        private readonly SongsView _songsView;
+        private readonly SongsPresenter _songsPresenter;
 
-    private async void OnViewLoadedAsync (object? sender, EventArgs e)
-    {
-        await RefreshSongListAsync();
-    }
+        private readonly SonglistsView _songlistsView;
+        private readonly SonglistsPresenter _songlistsPresenter;
 
-    private async void OnSearchRequestedAsync (object? sender, EventArgs e)
-    {
-        await RefreshSongListAsync(_view.SearchText);
-    }
-
-    private async void OnImportCsvRequestedAsync (object? sender, EventArgs e)
-    {
-        if (string.IsNullOrWhiteSpace(_view.SelectedCsvPath))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainPresenter"/> class and constructs child views and presenters.
+        /// </summary>
+        /// <param name="view">The main view contract.</param>
+        /// <param name="userRepository">Repository for user data persistence.</param>
+        /// <param name="songRepository">Repository for song data access.</param>
+        /// <param name="artistRepository">Repository for artist data access.</param>
+        /// <param name="songlistRepository">Repository for setlist data access.</param>
+        /// <param name="userInteractionRepository">Repository for user interaction data access.</param>
+        /// <param name="currentUserService">Service tracking active user state.</param>
+        /// <param name="dtoService">Service providing DTO conversions.</param>
+        /// <param name="csvService">Service handling CSV import and export operations.</param>
+        public MainPresenter (
+            IMainView view,
+            IRepository<User> userRepository,
+            ISongRepository songRepository,
+            IArtistRepository artistRepository,
+            ISonglistRepository songlistRepository,
+            IUserInteractionRepository userInteractionRepository,
+            ICurrentUserService currentUserService,
+            IDtoService dtoService,
+            ICsvService csvService)
         {
-            return;
+            _view = view ?? throw new ArgumentNullException(nameof(view));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _dtoService = dtoService ?? throw new ArgumentNullException(nameof(dtoService));
+
+            // Initialize Sub-Views & Presenters
+            _songsView = new SongsView();
+            _songsPresenter = new SongsPresenter(
+                _songsView,
+                songRepository,
+                artistRepository,
+                songlistRepository,
+                userInteractionRepository,
+                _currentUserService,
+                _dtoService,
+                csvService
+            );
+
+            _songlistsView = new SonglistsView();
+            _songlistsPresenter = new SonglistsPresenter(
+                _songlistsView,
+                songlistRepository,
+                songRepository,
+                artistRepository,
+                _currentUserService,
+                _dtoService
+            );
+
+            WireUpEvents();
         }
 
-        try
+        /// <summary>
+        /// Subscribes to main view UI events.
+        /// </summary>
+        private void WireUpEvents ()
         {
-            var importedEntries = await _csvService.ImportSongsAsync(_view.SelectedCsvPath);
-            var existingArtists = _artistRepository.GetAll().ToList();
+            _view.UserSelectionChanged += OnUserSelectionChanged;
+            _view.NavSongsClicked += OnNavSongsClicked;
+            _view.NavSonglistsClicked += OnNavSonglistsClicked;
+        }
 
-            foreach (var (song, artistName) in importedEntries)
+        /// <summary>
+        /// Initializes application state, loads registered users, and displays the default initial view.
+        /// </summary>
+        public void Initialize ()
+        {
+            LoadUsers();
+
+            // Load and display default initial view
+            _songsPresenter.LoadInitialData();
+            _view.ShowView(_songsView);
+        }
+
+        /// <summary>
+        /// Fetches user entities from database, maps them to DTOs, populates the view, and sets default active user.
+        /// </summary>
+        private void LoadUsers ()
+        {
+            var users = _userRepository.GetAll().ToList();
+            var userDtos = _dtoService.MapToUserDtos(users).ToList();
+
+            _view.DisplayUsers(userDtos);
+
+            if (userDtos.Count > 0)
             {
-                if (!string.IsNullOrWhiteSpace(artistName))
-                {
-                    var artist = existingArtists.FirstOrDefault(a => a.Name.Equals(artistName, StringComparison.OrdinalIgnoreCase));
-                    if (artist == null)
-                    {
-                        artist = new Artist { Name = artistName };
-                        _artistRepository.Insert(artist);
-                        existingArtists.Add(artist);
-                    }
-
-                    song.ArtistId = artist.Id;
-                }
-
-                _songRepository.Insert(song);
+                _currentUserService.SetCurrentUser(userDtos[0]);
             }
-
-            _view.ShowSuccessMessage("CSV songs successfully imported.");
-            await RefreshSongListAsync();
         }
-        catch (Exception ex)
-        {
-            _view.ShowErrorMessage($"CSV Import failed: {ex.Message}");
-        }
-    }
 
-    private async Task RefreshSongListAsync (string? filterText = null)
-    {
-        try
+        /// <summary>
+        /// Handles changes to the active user selection.
+        /// </summary>
+        private void OnUserSelectionChanged (object? sender, EventArgs e)
         {
-            var songs = _songRepository.GetAll();
-            var artists = _artistRepository.GetAll();
-            var artistDict = artists.ToDictionary(a => a.Id, a => a.Name);
-
-            if (!string.IsNullOrWhiteSpace(filterText))
+            if (_view.SelectedUser != null)
             {
-                songs = songs.Where(s => s.Title.Contains(filterText, StringComparison.OrdinalIgnoreCase)).ToList();
+                _currentUserService.SetCurrentUser(_view.SelectedUser);
             }
-
-            // Centralized transformation using IDtoService
-            var displayDtos = _dtoService.MapToSongDisplayDtos(songs, artistDict).ToList();
-
-            _view.DisplaySongs(displayDtos);
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Refreshes song data and displays the Songs view.
+        /// </summary>
+        private void OnNavSongsClicked (object? sender, EventArgs e)
         {
-            _view.ShowErrorMessage($"Failed to load songs: {ex.Message}");
+            _songsPresenter.LoadInitialData();
+            _view.ShowView(_songsView);
+        }
+
+        /// <summary>
+        /// Refreshes setlist data and displays the Songlists view.
+        /// </summary>
+        private void OnNavSonglistsClicked (object? sender, EventArgs e)
+        {
+            _songlistsPresenter.LoadInitialData();
+            _view.ShowView(_songlistsView);
         }
     }
 }

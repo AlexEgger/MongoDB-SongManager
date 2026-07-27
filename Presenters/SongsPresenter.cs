@@ -7,7 +7,7 @@ using SongManager.Views;
 namespace MongoDB_SongManager.Presenters
 {
     /// <summary>
-    /// Presenter responsible for binding song data, managing filters, and handling view interactions.
+    /// Presenter responsible for binding song data, managing multi-criteria filters, and handling song lifecycle events.
     /// </summary>
     public class SongsPresenter
     {
@@ -16,7 +16,7 @@ namespace MongoDB_SongManager.Presenters
         private readonly IArtistRepository _artistRepository;
         private readonly ISonglistRepository _songlistRepository;
         private readonly IUserInteractionRepository _userInteractionRepository;
-        private readonly CurrentUserService _currentUserService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IDtoService _dtoService;
         private readonly ICsvService _csvService;
 
@@ -27,13 +27,21 @@ namespace MongoDB_SongManager.Presenters
         /// <summary>
         /// Initializes a new instance of the <see cref="SongsPresenter"/> class.
         /// </summary>
+        /// <param name="view">The songs view contract.</param>
+        /// <param name="songRepository">Repository for song data access.</param>
+        /// <param name="artistRepository">Repository for artist data access.</param>
+        /// <param name="songlistRepository">Repository for songlist data access.</param>
+        /// <param name="userInteractionRepository">Repository for user interactions and favorites.</param>
+        /// <param name="currentUserService">Service tracking the current user state.</param>
+        /// <param name="dtoService">Service for DTO mappings.</param>
+        /// <param name="csvService">Service providing CSV import and export capabilities.</param>
         public SongsPresenter (
             ISongsView view,
             ISongRepository songRepository,
             IArtistRepository artistRepository,
             ISonglistRepository songlistRepository,
             IUserInteractionRepository userInteractionRepository,
-            CurrentUserService currentUserService,
+            ICurrentUserService currentUserService,
             IDtoService dtoService,
             ICsvService csvService)
         {
@@ -125,7 +133,7 @@ namespace MongoDB_SongManager.Presenters
         {
             IEnumerable<Song> filtered = _allSongs;
 
-            // 1. Filter by selected setlist/playlist (if a songlist is selected in the view)
+            // 1. Filter by selected setlist/playlist
             var selectedList = _view.SelectedSonglist;
             if (selectedList != null)
             {
@@ -175,7 +183,6 @@ namespace MongoDB_SongManager.Presenters
                 return;
             }
 
-            // Find full model entity matching the selected DTO Id
             var selectedSong = _allSongs.FirstOrDefault(s => s.Id == selectedDto.Id);
             string? artistName = selectedDto.ArtistName;
 
@@ -259,7 +266,6 @@ namespace MongoDB_SongManager.Presenters
         /// </summary>
         private void OnExportCsvClicked (object? sender, EventArgs e)
         {
-            // Get currently filtered songs directly based on active view filters (Search, Playlist, Favorites)
             var songsToExport = GetCurrentlyFilteredSongs().ToList();
 
             if (!songsToExport.Any())
@@ -274,7 +280,7 @@ namespace MongoDB_SongManager.Presenters
 
             string? filePath = null;
 
-            // Create dedicated STA thread for SaveFileDialog
+            // Dedicated STA thread for WinForms file dialogs
             Thread staThread = new Thread(() =>
             {
                 using var saveDialog = new SaveFileDialog
@@ -300,13 +306,12 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Helper to retrieve the current list of filtered songs (mirrors ApplyFilters logic).
+        /// Retrieves the current list of filtered songs matching active view criteria.
         /// </summary>
         private IEnumerable<Song> GetCurrentlyFilteredSongs ()
         {
             IEnumerable<Song> filtered = _allSongs;
 
-            // 1. Selected playlist filter
             var selectedList = _view.SelectedSonglist;
             if (selectedList != null)
             {
@@ -314,7 +319,6 @@ namespace MongoDB_SongManager.Presenters
                 filtered = filtered.Where(s => songIdsInList.Contains(s.Id));
             }
 
-            // 2. Favorites filter
             if (_view.IsFavoritesFilterActive)
             {
                 string currentUserId = _currentUserService.CurrentUserId;
@@ -326,7 +330,6 @@ namespace MongoDB_SongManager.Presenters
                 filtered = filtered.Where(s => favoriteSongIds.Contains(s.Id));
             }
 
-            // 3. Search query filter
             string search = _view.SearchTerm;
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -341,6 +344,9 @@ namespace MongoDB_SongManager.Presenters
             return filtered;
         }
 
+        /// <summary>
+        /// Asynchronously exports songs to the designated CSV file path.
+        /// </summary>
         private async void ExecuteExportAsync (List<Song> songsToExport, string filePath)
         {
             try
@@ -356,13 +362,12 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Handles CSV import, giving the option to create a playlist or only import songs.
+        /// Handles CSV import, offering options to group songs into a playlist or import them directly.
         /// </summary>
         private void OnImportCsvClicked (object? sender, EventArgs e)
         {
             string? filePath = null;
 
-            // Create dedicated STA thread for OpenFileDialog
             Thread staThread = new Thread(() =>
             {
                 using var openDialog = new OpenFileDialog
@@ -382,7 +387,6 @@ namespace MongoDB_SongManager.Presenters
 
             if (string.IsNullOrEmpty(filePath)) return;
 
-            // Ask user how to proceed with the import
             var result = MessageBox.Show(
                 "Do you want to create a new playlist for the imported songs?\n\n" +
                 "• Click [Yes] to enter a playlist name and group them.\n" +
@@ -404,14 +408,15 @@ namespace MongoDB_SongManager.Presenters
                     "Create Playlist on Import",
                     defaultListName);
 
-                // If user cancels the InputBox, cancel the whole import
                 if (string.IsNullOrWhiteSpace(playlistName)) return;
             }
 
-            // Execute import (playlistName will be null if user clicked 'No')
             ExecuteImportAsync(filePath, playlistName);
         }
 
+        /// <summary>
+        /// Asynchronously parses CSV data, registers new artists, persists songs, and optionally builds a new playlist.
+        /// </summary>
         private async void ExecuteImportAsync (string filePath, string? playlistName)
         {
             try
@@ -423,7 +428,6 @@ namespace MongoDB_SongManager.Presenters
                 {
                     string? artistId = null;
 
-                    // 1. Resolve or create artist
                     if (!string.IsNullOrWhiteSpace(artistName))
                     {
                         var existingArtist = _artistRepository.GetAll()
@@ -443,7 +447,6 @@ namespace MongoDB_SongManager.Presenters
                         importedSong.ArtistId = artistId;
                     }
 
-                    // 2. Check if song already exists in repository (match by Title and ArtistId)
                     var existingSong = _allSongs.FirstOrDefault(s =>
                         string.Equals(s.Title, importedSong.Title, StringComparison.OrdinalIgnoreCase) &&
                         s.ArtistId == artistId);
@@ -459,7 +462,6 @@ namespace MongoDB_SongManager.Presenters
                     }
                 }
 
-                // 3. Create playlist ONLY if requested (playlistName is not null)
                 if (!string.IsNullOrWhiteSpace(playlistName))
                 {
                     var newPlaylist = new Songlist
@@ -472,7 +474,6 @@ namespace MongoDB_SongManager.Presenters
                     _songlistRepository.Insert(newPlaylist);
                 }
 
-                // Refresh presenter state
                 LoadArtists();
                 LoadSongs();
                 LoadSonglists();
@@ -491,7 +492,7 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Prompts the user for a title and inserts a new songlist.
+        /// Prompts user input and inserts a new songlist.
         /// </summary>
         private void OnCreateSonglistClicked (object? sender, EventArgs e)
         {
@@ -511,7 +512,7 @@ namespace MongoDB_SongManager.Presenters
         }
 
         /// <summary>
-        /// Handles renaming the currently selected songlist if the current user is the owner.
+        /// Handles renaming the selected songlist if authorized.
         /// </summary>
         private void OnRenameSonglistClicked (object? sender, EventArgs e)
         {
@@ -523,7 +524,6 @@ namespace MongoDB_SongManager.Presenters
                 return;
             }
 
-            // Security / Ownership Check: Only creator can rename their playlist
             if (selectedList.CreatorId != _currentUserService.CurrentUserId)
             {
                 MessageBox.Show("You can only rename playlists created by you.", "Permission Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -531,15 +531,13 @@ namespace MongoDB_SongManager.Presenters
             }
 
             string newListName = Microsoft.VisualBasic.Interaction.InputBox(
-                                                                    "Enter a new name for the playlist:",
-                                                                    "Rename Playlist",
-                                                                    selectedList.Name);
+                "Enter a new name for the playlist:",
+                "Rename Playlist",
+                selectedList.Name);
 
             if (!string.IsNullOrWhiteSpace(newListName) && newListName != selectedList.Name)
             {
                 selectedList.Name = newListName;
-
-                // Update in DB and reload view
                 _songlistRepository.Update(selectedList);
                 LoadSonglists();
             }
