@@ -79,7 +79,7 @@ namespace SongManager.Views
             // Default Option: All songs average
             _allSongItems.Add(new SongComboItem("📊 All Songs (Global Average)", null, string.Empty, string.Empty));
 
-            // Sort: Rated songs first (OrderByDescending on boolean isRated), then alphabetically by Title
+            // Sort: Rated songs first, then alphabetically by Title
             var sortedSongs = songs
                 .OrderByDescending(song => ratedSongIds.Contains(song.Id))
                 .ThenBy(song => song.Title);
@@ -88,9 +88,11 @@ namespace SongManager.Views
             {
                 bool isRated = ratedSongIds.Contains(song.Id);
                 string indicator = isRated ? "⭐ [Rated] " : "🎵 ";
-                string displayText = $"{indicator}{song.Title} - {song.ArtistName}";
+                string title = song.Title ?? string.Empty;
+                string artist = song.ArtistName ?? string.Empty;
+                string displayText = $"{indicator}{title} - {artist}";
 
-                _allSongItems.Add(new SongComboItem(displayText, song.Id, song.Title, song.ArtistName));
+                _allSongItems.Add(new SongComboItem(displayText, song.Id, title, artist));
             }
 
             ApplySearchFilter();
@@ -169,7 +171,7 @@ namespace SongManager.Views
         #endregion
 
         /// <summary>
-        /// Filters song items in the ComboBox based on search text matching Title or Artist, maintaining initial sorting.
+        /// Filters song items in the ComboBox based on search text matching Title, Artist, or DisplayText.
         /// </summary>
         private void ApplySearchFilter ()
         {
@@ -178,21 +180,36 @@ namespace SongManager.Views
             string? previousSelectedId = SelectedSongId;
             string query = txtSearch.Text.Trim().ToLowerInvariant();
 
+            cmbSongSelector.BeginUpdate();
             cmbSongSelector.Items.Clear();
 
             var filteredItems = _allSongItems.Where(item =>
-                string.IsNullOrEmpty(item.SongId) || // Always keep "All Songs" option
-                string.IsNullOrEmpty(query) ||
-                item.Title.ToLowerInvariant().Contains(query) ||
-                item.Artist.ToLowerInvariant().Contains(query)).ToList();
+            {
+                // Always show "All Songs" option if search is empty
+                if (string.IsNullOrEmpty(item.SongId) && string.IsNullOrEmpty(query))
+                {
+                    return true;
+                }
+
+                // Skip "All Songs" option when user is actively searching
+                if (string.IsNullOrEmpty(item.SongId))
+                {
+                    return false;
+                }
+
+                // Match query against Title, Artist, or formatted DisplayText
+                return item.Title.ToLowerInvariant().Contains(query) ||
+                       item.Artist.ToLowerInvariant().Contains(query) ||
+                       item.DisplayText.ToLowerInvariant().Contains(query);
+            }).ToList();
 
             foreach (var item in filteredItems)
             {
                 cmbSongSelector.Items.Add(item);
             }
 
-            // Restore previously selected song if present in filtered list, otherwise select first item
-            int restoreIndex = 0;
+            // Restore selection if previously selected song remains in the filtered list
+            int restoreIndex = -1;
             if (!string.IsNullOrEmpty(previousSelectedId))
             {
                 for (int i = 0; i < cmbSongSelector.Items.Count; i++)
@@ -205,15 +222,24 @@ namespace SongManager.Views
                 }
             }
 
-            if (cmbSongSelector.Items.Count > 0)
+            // Fallback to first item if previous selection isn't in filtered list
+            if (restoreIndex != -1)
             {
                 cmbSongSelector.SelectedIndex = restoreIndex;
             }
+            else if (cmbSongSelector.Items.Count > 0)
+            {
+                cmbSongSelector.SelectedIndex = 0;
+            }
 
+            cmbSongSelector.EndUpdate();
             _isUpdatingSelector = false;
 
-            // Trigger chart refresh if selection was adjusted by filter
-            SongSelectionChanged?.Invoke(this, EventArgs.Empty);
+            // Trigger event only if active selection actually changed
+            if (SelectedSongId != previousSelectedId)
+            {
+                SongSelectionChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         /// <summary>
