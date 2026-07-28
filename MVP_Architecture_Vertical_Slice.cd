@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MongoDB_SongManager.Presenters.SongsPresenter" Collapsed="true">
+    <Position X="5.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAASAAECIy0ASAIIASSAAACAEEEIAiCAAhAEAAAA=</HashCode>
+      <FileName>Presenters\SongsPresenter.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_view" />
+      <Field Name="_songRepository" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SongManager.Views.SongsView" Collapsed="true">
+    <Position X="0.75" Y="2.5" Width="1.5" />
+    <NestedTypes>
+      <Class Name="SongManager.Views.SongsView.ListBoxItemWrapper" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Views\SongsView.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>E5RAoCFkDmBAhosAAACygIoGoABAYDBcSSBEAyKSCAQ=</HashCode>
+      <FileName>Views\SongsView.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MongoDB_SongManager.Data.Repositories.MongoSongRepository" Collapsed="true">
+    <Position X="10.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEAAAQAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Repositories\MongoSongRepository.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.1" />
+  </Class>
+  <Class Name="MongoDB_SongManager.Models.Song" Collapsed="true">
+    <Position X="8.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAQAAAAAAAEAAAAAAEAAAEAAAIAAAAAAgAQAAAAA=</HashCode>
+      <FileName>Models\Song.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MongoDB_SongManager.Services.DtoService" Collapsed="true">
+    <Position X="5.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAQAAAAAAAAAAIACAAAAAQAAAgAAAEAAAgIAAAEBA=</HashCode>
+      <FileName>Services\DtoService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="MongoDB_SongManager.Services.DTOs.SongDisplayDto" Collapsed="true">
+    <Position X="2.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAiAQACAAAAAEAAAgAAAAAAEAAAIACAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\DTOs\SongDisplayDto.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="MongoDB_SongManager.Views.ISongsView" Collapsed="true">
+    <Position X="2.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgDEBAhAIAAAAigAIEgABAQCAcQAAAAgCAAAQ=</HashCode>
+      <FileName>Views\ISongsView.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SelectedSong" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="MongoDB_SongManager.Data.Repositories.ISongRepository" Collapsed="true">
+    <Position X="8.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\Repositories\ISongRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MongoDB_SongManager.Services.IDtoService" Collapsed="true">
+    <Position X="5.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAQAAAAAAAAAAIACAAAAAQAAAgAAAEAAAgIAAAEBA=</HashCode>
+      <FileName>Services\IDtoService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
